@@ -1,12 +1,13 @@
 class Programa {
 
 
-    constructor(idPrograma, nombre, descripción1, imagen, descripcion, TipoAporte, costo, fechaCreacion, fechaModificacion, usuCreador, usuModificador, Estado, idColaborador) {
+    constructor(idPrograma, nombre, eslogan, descripción, imagen, descripcion, TipoAporte, costo, fechaCreacion, fechaModificacion, usuCreador, usuModificador, Estado, idColaborador) {
 
 
       this.idPrograma = idPrograma;
       this.nombre = nombre;
-      this.descripción1 = descripción1;
+      this.eslogan = eslogan;
+      this.descripción = descripción;
       this.imagen = imagen;
       this.descripcion = descripcion;
       this.fechaCreacion = fechaCreacion;

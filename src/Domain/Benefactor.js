@@ -8,7 +8,7 @@ class Benefactor{
       this.tipoIdentificacion = tipoIdentificacion;
       this.numeroIdentificacion = numeroIdentificacion;
       this.nombre = nombre;
-      this.email = email;
+      this.correo = correo;
       this.celular = celular; 
 
     }

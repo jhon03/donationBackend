@@ -1,20 +1,24 @@
 class Colaborador{
 
 
-    constructor(codColaborador, tipoIdentificacion, numeroIdentificacion, nombre, email, celular, cargo, usuario, constraseña, fechaCreacion, fechaModificacion, Estado) {
+    constructor(codColaborador, tipoIdentificacion, numeroIdentificacion, nombre, username, contraseña, correo, celular, cargo,  fechaCreacion, fechaModificacion, colCreador, colModificador, Estado) {
 
 
       this.codColaborador = codColaborador;
       this.tipoIdentificacion = tipoIdentificacion;
       this.numeroIdentificacion = numeroIdentificacion;
       this.nombre = nombre;
-      this.email = email;
+      this.username = username;
+      this.constraseña = contraseña; 
+
+      this.correo = correo;
       this.celular = celular; 
       this.cargo = cargo;
-      this.usuario = usuario;
-      this.constraseña = constraseña;
       this.fechaCreacion = fechaCreacion;
       this.fechaModificacion = fechaModificacion;
+
+      this.colCreador = colCreador;
+      this.colModificadore = colModificador;
       this.Estado = Estado;
 
     }
