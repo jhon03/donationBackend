@@ -1,0 +1,23 @@
+{
+  "name": "donationbackend",
+  "version": "1.0.0",
+  "description": "lógica para aplicación web de gestion y control de donaciones de diferentes maneras",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhon03/ProyectoCDC_backend.git"
+  },
+  "author": "jhon hoyos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jhon03/ProyectoCDC_backend/issues"
+  },
+  "homepage": "https://github.com/jhon03/ProyectoCDC_backend#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2"
+  }
+}
