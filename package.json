@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jhon03/ProyectoCDC_backend.git"
+    "url": "https://github.com/jhon03/donationBackend.git"
   },
   "author": "jhon hoyos",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jhon03/ProyectoCDC_backend/issues"
+    "url": "https://github.com/jhon03/donationBackend.git/issues"
   },
-  "homepage": "https://github.com/jhon03/ProyectoCDC_backend#readme",
+  "homepage": "https://github.com/jhon03/donationBackend.git",
   "dependencies": {
     "body-parser": "^1.20.2",
     "express": "^4.18.2"
