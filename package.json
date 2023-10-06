@@ -4,7 +4,7 @@
   "description": "lógica para aplicación web de gestion y control de donaciones de diferentes maneras",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/index.js"
   },
   "repository": {
     "type": "git",
@@ -17,7 +17,23 @@
   },
   "homepage": "https://github.com/jhon03/donationBackend.git",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
-    "express": "^4.18.2"
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.1.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.1.0",
+    "mongoose": "^7.5.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.0",
+    "@babel/node": "^7.22.19",
+    "@babel/preset-env": "^7.22.20",
+    "nodemon": "^3.0.1"
   }
 }
