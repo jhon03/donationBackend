@@ -1,34 +1,50 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const {validarCampos, validarJWT} = require('../middlewares');   //importamos todos los middlewares desde del index
+const {validarCampos, validarJWT, tieneRol} = require('../middlewares');   //importamos todos los middlewares desde del index
 
-const { programaPost, programaGet, programaPut, programaDelete, programaGetId } = require('../controllers/programa.controller');
+const { crearPrograma, obtenerProgramas, actualizarPrograma, eliminarPrograma, obtenerProgramasId } = require('../controllers/programa.controller');
+
+const { validarIdPrograma } = require('../helpers');
 
 const router = new Router();
 
 
-router.get('/',[
-    validarCampos
-],programaGet)
+router.get('/',obtenerProgramas)
 
 router.get('/:id',[
+    check('id', 'El id no es valido').isMongoId(),
+    check('id').custom(validarIdPrograma),
     validarCampos
-], programaGetId)
+], obtenerProgramasId)
 
 router.post('/crear', [
     validarJWT,
     check('nombre', 'el nombre es requerido').not().isEmpty(),
+    check('eslogan', 'El eslogan es requerido').not().isEmpty(),
+    check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
+    check('usuModificador', 'El usuario modificador es requerido').not().isEmpty(),
     validarCampos
-],programaPost);
+],crearPrograma);
 
 router.put('/:id',[
+    validarJWT,
+    check('id', 'el id del programa a actualizar no es valido').isMongoId(),
+    check('id').custom(validarIdPrograma),
+    check('nombre', 'el nombre es requerido').not().isEmpty(),
+    check('eslogan', 'El eslogan es requerido').not().isEmpty(),
+    check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
+    check('usuModificador', 'El usuario modificador es requerido').not().isEmpty(),
     validarCampos
-], programaPut)
+], actualizarPrograma)
 
 router.delete('/:id',[
+    validarJWT,
+    tieneRol('CREADOR'),
+    check('id','El id no es valido').isMongoId(),
+    check('id').custom(validarIdPrograma),
     validarCampos
-],programaDelete)
+],eliminarPrograma)
 
 
 

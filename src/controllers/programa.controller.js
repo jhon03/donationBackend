@@ -5,66 +5,73 @@ const {Programa} = require('../Domain/models');
 
 
 
-const programaGet = async(req = request, res = response) => {
+const obtenerProgramas = async(req = request, res = response) => {
 
-    //const { limite = 5, desde = 0 } = req.query;
-    //const query = {estado: true};   //buscar solo usuarios activos
+    const { limite = 5, desde = 0 } = req.query;
+    const query = {estado: true};   //buscar solo programas activos
     
 
-    //const [total, colaboradores] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
-        //Colaborador.countDocuments(query),
-        //Colaborador.find(query)
-           // .skip(Number(desde))
-           // .limit(Number(limite))
-   // ]);
+    const [total, programas] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
+        Programa.countDocuments(query),  //devuelve los datos por indice
+        Programa.find(query)
+           .skip(Number(desde))
+           .limit(Number(limite))
+    ]);
 
     res.json({
-        msg: 'get programas'
+        total,
+        programas
     });
 }
 
-const programaGetId = (req, res) => {
+const obtenerProgramasId = async(req, res) => {
 
     const {id} = req.params;
+    const programa = await Programa.findById(id);
+    if(!programa  || !programa.estado){
+        res.status(404).json({
+          msg: "No existe el programa"
+        });
+    }
 
     res.json({
-        msg: `obtener programa ${id}`
+        programa
     });
 }
 
-const programaDelete = async(req, res= response) => {
+const eliminarPrograma = async(req, res= response) => {
 
-    //const {id} = req.params;
-    //const colaborador = await Colaborador.findByIdAndUpdate(id, {estado:false});
+    const {id} = req.params;
+    const programa = await Programa.findByIdAndUpdate(id, {estado:false}, {new:true} );
     res.json({
-        msg: 'delete programa id'
+        msg: 'programa eliminado correctamenete',
+        programa
     });
 }
 
-const programaPost = async (req, res = response) => {
+const crearPrograma = async (req, res = response) => {
 
     const nombre = req.body.nombre.toUpperCase();
 
+    //generar data aqui estan los datos necesarios para crear un programa
+    const data = {nombre, eslogan: req.body.eslogan, descripcion: req.body.descripcion, imagen: req.body.imagen, usuCreador: req.body.usuCreador, usuModificador: req.body.usuModificador, colaborador: req.usuario._id}
+
     const programaDB = await Programa.findOne({nombre});
-    if(programaDB){
+    if(programaDB ){
+        if(!programaDB.estado){
+    
+            const programaNue = new Programa(data);
+            await programaNue.save();
+            return res.status(201).json({
+                programaNue
+            });
+        }
+
         return res.status(400).json({
             msg: `El programa ${programaDB.nombre} ya existe`
         });
     }
 
-
-    //generar data
-    const data = {
-        nombre,
-        eslogan: req.body.eslogan,
-        descripcion:req.body.descripcion,
-        tipoAporte:req.body.tipoAporte,
-        costo:req.body.costo,
-        imagen:req.body.imagen,
-        usuCreador:req.body.usuCreador,
-        usuModificador:req.body.usuModificador,
-        colaborador: req.usuario._id
-    }
 
     const programa = new Programa(data);
     
@@ -74,30 +81,24 @@ const programaPost = async (req, res = response) => {
     res.status(201).json(programa);
 }
 
-const programaPut = async(req, res) => {
-    //const { id } = req.params;
-    //const {_id, rol, contrasena, correo, username, ...resto } = req.body;
+const actualizarPrograma = async(req, res) => {
+    const { id } = req.params;
+    const {_id, ...resto } = req.body;
 
-    //validar
-    //if( contrasena){
-    //    const salt = bcryptjs.genSaltSync();  //encriptar contraseña
-    //    resto.contrasena= bcryptjs.hashSync( contrasena, salt);
-    //}
+    resto.fechaModificacion = new Date();
 
-    //resto.fechaModificacion = new Date();
-
-    //const colaborador = await Colaborador.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
+    const programa = await Programa.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
 
     res.json({
-        msg: 'actualizar programa por id'
+        programa
     });
 }
 
 
 module.exports = {
-    programaGet,
-    programaGetId,
-    programaDelete,
-    programaPost,
-    programaPut
+    obtenerProgramas,
+    obtenerProgramasId,
+    eliminarPrograma,
+    crearPrograma,
+    actualizarPrograma
 }

@@ -1,13 +1,11 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const { 
-        validarCampos,
+const { validarCampos,
         validarJWT,
-        tieneRol
- } = require('../middlewares');  //carpeta donde estan todos los middlewares
+        tieneRol} = require('../middlewares');  //carpeta donde estan todos los middlewares
 
- const { validarRol, validarEmail, validarId, validarEstado } = require('../helpers/bd-valiadators');
+const { validarRol, validarEmail, validarId, validarEstado } = require('../helpers');
 
 const { colaboradorGet, 
         colaboradorDelete, 
