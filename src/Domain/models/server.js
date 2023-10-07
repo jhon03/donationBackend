@@ -14,6 +14,7 @@ class Server{
             auth: '/api/auth',
             colaborador: '/api/colaborador',
             programa : '/api/programa',
+            proyecto: '/api/proyecto',
         }
        
         this.middlewares();  //middleware
@@ -31,7 +32,8 @@ class Server{
     routes(){
         this.app.use(this.paths.auth, require('../../routes/auth.routes')) ;
         this.app.use(this.paths.colaborador, require('../../routes/colaborador.routes'));   //endpoint de user    
-        this.app.use(this.paths.programa, require('../../routes/programa.routes'))
+        this.app.use(this.paths.programa, require('../../routes/programa.routes'));
+        this.app.use(this.paths.proyecto, require('../../routes/proyecto.routes'))
     }
 
     listen(){

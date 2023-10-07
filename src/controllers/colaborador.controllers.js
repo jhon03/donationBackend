@@ -33,7 +33,7 @@ const colaboradorPatch = (req, res) => {
 const colaboradorDelete = async(req, res= response) => {
 
     const {id} = req.params;
-    const colaborador = await Colaborador.findByIdAndUpdate(id, {estado:false});
+    const colaborador = await Colaborador.findByIdAndUpdate(id, {estado:false}, {new:true});
     res.json(colaborador);
 }
 

@@ -1,34 +1,41 @@
 const { Schema, model} = require('mongoose');
 
 const proyectoSchema = Schema({
+
+    programa: {
+        type: Schema.Types.ObjectId,
+        ref: 'Programa',
+        required: true
+    },
     nombre: {
         type: String,
         required:[true,'El nombre es obligatorio'],
     },
     descripcion: {
-        type: String
+        type: String,
+        required: [true, 'La descripcion es requerida'],
     },
     imagen: {
-        type: String
+        type: String,
+        default: ''
     },
-    consto: {
+    costo: {
         type: Number,
         required : [ true , 'el costo del proyecto es requerido']
     },
     fechaInicio: {
         type: Date,
-        default: Date.now,
         required:[true,'La fecha de inicio es obligatoria'],
     },
     fechaFinalizacion: {
         type: Date,
-        require: [true,'la fecha de finalizacion es requerida']
+        required: [true,'la fecha de finalizacion es requerida']
     },
-    usuCreador: {
+    colCreador: {
         type: String,
         required:[true,'El nombre es obligatorio'],
     },
-    usuModificador: {
+    colModificador: {
         type: String,
         required:[true,'El nombre es obligatorio'],
     },
@@ -39,7 +46,7 @@ const proyectoSchema = Schema({
     },
     fechaModificacion: {
         type: Date,
-        required: true
+        default: null
     },
     estado: {
         type: Boolean,
@@ -50,19 +57,10 @@ const proyectoSchema = Schema({
         type: String,
         required: [true, 'el tipo de proyecto es requerido']
     },
-    tipoPrograma: {
-        type: String,
-        required: [true, 'El tipo de programa es requerido']
-    },
-    programa: {
-        type: Schema.Types.ObjectId,
-        ref: 'Programa',
-        required: true
-    }
 });
 
-ProyectoSchema.methods.JSON = function(){
-    const {__v, _id, ...proyecto} =this.toObjet();
+proyectoSchema.methods.toJSON = function(){
+    const {__v, _id, ...proyecto} =this.toObject();
     proyecto.uid = _id;
     return proyecto;
 }

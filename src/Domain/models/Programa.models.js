@@ -3,8 +3,7 @@ const { Schema, model} = require('mongoose');
 const programaSchema = Schema({
     nombre: {
         type: String,
-        required:[true,'El nombre es obligatorio'],
-        unique: true
+        required:[true,'El nombre es obligatorio']
     },
     eslogan: {
         type: String,
@@ -12,14 +11,6 @@ const programaSchema = Schema({
     },
     descripcion: {
         type: String
-    },
-    tipoAporte: {
-        type: String
-    },
-
-    costo: {
-        type: Number,
-        required:[true,"Costo del Programa"]
     },
     imagen: {
         type: String,

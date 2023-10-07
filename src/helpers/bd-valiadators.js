@@ -1,5 +1,6 @@
-const Role = require('../Domain/models/role');
-const Colaborador = require('../Domain/models/Colaborador.models');
+
+
+const {Role, Colaborador} = require('../Domain/models')
 
 
 
@@ -30,6 +31,8 @@ const validarEstado = async(id) =>{
         throw new Error('El colaborador esta inactivo')
     }
 }
+
+
 
 
 
