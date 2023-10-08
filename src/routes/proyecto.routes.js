@@ -4,6 +4,8 @@ const { check } = require('express-validator');
 const {validarCampos, validarJWT, tieneRol} = require('../middlewares');
 const { crearProyecto, actualizarProyecto, eliminarProyecto, obtenerProyectos, obtenerProyectoId } = require('../controllers/proyecto.controller');
 
+const {validarIdPrograma} = require('../helpers');
+
 const router = new Router();
 
 router.get('/',obtenerProyectos)

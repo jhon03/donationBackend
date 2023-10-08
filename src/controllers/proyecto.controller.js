@@ -1,6 +1,7 @@
 const { response, request} = require('express');
 
 const {Proyecto} = require('../Domain/models'); 
+const { ReturnDocument } = require('mongodb');
 
 const obtenerProyectos = async(req = request, res = response) => {
 
@@ -26,10 +27,10 @@ const obtenerProyectoId = async(req, res) => {
     const {id} = req.params;
     const proyecto = await Proyecto.findById(id);
     if(!proyecto  || !proyecto.estado){
-        res.status(404).json({
+        return res.status(404).json({
           msg: "No existe el proyecto"
         });
-    }
+    } 
 
     res.json({
         proyecto
@@ -40,6 +41,11 @@ const eliminarProyecto = async(req, res= response) => {
 
     const {id} = req.params;
     const proyecto = await Proyecto.findByIdAndUpdate(id, {estado:false}, {new:true} );
+    if (!proyecto ) {
+        return res.status(400).json({
+            msg: 'El programa que intentas eliminar no existe'
+        })
+    }
     res.json({
         msg: 'proyecto eliminado correctamenete',
         proyecto
@@ -98,7 +104,11 @@ const actualizarProyecto = async(req, res) => {
     resto.fechaModificacion = new Date();
 
     const proyecto = await Proyecto.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
-
+    if(!proyecto.estado){
+        return res.status(400).json({
+            msg: 'no se puede actualizar -id'
+        });
+    }
     res.json({
         proyecto
     });
