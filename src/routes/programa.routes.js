@@ -5,8 +5,6 @@ const {validarCampos, validarJWT, tieneRol} = require('../middlewares');   //imp
 
 const { crearPrograma, obtenerProgramas, actualizarPrograma, eliminarPrograma, obtenerProgramasId } = require('../controllers/programa.controller');
 
-const { validarIdPrograma } = require('../helpers');
-
 const router = new Router();
 
 
@@ -14,7 +12,6 @@ router.get('/',obtenerProgramas)
 
 router.get('/:id',[
     check('id', 'El id no es valido').isMongoId(),
-    check('id').custom(validarIdPrograma),
     validarCampos
 ], obtenerProgramasId)
 
@@ -30,7 +27,6 @@ router.post('/crear', [
 router.put('/:id',[
     validarJWT,
     check('id', 'el id del programa a actualizar no es valido').isMongoId(),
-    check('id').custom(validarIdPrograma),
     check('nombre', 'el nombre es requerido').not().isEmpty(),
     check('eslogan', 'El eslogan es requerido').not().isEmpty(),
     check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
@@ -42,7 +38,6 @@ router.delete('/:id',[
     validarJWT,
     tieneRol('CREADOR'),
     check('id','El id no es valido').isMongoId(),
-    check('id').custom(validarIdPrograma),
     validarCampos
 ],eliminarPrograma)
 

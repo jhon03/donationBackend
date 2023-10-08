@@ -1,8 +1,7 @@
 const moongose = require('mongoose');
 
 const dbConnection = async() => {
-    try {
-        
+    try {   
         await moongose.connect(process.env.MONGODB_CNN)
 
         console.log('base de datos onlinne');

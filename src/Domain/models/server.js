@@ -15,6 +15,7 @@ class Server{
             colaborador: '/api/colaborador',
             programa : '/api/programa',
             proyecto: '/api/proyecto',
+            benefactor: 'api/benefactor',
         }
        
         this.middlewares();  //middleware
