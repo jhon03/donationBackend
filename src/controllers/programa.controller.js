@@ -14,6 +14,7 @@ const obtenerProgramas = async(req = request, res = response) => {
     const [total, programas] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
         Programa.countDocuments(query),  //devuelve los datos por indice
         Programa.find(query)
+           .populate('colaborador','nombre')
            .skip(Number(desde))
            .limit(Number(limite))
     ]);
@@ -27,7 +28,8 @@ const obtenerProgramas = async(req = request, res = response) => {
 const obtenerProgramasId = async(req, res) => {
 
     const {id} = req.params;
-    const programa = await Programa.findById(id);
+    const programa = await Programa.findById(id)
+                                   .populate('colaborador','nombre');
     if(!programa  || !programa.estado){
         return res.status(404).json({
           msg: "No existe el programa"

@@ -2,11 +2,6 @@ const { Schema, model} = require('mongoose');
 
 const proyectoSchema = Schema({
 
-    programa: {
-        type: Schema.Types.ObjectId,
-        ref: 'Programa',
-        required: true
-    },
     nombre: {
         type: String,
         required:[true,'El nombre es obligatorio'],
@@ -57,6 +52,12 @@ const proyectoSchema = Schema({
         type: String,
         required: [true, 'el tipo de proyecto es requerido']
     },
+    
+    programa: {
+        type: Schema.Types.ObjectId,
+        ref: 'Programa',
+        required: true
+    },
 });
 
 proyectoSchema.methods.toJSON = function(){
@@ -64,6 +65,7 @@ proyectoSchema.methods.toJSON = function(){
     proyecto.uid = _id;
     return proyecto;
 }
+
 
 
 module.exports = model('Proyecto', proyectoSchema)
