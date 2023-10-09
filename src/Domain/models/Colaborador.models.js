@@ -22,8 +22,7 @@ const colaboradorSchema = Schema({
   },
   contrasena: {
     type: String,
-    required: [true, 'el password es requerido'],
-    unique: true
+    required: [true, 'el password es requerido']
   },
   correo: {
     type: String,

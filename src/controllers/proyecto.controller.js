@@ -12,6 +12,7 @@ const obtenerProyectos = async(req = request, res = response) => {
     const [total, proyecto] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
             Proyecto.countDocuments(query),  //devuelve los datos por indice
             Proyecto.find(query)
+            .populate('programa','nombre')
            .skip(Number(desde))
            .limit(Number(limite))
     ]);
@@ -25,7 +26,8 @@ const obtenerProyectos = async(req = request, res = response) => {
 const obtenerProyectoId = async(req, res) => {
 
     const {id} = req.params;
-    const proyecto = await Proyecto.findById(id);
+    const proyecto = await Proyecto.findById(id)
+                                    .populate('programa','nombre');
     if(!proyecto  || !proyecto.estado){
         return res.status(404).json({
           msg: "No existe el proyecto"
