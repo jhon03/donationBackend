@@ -1,0 +1,62 @@
+const { response, request} = require('express');
+
+const {DonacionAno} = require('../Domain/models'); 
+
+const obtenerDonacionesAnonimas = async(req = request, res = response) => {
+
+    const { limite = 5, desde = 0 } = req.query;
+    const query = {estado: true};   //buscar solo programas activos
+    
+
+    const [total, donacion] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
+            DonacionAno.countDocuments(query),  //devuelve los datos por indice
+            DonacionAno.find(query)
+            .populate('proyecto','nombre')
+           .skip(Number(desde))
+           .limit(Number(limite))
+    ]);
+
+    res.json({
+        total,
+        donacion
+    });
+}
+
+const obtenerDonacionAId = async(req, res) => {
+
+    const {id} = req.params;
+    const donacion = await DonacionAno.findById(id)
+                                    .populate('proyecto','nombre');
+                                    
+    res.json({
+        donacion
+    });
+}
+
+
+const crearDonacionAno = async (req, res = response) => {
+
+    const {idProyecto} = req.params;
+    const {nombreBenefactor, aporte} = req.body;
+
+    //generar data aqui estan los datos necesarios para crear un programa
+    const data = {
+        nombreBenefactor,
+        proyecto: idProyecto,
+        aporte      
+    }
+
+    const donacion = new DonacionAno(data);
+    
+    //guardar en la base de datos
+    await donacion.save();
+    res.status(201).json(donacion);
+}
+
+
+
+module.exports = {
+    obtenerDonacionesAnonimas,
+    obtenerDonacionAId,
+    crearDonacionAno,
+}

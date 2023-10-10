@@ -1,10 +1,9 @@
 const {Schema, model} = require('mongoose');
 
-const donacionSchema = Schema({
+const donacionAnoSchema = Schema({
 
-  benefactor: {
-    type: Schema.Types.ObjectId, 
-    ref: 'Benefactor',
+  nombreBenefactor: {
+    type: String,
     required: [true, 'el benefactor es requerido'],
   },
   proyecto: {
@@ -31,11 +30,10 @@ const donacionSchema = Schema({
 
 
 //modificar metodo json respuesta
-donacionSchema.methods.toJSON = function(){
-    const {__v, _id, ...donacion} = this.toObject();
-    donacion.uid = _id;
-    return donacion;
+donacionAnoSchema.methods.toJSON = function(){
+    const {__v, _id, estado,  ...donacionA} = this.toObject();
+    donacionA.uid = _id;
+    return donacionA;
 }
 
-module.exports = model('Donacion', donacionSchema);
-
+module.exports = model('DonacionesAnonima', donacionAnoSchema);
