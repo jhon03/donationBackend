@@ -18,7 +18,6 @@ const colaboradorSchema = Schema({
   username: {
     type: String,
     required: [true, 'el username es requerido'],
-    unique: true
   },
   contrasena: {
     type: String,
@@ -27,12 +26,10 @@ const colaboradorSchema = Schema({
   correo: {
     type: String,
     required: [true, 'el correo es requerido'],
-    unique: true
   },
   celular: {
     type: Number,
-    required: [true, 'el celular es requerido'],
-    unique: true
+    required: [true, 'el celular es requerido']
   },
   cargo: {
     type: String,

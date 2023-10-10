@@ -12,27 +12,32 @@ const validarRol = async(rol = '') =>{        //verificacion personalizada de ro
 }
 
 const validarEmail = async(correo = '')=>{
-    const existeEmail = await Colaborador.findOne({ correo});
-    if(existeEmail){
+    const colaborador = await Colaborador.findOne({ correo});
+    if(colaborador && colaborador.estado ){
         throw new Error(`el correo: ${correo}, ya esta registrado`)
     }
 }
 
 const validarId = async(id) =>{
     const existeColaborador = await Colaborador.findById(id);
-    if(!existeColaborador){
-        throw new Error(`el id no existe ${id}`)
+    if(!existeColaborador || !existeColaborador.estado){
+        throw new Error(`el id no existe ${id} o esta inactivo`)
     }
 }
 
-const validarEstado = async(id) =>{
-    const colaborador = await Colaborador.findById(id);
-    if(!colaborador.estado){
-        throw new Error('El colaborador esta inactivo')
+const validarNIdentificacion = async(numeroIdentificacion) =>{
+    const colaborador = await Colaborador.findOne({numeroIdentificacion});
+    if(colaborador && colaborador.estado){
+        throw  new Error('ya se encuentra un usuario registrado con este numero identificación');
     }
 }
 
-
+const validarUsername = async(username) =>{
+    const usuario = await Colaborador.findOne({username});
+    if(usuario && usuario.estado){
+        throw new Error(`ya hay un usuario con el username ${username}`)
+    }
+}
 
 
 
@@ -40,5 +45,6 @@ module.exports = {
     validarRol,
     validarEmail,
     validarId,
-    validarEstado
+    validarNIdentificacion,
+    validarUsername
 }

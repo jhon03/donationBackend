@@ -80,9 +80,8 @@ const crearDonacion = async (req, res = response) => {
 
 const actualizarDonacion = async(req, res) => {
     const { id } = req.params;
-    const {_id, ...resto } = req.body;
+    const {_id,benefactor, proyecto, fechaCreacion, estado, ...resto } = req.body;
 
-    resto.fechaModificacion = new Date();
 
     const donacion = await Donacion.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
     if(!donacion.estado){
