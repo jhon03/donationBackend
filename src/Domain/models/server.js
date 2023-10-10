@@ -15,6 +15,7 @@ class Server{
             benefactor: '/api/benefactor',
             colaborador: '/api/colaborador',
             donacion: '/api/donacion',
+            donacionAno: '/api/donacionAnonima',
             programa : '/api/programa',
             proyecto: '/api/proyecto',
         }
@@ -36,6 +37,7 @@ class Server{
         this.app.use(this.paths.benefactor, require('../../routes/benefactor.routes'));
         this.app.use(this.paths.colaborador, require('../../routes/colaborador.routes'));   //endpoint de user    
         this.app.use(this.paths.donacion, require('../../routes/donacion.routes.js'))
+        this.app.use(this.paths.donacionAno, require('../../routes/donacionAnonima.routes'))
         this.app.use(this.paths.programa, require('../../routes/programa.routes'));
         this.app.use(this.paths.proyecto, require('../../routes/proyecto.routes'));
     }

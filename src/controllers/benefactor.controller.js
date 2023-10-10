@@ -26,11 +26,6 @@ const obtenerBenefactorId = async(req, res) => {
 
     const {id} = req.params;
     const benefactor = await Benefactor.findById(id);
-    if(!benefactor  || !benefactor.estado){
-        return res.status(404).json({
-          msg: "No existe el benefactor"
-        });
-    } 
 
     res.json({
         benefactor
@@ -56,12 +51,6 @@ const crearBenefactor = async (req, res = response) => {
 
     const {nombre, tipoIdentificacion, numeroIdentificacion, correo, contrasena ,celular} = req.body;
 
-    const nIdenti = await Benefactor.findOne({numeroIdentificacion})
-    if(nIdenti){
-        return res.status(400).json({
-            msg:'el número de identificación ya se encuentra registrado en la base de datos.'
-        })
-    }
     const salt = bcryptjs.genSaltSync();
     const contrasenaEn= bcryptjs.hashSync(contrasena, salt);
     
@@ -72,14 +61,6 @@ const crearBenefactor = async (req, res = response) => {
         correo,
         contrasena:contrasenaEn,
         celular       
-    }
-
-    const benefactorBD = await Benefactor.findOne({nombre});
-    if(benefactorBD ){
-
-        return res.status(400).json({
-            msg: `El benefactor ${benefactorBD.nombre} ya existe`
-        });
     }
 
     const benefactor = new Benefactor(data);
