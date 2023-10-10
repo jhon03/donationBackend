@@ -30,11 +30,7 @@ const obtenerProgramasId = async(req, res) => {
     const {id} = req.params;
     const programa = await Programa.findById(id)
                                    .populate('colaborador','nombre');
-    if(!programa  || !programa.estado){
-        return res.status(404).json({
-          msg: "No existe el programa"
-        });
-    }
+
 
     res.json({
         programa
@@ -45,11 +41,6 @@ const eliminarPrograma = async(req, res= response) => {
 
     const {id} = req.params;
     const programa = await Programa.findByIdAndUpdate(id, {estado:false}, {new:true} );
-    if(!programa){
-        return res.status(404).json({
-            msg:"El programa no se encuentra en la base de datos"
-        })
-    }
     res.json({
         msg: 'programa eliminado correctamenete',
         programa
@@ -95,11 +86,6 @@ const actualizarPrograma = async(req, res) => {
     resto.fechaModificacion = new Date();
 
     const programa = await Programa.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
-    if(!programa.estado){
-        return 	res.status(400).json({
-            msg:'No se encontró el programa'
-        })
-    }
     res.json({
         programa
     });

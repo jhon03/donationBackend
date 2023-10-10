@@ -13,6 +13,10 @@ const donacionSchema = Schema({
     required: [true, 'el proyecto es requerido'],
 
   },
+  aporte: {
+    type: Number,
+    required: [true,'El monto del aporte es requerido']
+  },
   fechaCreacion: {
     type: Date,
     default: Date.now,

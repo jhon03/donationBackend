@@ -1,7 +1,6 @@
 const { response, request} = require('express');
 
 const {Proyecto} = require('../Domain/models'); 
-const { ReturnDocument } = require('mongodb');
 
 const obtenerProyectos = async(req = request, res = response) => {
 
@@ -28,12 +27,6 @@ const obtenerProyectoId = async(req, res) => {
     const {id} = req.params;
     const proyecto = await Proyecto.findById(id)
                                     .populate('programa','nombre');
-    if(!proyecto  || !proyecto.estado){
-        return res.status(404).json({
-          msg: "No existe el proyecto"
-        });
-    } 
-
     res.json({
         proyecto
     });
@@ -58,20 +51,21 @@ const crearProyecto = async (req, res = response) => {
 
     const {idPrograma} = req.params;
 
-    const nombre = req.body.nombre.toUpperCase();
+    const {nombre, descripcion, imagen, costo, fechaInicio, fechaFinalizacion,colCreador, colModificador, tipoProyecto} = req.body;
+
 
     //generar data aqui estan los datos necesarios para crear un programa
     const data = {
         programa:idPrograma,
-        nombre,
-        descripcion: req.body.descripcion, 
-        imagen: req.body.imagen, 
-        costo: req.body.costo,
-        fechaInicio: req.body.fechaInicio,
-        fechaFinalizacion: req.body.fechaFinalizacion,
-        colCreador: req.body.colCreador, 
-        colModificador: req.body.colModificador,
-        tipoProyecto: req.body.tipoProyecto
+        nombre: nombre.toUpperCase(),
+        descripcion, 
+        imagen, 
+        costo,
+        fechaInicio,
+        fechaFinalizacion,
+        colCreador, 
+        colModificador,
+        tipoProyecto
     }
 
     const proyectoDB = await Proyecto.findOne({nombre});
@@ -101,16 +95,11 @@ const crearProyecto = async (req, res = response) => {
 
 const actualizarProyecto = async(req, res) => {
     const { id } = req.params;
-    const {_id, ...resto } = req.body;
+    const {_id, estado, programa, ...resto } = req.body;
 
     resto.fechaModificacion = new Date();
 
     const proyecto = await Proyecto.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
-    if(!proyecto.estado){
-        return res.status(400).json({
-            msg: 'no se puede actualizar -id'
-        });
-    }
     res.json({
         proyecto
     });

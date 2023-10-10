@@ -36,6 +36,7 @@ router.delete('/:id',[
     validarJWT,
     tieneRol('CREADOR'),
     check('id','El id no es valido').isMongoId(),
+    
     validarCampos
 ],eliminarBenefactor)
 

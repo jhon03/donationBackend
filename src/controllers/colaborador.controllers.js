@@ -39,11 +39,12 @@ const colaboradorDelete = async(req, res= response) => {
 
 const colaboradorPost = async (req, res = response) => {
 
-    const body = req.body; //desestructuramos el body
-    const colaborador = new Colaborador(body);
+    const {fechaModificacion, fechaCreacion, estado, ...resto} = req.body;
+
+    const colaborador = new Colaborador(resto);
 
     const salt = bcryptjs.genSaltSync();  //encriptar contraseña
-    colaborador.contrasena= bcryptjs.hashSync( body.contrasena, salt);
+    colaborador.contrasena= bcryptjs.hashSync( resto.contrasena, salt);
 
     await colaborador.save(); //guardar en base de datos
 
@@ -54,12 +55,28 @@ const colaboradorPost = async (req, res = response) => {
 
 const colaboradorPut = async(req, res) => {
     const { id } = req.params;
-    const {_id, rol, contrasena, correo, username, ...resto } = req.body;
+    const {_id, rol, username, contrasena, estado, ...resto } = req.body;
 
     //validar
     if( contrasena){
-        const salt = bcryptjs.genSaltSync();  //encriptar contraseña
+        const salt = bcryptjs.genSaltSync();  //encriptar nueva contraseña
         resto.contrasena= bcryptjs.hashSync( contrasena, salt);
+    }
+
+    if(username){;
+        const colaboradorAct = await Colaborador.findById(id);
+        if(username !== colaboradorAct.username){
+            
+            const usuarioExi = await Colaborador.findOne({username})
+            if(usuarioExi && usuarioExi.estado){
+                return res.status(409).json({
+                    msg: 'Ya existe un usuario con ese nombre de usuario y está activo.'
+                });
+            }
+
+            resto.username = usuarioExi;
+        }
+
     }
 
     resto.fechaModificacion = new Date();

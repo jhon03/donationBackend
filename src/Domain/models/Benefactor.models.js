@@ -15,7 +15,7 @@ const benefactorSchema = Schema({
   },
   correo: {
     type: String,
-    unique: true
+    required: [true, 'el correo es requerido']
   },
   contrasena: {
     type: String,
