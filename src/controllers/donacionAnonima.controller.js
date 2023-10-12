@@ -37,11 +37,15 @@ const obtenerDonacionAId = async(req, res) => {
 const crearDonacionAno = async (req, res = response) => {
 
     const {idProyecto} = req.params;
-    const {nombreBenefactor, aporte} = req.body;
+    const {tipoIdentificacion, numeroIdentificacion, nombreBenefactor, correo, celular, aporte} = req.body;
 
     //generar data aqui estan los datos necesarios para crear un programa
     const data = {
+        tipoIdentificacion,
+        numeroIdentificacion,
         nombreBenefactor,
+        correo,
+        celular,
         proyecto: idProyecto,
         aporte      
     }
@@ -50,7 +54,10 @@ const crearDonacionAno = async (req, res = response) => {
     
     //guardar en la base de datos
     await donacion.save();
-    res.status(201).json(donacion);
+    res.status(201).json({
+        msg:'la donacion fue creada con exito',
+        donacion
+    });
 }
 
 
