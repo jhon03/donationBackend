@@ -5,7 +5,7 @@ const { validarCampos,
         validarJWT,
         tieneRol} = require('../middlewares');  //carpeta donde estan todos los middlewares
 
-const { validarRol, validarEmail, validarId, validarEstado } = require('../helpers');
+const { validarRol, validarEmail, validarId, validarEstado, validarIdProyecto } = require('../helpers');
 const { obtenerDonaciones, obtenerDonacionId, eliminarDonacion, crearDonacion, actualizarDonacion } = require('../controllers/donacion.controller');
 
 
@@ -43,6 +43,10 @@ router.delete('/:id', [
 
 router.post('/:idProyecto', [              //arreglo de middlewares para verificar campos
         validarJWT,        //middleware personalizado
+        check('idProyecto', 'el id del proyecto es invalido').isMongoId(),
+        check('aporte', 'el aporte es requerido').not().isEmpty(),
+        check('aporte', ' el aporte debe ser numerico').isNumeric(),
+        check('idProyecto').custom(validarIdProyecto),
         tieneRol('BENEFACTOR'),
         validarCampos
 ],crearDonacion);

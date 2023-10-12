@@ -7,15 +7,15 @@ const Colaborador = require('../Domain/models/Colaborador.models');
 
 const colaboradorGet = async(req = request, res = response) => {
 
-    const { limite = 5, desde = 0 } = req.query;
+    //const { limite = 5, desde = 0 } = req.query;
     const query = {estado: true};   //buscar solo usuarios activos
     
 
     const [total, colaboradores] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
         Colaborador.countDocuments(query),
         Colaborador.find(query)
-            .skip(Number(desde))
-            .limit(Number(limite))
+            //.skip(Number(desde))
+            //.limit(Number(limite))
     ]);
 
     res.json({

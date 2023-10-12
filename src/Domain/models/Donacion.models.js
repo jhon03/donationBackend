@@ -32,7 +32,7 @@ const donacionSchema = Schema({
 
 //modificar metodo json respuesta
 donacionSchema.methods.toJSON = function(){
-    const {__v, _id, ...donacion} = this.toObject();
+    const {__v, _id, estado,...donacion} = this.toObject();
     donacion.uid = _id;
     return donacion;
 }
