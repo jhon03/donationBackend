@@ -43,8 +43,8 @@ const donacionAnoSchema = Schema({
   },
 
   estado: {
-    type: Boolean,
-    default: true,
+    type: String,
+    default: "en proceso",
     required: [true, 'el estado es requerido'],
   }
 });
@@ -52,7 +52,7 @@ const donacionAnoSchema = Schema({
 
 //modificar metodo json respuesta
 donacionAnoSchema.methods.toJSON = function(){
-    const {__v, _id, estado,  ...donacionA} = this.toObject();
+    const {__v, _id, ...donacionA} = this.toObject();
     donacionA.uid = _id;
     return donacionA;
 }

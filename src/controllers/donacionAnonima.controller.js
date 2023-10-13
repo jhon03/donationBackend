@@ -9,8 +9,8 @@ const obtenerDonacionesAnonimas = async(req = request, res = response) => {
     
 
     const [total, donacion] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
-            DonacionAno.countDocuments(query),  //devuelve los datos por indice
-            DonacionAno.find(query)
+            DonacionAno.countDocuments(),  //devuelve los datos por indice
+            DonacionAno.find()
             .populate('proyecto','nombre')
            .skip(Number(desde))
            .limit(Number(limite))
@@ -51,9 +51,8 @@ const crearDonacionAno = async (req, res = response) => {
     }
 
     const donacion = new DonacionAno(data);
-    
-    //guardar en la base de datos
-    await donacion.save();
+       
+    await donacion.save();      //guardar en la base de datos
     res.status(201).json({
         msg:'la donacion fue creada con exito',
         donacion
