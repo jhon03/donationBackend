@@ -1,6 +1,7 @@
 const { response, request} = require('express');
 const bcryptjs = require('bcryptjs');
 
+
 const {Benefactor} = require('../Domain/models'); 
 
 const obtenerBenefactores = async(req = request, res = response) => {
@@ -85,6 +86,7 @@ const crearBenefactor = async (req, res = response) => {
     const benefactor = new Benefactor(data);
     await benefactor.save();     //guardar en la base de datos
     res.status(201).json(benefactor);
+
 }
 
 const actualizarBenefactor = async(req, res) => {
@@ -103,6 +105,8 @@ const actualizarBenefactor = async(req, res) => {
         benefactor
     });
 }
+
+
 
 
 module.exports = {
