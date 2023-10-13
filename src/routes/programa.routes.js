@@ -3,7 +3,7 @@ const { check } = require('express-validator');
 
 const {validarCampos, validarJWT, tieneRol} = require('../middlewares');   //importamos todos los middlewares desde del index
 
-const { crearPrograma, obtenerProgramas, actualizarPrograma, eliminarPrograma, obtenerProgramasId } = require('../controllers/programa.controller');
+const { crearPrograma, obtenerProgramas, actualizarPrograma, eliminarPrograma, obtenerProgramasId } = require('../controllers');
 const { validarIdPrograma } = require('../helpers');
 
 const router = new Router();

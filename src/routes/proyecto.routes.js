@@ -2,7 +2,7 @@ const {Router} = require('express');
 const { check } = require('express-validator');
 
 const {validarCampos, validarJWT, tieneRol} = require('../middlewares');
-const { crearProyecto, actualizarProyecto, eliminarProyecto, obtenerProyectos, obtenerProyectoId } = require('../controllers/proyecto.controller');
+const { crearProyecto, actualizarProyecto, eliminarProyecto, obtenerProyectos, obtenerProyectoId } = require('../controllers');
 
 const {validarIdPrograma, validarIdProyecto} = require('../helpers');
 

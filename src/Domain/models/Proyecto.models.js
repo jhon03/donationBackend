@@ -52,6 +52,11 @@ const proyectoSchema = Schema({
         type: String,
         required: [true, 'el tipo de proyecto es requerido']
     },
+
+    opcionesDonacion: {
+        type: [String],  // Campo que acepta una lista de strings
+        default: [],    // Valor por defecto: un arreglo vacío
+    },
     
     programa: {
         type: Schema.Types.ObjectId,
@@ -61,7 +66,7 @@ const proyectoSchema = Schema({
 });
 
 proyectoSchema.methods.toJSON = function(){
-    const {__v, _id, ...proyecto} =this.toObject();
+    const {__v, _id, estado, ...proyecto} =this.toObject();
     proyecto.uid = _id;
     return proyecto;
 }
