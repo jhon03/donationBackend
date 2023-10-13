@@ -7,7 +7,7 @@ const benefactorSchema = Schema({
   },
   numeroIdentificacion: {
     type: Number,
-    unique: true
+    required: [true, 'el numero de identificacion es requerido'],
   },
   nombre: {
     type: String,

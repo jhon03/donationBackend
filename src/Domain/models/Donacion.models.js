@@ -25,14 +25,14 @@ const donacionSchema = Schema({
   estado: {
     type: Boolean,
     default: true,
-    required: [true, 'el correo estado es requerido'],
+    required: [true, 'el estado es requerido'],
   }
 });
 
 
 //modificar metodo json respuesta
 donacionSchema.methods.toJSON = function(){
-    const {__v, _id, ...donacion} = this.toObject();
+    const {__v, _id, estado,...donacion} = this.toObject();
     donacion.uid = _id;
     return donacion;
 }

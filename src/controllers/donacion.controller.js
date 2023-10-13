@@ -59,15 +59,12 @@ const eliminarDonacion = async(req, res= response) => {
 const crearDonacion = async (req, res = response) => {
 
     const {idProyecto} = req.params;
-    if(!idProyecto){
-        return res.status(400).json({
-            msg: 'el proyecto no existe'
-        });
-    }
+    
 
     //generar data aqui estan los datos necesarios para crear un programa
     const data = {
         benefactor: req.usuario._id,
+        aporte: req.body.aporte,
         proyecto: idProyecto,      
     }
 

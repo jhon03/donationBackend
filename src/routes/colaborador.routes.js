@@ -9,10 +9,9 @@ const { validarRol, validarEmail, validarId, validarEstado, validarNIdentificaci
 
 const { colaboradorGet, 
         colaboradorDelete, 
-        colaboradorPatch,
         colaboradorPost,
         colaboradorPut
-} = require('../controllers/colaborador.controllers');
+} = require('../controllers');
 
 
 
