@@ -34,7 +34,6 @@ router.post('/:idProyecto/crear', [              //arreglo de middlewares para v
         check('celular', 'El celular es requerido').not().isEmpty(),
         check('celular','El celualr debe ser numerico').isNumeric(),
         check('aporte','El aporte es requerido').not().isEmpty(),
-        check('aporte', 'El aporte debe ser un numero').isNumeric(),
         check('idProyecto').custom(validarIdProyecto),
         validarCampos
 ],crearDonacionAno);
