@@ -38,6 +38,10 @@ const programaSchema = Schema({
         default:true,
         required: true,
     },
+    opcionesColaboracion: {
+        type: [String],  // Campo que acepta una lista de strings
+        default: [],    // Valor por defecto: un arreglo vacío
+    },
     colaborador: {
         type: Schema.Types.ObjectId,
         ref: 'Colaborador',
