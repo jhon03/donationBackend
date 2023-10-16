@@ -3,7 +3,7 @@ const { check } = require('express-validator');
 
 const {validarCampos, validarJWT, tieneRol} = require('../middlewares');
 
-const {obtenerBenefactorId, obtenerBenefactores, crearBenefactor, eliminarBenefactor, actualizarBenefactor} =require('../controllers/benefactor.controller');
+const {obtenerBenefactorId, obtenerBenefactores, crearBenefactor, eliminarBenefactor, actualizarBenefactor} =require('../controllers');
 const { validarIdBenefactor, validarIdentificacionBenefactor } = require('../helpers');
 
 const router = new Router();

@@ -52,7 +52,7 @@ const crearPrograma = async (req, res = response) => {
     const nombre = req.body.nombre.toUpperCase();
 
     //generar data aqui estan los datos necesarios para crear un programa
-    const data = {nombre, eslogan: req.body.eslogan, descripcion: req.body.descripcion, imagen: req.body.imagen, usuCreador: req.body.usuCreador, usuModificador: req.body.usuModificador, colaborador: req.usuario._id}
+    const data = {nombre, eslogan: req.body.eslogan, descripcion: req.body.descripcion, imagen: req.body.imagen, usuCreador: req.body.usuCreador, usuModificador: req.body.usuModificador, colaborador: req.usuario._id, opcionesColaboracion: req.body.opcionesColaboracion }
 
     const programaDB = await Programa.findOne({nombre});
     if(programaDB ){

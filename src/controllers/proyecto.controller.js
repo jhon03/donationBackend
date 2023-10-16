@@ -51,7 +51,7 @@ const crearProyecto = async (req, res = response) => {
 
     const {idPrograma} = req.params;
 
-    const {nombre, descripcion, imagen, costo, fechaInicio, fechaFinalizacion,colCreador, colModificador, tipoProyecto} = req.body;
+    const {nombre, descripcion, imagen, costo, fechaInicio, fechaFinalizacion,colCreador, colModificador, tipoProyecto, opcionesDonacion} = req.body;
 
 
     //generar data aqui estan los datos necesarios para crear un programa
@@ -65,7 +65,8 @@ const crearProyecto = async (req, res = response) => {
         fechaFinalizacion,
         colCreador, 
         colModificador,
-        tipoProyecto
+        tipoProyecto,
+        opcionesDonacion
     }
 
     const proyectoDB = await Proyecto.findOne({nombre});

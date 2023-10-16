@@ -2,7 +2,7 @@ const {Router} = require('express');
 const { check } = require('express-validator');
 
 const {validarCampos, validarJWT, tieneRol} = require('../middlewares');
-const { crearProyecto, actualizarProyecto, eliminarProyecto, obtenerProyectos, obtenerProyectoId } = require('../controllers/proyecto.controller');
+const { crearProyecto, actualizarProyecto, eliminarProyecto, obtenerProyectos, obtenerProyectoId } = require('../controllers');
 
 const {validarIdPrograma, validarIdProyecto} = require('../helpers');
 
@@ -21,6 +21,7 @@ router.post('/:idPrograma/crear', [
     validarJWT,
     check('idPrograma', 'el id del proyecto no es valido').isMongoId(),
     tieneRol("CREADOR"),
+    check('tipoProyecto', 'el tipo de programa es requerido'),
     check('nombre', 'el nombre es requerido').not().isEmpty(),
     check('colCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('colModificador', 'El usuario modificador es requerido').not().isEmpty(),
