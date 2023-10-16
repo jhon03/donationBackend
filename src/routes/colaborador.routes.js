@@ -50,7 +50,7 @@ router.post('/', [              //arreglo de middlewares para verificar campos
         check('celular', 'El numero de celular es requerido').not().isEmpty(),
         check('contrasena', 'el password deber ser de mas de 6 letras').isLength( {min: 6}),
         check('correo','el corrreo no es valido').isEmail(),
-        //check('correo').custom(validarEmail),   //validacion personalizada
+        check('correo').custom(validarEmail),   //validacion personalizada
         check('rol').custom( validarRol ),
         check('numeroIdentificacion').custom(validarNIdentificacion),
         check('username').custom(validarUsername),
