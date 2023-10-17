@@ -12,8 +12,8 @@ const obtenerProyectos = async(req = request, res = response) => {
             Proyecto.countDocuments(query),  //devuelve los datos por indice
             Proyecto.find(query)
             .populate('programa','nombre')
-           .skip(Number(desde))
-           .limit(Number(limite))
+           //.skip(Number(desde))
+           //.limit(Number(limite))
     ]);
 
     res.json({
