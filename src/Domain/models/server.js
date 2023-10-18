@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 
 const { dbConnection } = require('../../config/database');
 const path = require("path");
@@ -19,6 +20,7 @@ class Server{
             donacionPrograma: '/api/donacionPrograma/',
             programa : '/api/programa',
             proyecto: '/api/proyecto',
+            uploads: '/api/uploads',
         }
        
         this.middlewares();  //middleware
@@ -31,6 +33,11 @@ class Server{
         this.app.use(cors());  //cors
         this.app.use( express.json());  //lectura y parseo del body
         this.app.use(express.static(path.join(__dirname, '../public')));   //directorio publico
+        this.app.use(fileUpload({     //maneja la carga de archivos 
+            useTempFiles : true,
+            tempFileDir : '/tmp/',
+            createParentPath: true,  //funcion para que al momento de crear el archivo, si queremos tambien se cree una carpeta
+        }));
     }
 
     routes(){
@@ -42,6 +49,7 @@ class Server{
         this.app.use(this.paths.donacionPrograma, require('../../routes/donacionPrograma.routes'))
         this.app.use(this.paths.programa, require('../../routes/programa.routes'));
         this.app.use(this.paths.proyecto, require('../../routes/proyecto.routes'));
+        this.app.use(this.paths.uploads, require('../../routes/uqloads.routes'))
     }
 
     listen(){
