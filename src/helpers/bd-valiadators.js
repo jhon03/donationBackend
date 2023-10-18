@@ -1,5 +1,6 @@
 
 
+const { default: mongoose } = require('mongoose');
 const {Role, Colaborador} = require('../Domain/models')
 
 
@@ -39,9 +40,30 @@ const validarUsername = async(username) =>{
     }
 }
 
+const validarColecciones = async(coleccion = '', colleciones = []) => {
+
+    const incluida = colleciones.includes( coleccion);
+    if(!incluida){
+        throw new Error(`La collecion ${coleccion} no es permitida`);
+    }
+}
+
+const validarColeccionesBD = async(coleccion = '') => {
+
+    const db = mongoose.connection;
+    const colecciones = await db.db.listCollections().toArray();
+    const nombreColecciones = colecciones.map(coleccion => coleccion.name)
+    const incluida = nombreColecciones.includes(coleccion);
+    if(!incluida){
+        throw new Error(`La coleccion ${coleccion} no es permitida, coleciones permitidas ${nombreColecciones}`);
+    }
+}
+
 
 
 module.exports = {
+    validarColecciones,
+    validarColeccionesBD,
     validarRol,
     validarEmail,
     validarId,

@@ -6,6 +6,7 @@ const donacionAnonimaRoutes = require('./donacionAnonima.routes');
 const donacionProgramaRoutes = require('./donacionPrograma.routes');
 const programaRoutes = require('./programa.routes');
 const proyectoRoutes = require('./proyecto.routes');
+const uqloadRoutes = require('./uqloads.routes');
 
 
 module.exports = {
@@ -16,5 +17,6 @@ module.exports = {
     ...donacionAnonimaRoutes,
     ...donacionProgramaRoutes,
     ...programaRoutes,
-    ...proyectoRoutes
+    ...proyectoRoutes,
+    ...uqloadRoutes,
 }
