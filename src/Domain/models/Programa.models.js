@@ -12,10 +12,11 @@ const programaSchema = Schema({
     descripcion: {
         type: String
     },
-    imagen: {
-        type: String,
-        default: ""
-    },
+    imagenes: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Imagen',
+      required: [true, 'La imagen es requerida']  
+    }],
     fechaCreacion: {
         type: Date,
         default: Date.now,

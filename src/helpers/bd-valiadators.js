@@ -1,7 +1,7 @@
 
 
 const { default: mongoose } = require('mongoose');
-const {Role, Colaborador} = require('../Domain/models')
+const {Role, Colaborador, Imagen} = require('../Domain/models')
 
 
 
@@ -59,9 +59,19 @@ const validarColeccionesBD = async(coleccion = '') => {
     }
 }
 
+const validarexisteImg = async(id = '') =>{
+
+    const imagen = await Imagen.findById(id);
+    if(!imagen){
+        throw new Error('no existe la imagen')
+    }
+      
+}
+
 
 
 module.exports = {
+    validarexisteImg,
     validarColecciones,
     validarColeccionesBD,
     validarRol,

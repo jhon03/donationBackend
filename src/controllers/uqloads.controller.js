@@ -1,93 +1,11 @@
 const { response, request} = require('express');
-const path = require('path');
-const fs = require('fs');
-
 
 const cloudinary = require('cloudinary').v2   //importamos clouddinary
 cloudinary.config(process.env.CLOUDINARY_URL);
 
-const {check} = require('express-validator');
-const { subirArchivo, buscarModelo, eliminarImagenPrevia } = require('../helpers');
-const { validarImg } = require('../middlewares');
-const { Programa, Proyecto, Colaborador} = require('../Domain/models')
+const { buscarModelo, subirImagen, crearImagen, eliminarImgCloud, buscarModeloImg, remoImgLista } = require('../helpers');
+const { Imagen} = require('../Domain/models')
 
-
-const obtenerImg = async(req, res = response) =>{
-
-const {coleccion, id} = req.params;
-
-  try {
-    const modelo = await buscarModelo(coleccion, id, res);
-    
-    if(modelo.imagen ){     //limpiar imagenes previas
-      const pathImagen = path.join(__dirname, '../uploads', coleccion, modelo.imagen);                   //borrar imagen del servidor
-      if(fs.existsSync(pathImagen)){
-        return res.sendFile(pathImagen)     //con el res.sendfile podemos mandar la imagen de respuesta
-      }
-    }
-    
-    const pathImagenR = path.join( __dirname, '../assets/imagen not found.png',)    //si no hay imagen mandamos imagen de relleno
-    res.sendFile(pathImagenR)   
-
-  } catch (error) {
-    res.status(400).json({
-      msg: error.message
-    })
-  }
-}
-
-
-
-
-const subirImg = async(req= request, res= response) =>{
-
-  const {coleccion, id} = req.params;
-
-  try {     //siempre usar bloque try-catch al trabajar con promesas
-    const modelo = await buscarModelo(coleccion,id, res);
-    if(modelo.imagen  ){     //limpiar imagenes previas
-      eliminarImagenPrevia(coleccion, modelo.imagen);
-    }
-
-    const nombre = await subirArchivo(req.files, coleccion); 
-    modelo.imagen = nombre
-    await modelo.save()
-    res.json({
-      msg: 'imagen subida correctamente',
-      coleccion: modelo
-    })
-  } catch (error) {
-    res.status(400).json({
-      msg: error.message,
-    })
-  }
-
-}
-
-const actualizarImg = async(req = request, res = response) => {
-
-  const { coleccion, id} = req.params;
-
-  const modelo = await buscarModelo(coleccion,id, res);
-
-  if(modelo.imagen === ''){
-    return res.status(400).json({
-      msg: "No hay imagen para actualizar"
-    });
-  }
-
-  //eliminar imagenes anteriores
-  eliminarImagenPrevia(coleccion, modelo.imagen);
-
-  const nombre = await subirArchivo( req.files, coleccion);
-  modelo.imagen = nombre;
-  await modelo.save();
-
-  res.json({
-    msg: `imagen del ${coleccion} actualizada correctamente`,
-    coleccion: modelo, 
-  })
-} 
 
 
 
@@ -96,63 +14,81 @@ const subirImgCloud = async(req= request, res= response) =>{
   const {coleccion, id} = req.params;
 
   try {     //siempre usar bloque try-catch al trabajar con promesas
-    const modelo = await buscarModelo(coleccion,id, res);
-    
-    if(modelo.imagen ){     //limpiar imagenes previas
-      const nombreArr = modelo.imagen.split('/');
-      const nombre = nombreArr[ nombreArr.length - 1];
-      const [public_id] = nombre.split('.');
-      cloudinary.uploader.destroy( public_id);
-    }
+      const modelo = await buscarModelo(coleccion, id);
 
-    const {tempFilePath} = req.files.archivo;   //configuracion cloudinary
-    const {secure_url} = await cloudinary.uploader.upload( tempFilePath )
-    modelo.imagen = secure_url
-    await modelo.save()
-    res.json({
-      modelo
-    })
+      const {tempFilePath} = req.files.archivo;   //url de imagen cloudinary
+      const secure_url = await subirImagen(tempFilePath, coleccion);   //subimos imagen al cloud
+
+      const nuevaImagen = await crearImagen(secure_url, modelo, coleccion);     
+      modelo.imagenes.push(nuevaImagen._id);    //añadimos la imagen al proyecto o programa
+      await modelo.save()
+
+      res.json({
+        modelo
+      })
 
   } catch (error) {
-    res.status(400).json({
-      msg: error.message,
-    })
+      res.status(400).json({
+        msg: error.message,
+      })
   }
 
 }
 
 const eliminarImagenCloud = async(req, res= response) => {
-  const {coleccion, id} = req.params;
-  let modelo;
 
-  switch (coleccion) {
-    case 'programas':
-        modelo = await Programa.findByIdAndUpdate(id, {imagen : ""}); 
-        //modelo= await Programa.findById(id);
-      break;
-    case 'proyectos':
-        modelo = await Proyecto.findByIdAndUpdate(id, {imagen: ""});   
-    default:
-      return res.status(400).json({
-        msg: 'la coleccion no existe'
-      })
+  try {
+    const {id, coleccion} = req.params;
+  
+    await eliminarImgCloud(coleccion, id);
+
+    const modelo = await buscarModeloImg(coleccion, id);
+    await remoImgLista(modelo, id);
+    await Imagen.findByIdAndRemove(id);
+
+    res.json({
+      msg: 'imagen eliminada',
+      modelo
+    })
+
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      msg: error.message,
+    })
   }
 
-  const nombreArr = modelo.imagen.split('/');
-  const nombre = nombreArr[ nombreArr.length - 1];
-  const [public_id] = nombre.split('.');
-  cloudinary.uploader.destroy( public_id);
-
-  console.log(public_id);
-
-
-  console.log(modelo)
-  res.json({
-    msg: 'imagen eliminada',
-    modelo
-  })
+  
 
 }
+
+
+const actualizarImagenCloud = async (req, res = response) => {
+  const { id, coleccion } = req.params;
+  
+
+  try {
+    const imagen = await Imagen.findById(id);
+
+    const { tempFilePath } = req.files.archivo;
+    const secure_url = await subirImagen(tempFilePath, coleccion);
+
+    await eliminarImgCloud(coleccion, id);   //eliminamos la imagen mediante helper
+  
+    imagen.url = secure_url;    // Actualiza la URL de la imagen en el modelo
+    await imagen.save();
+
+    res.json({
+      msg: 'Imagen actualizada correctamente',
+      imagen,
+    });
+
+  } catch (error) {
+    res.status(400).json({
+      msg: error.message,
+    });
+  }
+};
 
 
 
@@ -161,9 +97,7 @@ const eliminarImagenCloud = async(req, res= response) => {
 
 
 module.exports = {
-  actualizarImg,
+  actualizarImagenCloud,
   eliminarImagenCloud,
-  subirImg,
   subirImgCloud,
-  obtenerImg
 }
