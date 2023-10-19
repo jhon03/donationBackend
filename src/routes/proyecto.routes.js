@@ -21,6 +21,7 @@ router.post('/:idPrograma/crear', [
     validarJWT,
     check('idPrograma', 'el id del proyecto no es valido').isMongoId(),
     tieneRol("CREADOR"),
+    check('tipoProyecto', 'el tipo de programa es requerido'),
     check('nombre', 'el nombre es requerido').not().isEmpty(),
     check('colCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('colModificador', 'El usuario modificador es requerido').not().isEmpty(),
