@@ -7,7 +7,40 @@ const { buscarModelo, subirImagen, crearImagen, eliminarImgCloud, buscarModeloIm
 const { Imagen} = require('../Domain/models')
 
 
+const obtenerImagenes = async(req = request, res = response) => {
+  try {
+    const [total, imagenes] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
+        Imagen.countDocuments(),
+        Imagen.find()
+    ]);
 
+    res.json({
+        total,
+        imagenes
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      msg: 'Algo a ocurrido en el backend'
+    })
+  }
+}
+
+const obtenerImagenId = async(req, res = response) => {
+  try {
+    const {id} = req.params;
+    const imagen = await Imagen.findById(id)
+
+    res.json({
+        imagen
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      msg: 'hubo un error inesperado'
+    })
+  }
+}
 
 const subirImgCloud = async(req= request, res= response) =>{
 
@@ -99,5 +132,7 @@ const actualizarImagenCloud = async (req, res = response) => {
 module.exports = {
   actualizarImagenCloud,
   eliminarImagenCloud,
+  obtenerImagenes,
+  obtenerImagenId,
   subirImgCloud,
 }

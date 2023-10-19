@@ -59,6 +59,7 @@ const crearImagen = async(url, modelo, coleccion) => {
     url,
     relacion: modelo._id,   //establece la relcion
     nombreRealacion: coleccion,
+    nombre: modelo.nombre
   });
   await nuevaImagen.save();     //guardamos en BD
   return nuevaImagen;

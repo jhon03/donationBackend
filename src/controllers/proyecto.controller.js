@@ -27,7 +27,8 @@ const obtenerProyectoId = async(req, res) => {
 
     const {id} = req.params;
     const proyecto = await Proyecto.findById(id)
-                                    .populate('programa','nombre');
+                                    .populate('programa','nombre')
+                                    .populate('imagenes','url')
     res.json({
         proyecto
     });

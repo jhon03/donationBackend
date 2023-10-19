@@ -30,7 +30,8 @@ const obtenerProgramasId = async(req, res) => {
 
     const {id} = req.params;
     const programa = await Programa.findById(id)
-                                   .populate('colaborador','nombre');
+                                   .populate('colaborador','nombre')
+                                   .populate('imagenes','url')
 
 
     res.json({

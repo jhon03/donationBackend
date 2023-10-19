@@ -1,11 +1,22 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const {validarCampos, validarJWT, tieneRol, validarImg, existeImg, validarExtencion} = require('../middlewares');
-const { subirImgCloud, eliminarImagenCloud, actualizarImagenCloud } = require('../controllers');
-const { validarColecciones, validarColeccionesBD, validarexisteImg } = require('../helpers');
+const {validarCampos, validarJWT, validarImg, validarExtencion} = require('../middlewares');
+const { subirImgCloud, eliminarImagenCloud, actualizarImagenCloud, obtenerImagenes, obtenerImagenId } = require('../controllers');
+const { validarColeccionesBD, validarexisteImg } = require('../helpers');
 
 const router = new Router();
+
+router.get('/imagenes',[
+
+], obtenerImagenes);
+
+router.get('/imagenes/:id', [
+    check('id', 'el id es requerido').not().isEmpty(),
+    check('id', 'El id no es valido').isMongoId(),
+    check('id').custom(validarexisteImg),
+    validarCampos
+], obtenerImagenId)
 
 router.put('/actualizarcloud/:coleccion/:id', [
     validarImg,

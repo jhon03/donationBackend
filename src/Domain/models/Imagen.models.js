@@ -25,6 +25,12 @@ const imagenSchema = Schema({
         type: String,
         default: '',
         required: [true,'El nombre de la coleccion relacionada es requerido'],
+    },
+
+    nombre: {
+        type: String,
+        default: '',
+        required: [true, 'El nombre es requerido'],
     }
 
 });
