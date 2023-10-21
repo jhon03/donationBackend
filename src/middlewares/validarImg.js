@@ -9,7 +9,6 @@ const validarImg = async(req= request ,res= response, next) => {
     }
 
     next();
-
 }
 
 
