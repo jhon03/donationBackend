@@ -10,10 +10,18 @@ const proyectoSchema = Schema({
         type: String,
         required: [true, 'La descripcion es requerida'],
     },
+<<<<<<< HEAD
     imagen: {
         type: String,
         default: ''
     },
+=======
+    imagenes: [{
+        type: Schema.Types.ObjectId,
+        required: [true, 'La imagen es requerida'],
+        ref: 'Imagen'  
+    }],
+>>>>>>> 1547cdec241cfaf65c30e13ba05ed4cb24463ecf
     costo: {
         type: Number,
         required : [ true , 'el costo del proyecto es requerido']
