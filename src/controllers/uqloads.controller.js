@@ -63,6 +63,7 @@ const subirImgCloud = async(req= request, res= response) =>{
   } catch (error) {
       res.status(400).json({
         msg: error.message,
+        msg: 'sucedio algo inesperado'
       })
   }
 

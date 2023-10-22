@@ -9,10 +9,8 @@ const colaboradorSchema = Schema({
   numeroIdentificacion: {
     type: Number,
     required: [true, 'el numero de identificacion es requerido'],
-<<<<<<< HEAD
-=======
     unique: true
->>>>>>> 1547cdec241cfaf65c30e13ba05ed4cb24463ecf
+
   },
   nombre: {
     type: String,
@@ -21,10 +19,7 @@ const colaboradorSchema = Schema({
   username: {
     type: String,
     required: [true, 'el username es requerido'],
-<<<<<<< HEAD
-=======
     unique: true
->>>>>>> 1547cdec241cfaf65c30e13ba05ed4cb24463ecf
   },
   contrasena: {
     type: String,
@@ -33,19 +28,10 @@ const colaboradorSchema = Schema({
   correo: {
     type: String,
     required: [true, 'el correo es requerido'],
-<<<<<<< HEAD
   },
   celular: {
     type: Number,
     required: [true, 'el celular es requerido']
-=======
-    unique: true
-  },
-  celular: {
-    type: Number,
-    required: [true, 'el celular es requerido'],
-    unique: true
->>>>>>> 1547cdec241cfaf65c30e13ba05ed4cb24463ecf
   },
   cargo: {
     type: String,

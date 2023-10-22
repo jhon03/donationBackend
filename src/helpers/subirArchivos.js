@@ -14,7 +14,7 @@ cloudinary.config(process.env.CLOUDINARY_URL);
 const buscarModelo = async (coleccion, id) => {
 
   let modelo;
-
+  
   switch (coleccion) {
     case 'programas':
           modelo = await Programa.findById(id); 
@@ -43,14 +43,22 @@ const carpetaCloudinary = async(coleccion) => {
 
 
 const subirImagen = async(archivo, coleccion) => {
-  const carpetaCloud = await carpetaCloudinary(coleccion);
 
-  const {secure_url} = await cloudinary.uploader.upload( archivo, {
-    folder: carpetaCloud,
-    use_filename: true    //si no exite la carpeta la crea
-  });
+  try {
+    const carpetaCloud = await carpetaCloudinary(coleccion);
+    console.log('carpeta')
 
-  return secure_url;
+    const {secure_url} = await cloudinary.uploader.upload( archivo, {
+      folder: carpetaCloud,
+      use_filename: true    //si no exite la carpeta la crea
+    });
+    console.log('imagen subida al cloud')
+
+    return secure_url;
+  } catch (error) {
+    throw new Error('error al subir la imagen');
+  }
+  
 }
 
 
