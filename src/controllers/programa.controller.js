@@ -15,6 +15,7 @@ const obtenerProgramas = async(req = request, res = response) => {
         Programa.countDocuments(query),  //devuelve los datos por indice
         Programa.find(query)
            .populate('colaborador','nombre')
+           .populate('imagenes','url')
            .skip(Number(desde))
            .limit(Number(limite))
     ]);
@@ -29,7 +30,8 @@ const obtenerProgramasId = async(req, res) => {
 
     const {id} = req.params;
     const programa = await Programa.findById(id)
-                                   .populate('colaborador','nombre');
+                                   .populate('colaborador','nombre')
+                                   .populate('imagenes','url')
 
 
     res.json({

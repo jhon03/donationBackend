@@ -46,13 +46,11 @@ const subirImagen = async(archivo, coleccion) => {
 
   try {
     const carpetaCloud = await carpetaCloudinary(coleccion);
-    console.log('carpeta')
 
     const {secure_url} = await cloudinary.uploader.upload( archivo, {
       folder: carpetaCloud,
       use_filename: true    //si no exite la carpeta la crea
     });
-    console.log('imagen subida al cloud')
 
     return secure_url;
   } catch (error) {

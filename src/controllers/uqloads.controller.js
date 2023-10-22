@@ -12,6 +12,7 @@ const obtenerImagenes = async(req = request, res = response) => {
     const [total, imagenes] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
         Imagen.countDocuments(),
         Imagen.find()
+        
     ]);
 
     res.json({
