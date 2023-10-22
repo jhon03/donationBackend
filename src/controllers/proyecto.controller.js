@@ -12,7 +12,6 @@ const obtenerProyectos = async(req = request, res = response) => {
             Proyecto.countDocuments(query),  //devuelve los datos por indice
             Proyecto.find(query)
             .populate('programa','nombre')
-            .populate('imagenes','url')
            .skip(Number(desde))
            .limit(Number(limite))
     ]);
@@ -27,8 +26,7 @@ const obtenerProyectoId = async(req, res) => {
 
     const {id} = req.params;
     const proyecto = await Proyecto.findById(id)
-                                    .populate('programa','nombre')
-                                    .populate('imagenes','url')
+                                    .populate('programa','nombre');
     res.json({
         proyecto
     });

@@ -1,7 +1,11 @@
 
 
+<<<<<<< HEAD
+const {Role, Colaborador} = require('../Domain/models')
+=======
 const { default: mongoose } = require('mongoose');
 const {Role, Colaborador, Imagen} = require('../Domain/models')
+>>>>>>> 1547cdec241cfaf65c30e13ba05ed4cb24463ecf
 
 
 
@@ -40,6 +44,11 @@ const validarUsername = async(username) =>{
     }
 }
 
+<<<<<<< HEAD
+
+
+module.exports = {
+=======
 const validarColecciones = async(coleccion = '', colleciones = []) => {
 
     const incluida = colleciones.includes( coleccion);
@@ -74,6 +83,7 @@ module.exports = {
     validarexisteImg,
     validarColecciones,
     validarColeccionesBD,
+>>>>>>> 1547cdec241cfaf65c30e13ba05ed4cb24463ecf
     validarRol,
     validarEmail,
     validarId,
