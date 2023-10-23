@@ -33,8 +33,8 @@ const donacionAnoSchema = Schema({
 
   aporte: {
     type: String,  // Campo que acepta una lista de strings
-    default: "",    // Valor por defecto: un arreglo vacío
-    required: [true,'El monto del aporte es requerido']
+    default: "",    // Valor por defecto: un string vacío
+    required: [true,'El aporte es requerido']
   },
 
 

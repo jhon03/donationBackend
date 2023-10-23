@@ -18,7 +18,7 @@ class Server{
             colaborador: '/api/colaborador',
             donacion: '/api/donacion',
             donacionAno: '/api/donacionAnonima',
-            donacionPrograma: '/api/donacionPrograma/',
+            donacionPrograma: '/api/donacionPrograma',
             programa : '/api/programa',
             proyecto: '/api/proyecto',
             uploads: '/api/uploads',

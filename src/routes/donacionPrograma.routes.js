@@ -1,31 +1,30 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const { validarCampos,
-        validarJWT,
-        tieneRol} = require('../middlewares');  //carpeta donde estan todos los middlewares
+const { validarCampos} = require('../middlewares');  //carpeta donde estan todos los middlewares
 
-const { validarRol, validarEmail, validarId, validarEstado, validarIdProyecto, ValidarIdDonacionAno } = require('../helpers');
-const { obtenerDonacionAId, obtenerDonacionesAnonimas, crearDonacionAno } = require('../controllers');
+const {validarIdPrograma, validarIdDonacionPrograma } = require('../helpers');
+const { obtenerDonacionPrograma, crearDonacionPrograma, obtenerDonacionProgramId } = require('../controllers');
+
 
 
 const router = Router();
 
 
-router.get('/', obtenerDonacionesAnonimas); //cuando se busque este endpoint llamara a controlador userget
+router.get('/', obtenerDonacionPrograma); //cuando se busque este endpoint llamara a controlador userget
 
-router.get('/:id',[
-    check('id', 'El id no es valido').isMongoId(),
+router.get('/donacion/:id',[
     check('id', 'El id es requerido').not().isEmpty(),
-    check('id').custom(ValidarIdDonacionAno),
+    check('id', 'El id no es valido').isMongoId(),
+    check('id').custom(validarIdDonacionPrograma),
     validarCampos
-], obtenerDonacionAId);
+], obtenerDonacionProgramId);
 
 
 
-router.post('/:idProyecto/crear', [              //arreglo de middlewares para verificar campos
-        check('idProyecto', 'El id del pryecto es invalido').isMongoId(),
-        check('idProyecto', 'El id del proyecto es requerido').not().isEmpty(),
+router.post('/:idPrograma/crear', [              //arreglo de middlewares para verificar campos
+        check('idPrograma', 'El id del programa es invalido').isMongoId(),
+        check('idPrograma', 'El id del programa es requerido').not().isEmpty(),
         check('nombreBenefactor','El nombre es requerido').not().isEmpty(),
         check('tipoIdentificacion', 'el tipo de identificacion es requerido').not().isEmpty(),
         check('numeroIdentificacion', 'El numero de indentificación es requerido').not().isEmpty(),
@@ -34,10 +33,9 @@ router.post('/:idProyecto/crear', [              //arreglo de middlewares para v
         check('celular', 'El celular es requerido').not().isEmpty(),
         check('celular','El celualr debe ser numerico').isNumeric(),
         check('aporte','El aporte es requerido').not().isEmpty(),
-        check('aporte', 'El aporte debe ser un numero').isNumeric(),
-        check('idProyecto').custom(validarIdProyecto),
+        check('idPrograma').custom(validarIdPrograma),
         validarCampos
-],crearDonacionAno);
+],crearDonacionPrograma);
 
 
 
