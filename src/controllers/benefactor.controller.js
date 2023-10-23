@@ -12,8 +12,8 @@ const obtenerBenefactores = async(req = request, res = response) => {
     const [total, benefactor] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
             Benefactor.countDocuments(query),  //devuelve los datos por indice
             Benefactor.find(query)
-           .skip(Number(desde))
-           .limit(Number(limite))
+           //.skip(Number(desde))
+           //.limit(Number(limite))
     ]);
 
     res.json({

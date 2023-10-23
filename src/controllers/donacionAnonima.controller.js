@@ -12,8 +12,8 @@ const obtenerDonacionesAnonimas = async(req = request, res = response) => {
             DonacionAno.countDocuments(),  //devuelve los datos por indice
             DonacionAno.find()
             .populate('proyecto','nombre')
-           .skip(Number(desde))
-           .limit(Number(limite))
+           //.skip(Number(desde))
+           //.limit(Number(limite))
     ]);
 
     res.json({
