@@ -29,10 +29,10 @@ router.put('/actualizarcloud/:coleccion/:id', [
 
 
 router.post('/cloud/:coleccion/:id', [
+    validarImg,  //middleware personalizado para verificar archivos en la peticion
     validarExtencion,
     check('coleccion').custom( c => validarColeccionesBD( c )), 
     check('id', 'el id debe ser valido').isMongoId(),
-    validarImg,  //middleware personalizado para verificar archivos en la peticion
     validarCampos,
 ],subirImgCloud);
 

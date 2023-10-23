@@ -16,8 +16,8 @@ const obtenerProgramas = async(req = request, res = response) => {
         Programa.find(query)
            .populate('colaborador','nombre')
            .populate('imagenes','url')
-           .skip(Number(desde))
-           .limit(Number(limite))
+           //.skip(Number(desde))
+           //.limit(Number(limite))
     ]);
 
     res.json({

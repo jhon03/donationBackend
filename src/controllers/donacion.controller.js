@@ -13,8 +13,8 @@ const obtenerDonaciones = async(req = request, res = response) => {
             Donacion.find(query)
             .populate('benefactor','nombre')
             .populate('proyecto','nombre')
-           .skip(Number(desde))
-           .limit(Number(limite))
+           //.skip(Number(desde))
+           //.limit(Number(limite))
     ]);
 
     res.json({
