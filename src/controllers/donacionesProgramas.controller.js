@@ -4,15 +4,12 @@ const {DonacionPrograma} = require('../Domain/models');
 
 const obtenerDonacionPrograma = async(req = request, res = response) => {
 
-    //const { limite = 5, desde = 0 } = req.query;
-    //const query = {estado: true};   buscar solo programas activos
-    
-
     const [total, donacion] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
             DonacionPrograma.countDocuments(),  //devuelve los datos por indice
             DonacionPrograma.find()
             .populate('programa','nombre')
           //.skip(Number(desde))
+           //.skip(Number(desde))
            //.limit(Number(limite))
     ]);
 
@@ -36,8 +33,14 @@ const obtenerDonacionProgramId = async(req, res) => {
 
 const crearDonacionPrograma = async (req, res = response) => {
 
-    const {idProyecto} = req.params;
-    const {tipoIdentificacion, numeroIdentificacion, nombreBenefactor, correo, celular, aporte} = req.body;
+    const {idPrograma} = req.params;
+    const {tipoIdentificacion, 
+           numeroIdentificacion, 
+           nombreBenefactor, 
+           correo, 
+           celular, 
+           aporte
+    } = req.body;
 
     //generar data aqui estan los datos necesarios para crear un programa
     const data = {
@@ -46,11 +49,11 @@ const crearDonacionPrograma = async (req, res = response) => {
         nombreBenefactor,
         correo,
         celular,
-        proyecto: idProyecto,
+        programa: idPrograma,
         aporte      
     }
 
-    const donacion = new DonacionAno(data);
+    const donacion = new DonacionPrograma(data);
        
     await donacion.save();      //guardar en la base de datos
     res.status(201).json({
@@ -62,7 +65,7 @@ const crearDonacionPrograma = async (req, res = response) => {
 
 
 module.exports = {
-    obtenerDonacionesAnonimas,
-    obtenerDonacionAId,
-    crearDonacionAno,
+    obtenerDonacionPrograma,
+    obtenerDonacionProgramId,
+    crearDonacionPrograma,
 }

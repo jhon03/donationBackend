@@ -32,8 +32,9 @@ const donacionProgramaSchema = Schema({
   },
 
   aporte: {
-    type: Number,
-    required: [true,'El monto del aporte es requerido']
+    type: String,
+    default: '',
+    required: [true,'El aporte es requerido']
   },
 
   fechaCreacion: {
