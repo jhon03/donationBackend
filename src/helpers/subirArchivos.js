@@ -47,11 +47,13 @@ const subirImagen = async(archivo, coleccion) => {
 
   try {
     const carpetaCloud = await carpetaCloudinary(coleccion);
+    console.log('error carpeta')
 
     const {secure_url} = await cloudinary.uploader.upload( archivo, {
       folder: carpetaCloud,
       use_filename: true    //si no exite la carpeta la crea
     });
+    console.log('error subida')
 
     return secure_url;
   } catch (error) {
@@ -59,6 +61,8 @@ const subirImagen = async(archivo, coleccion) => {
   }
   
 }
+
+
 
 
 const crearImagen = async(url, modelo, coleccion) => {

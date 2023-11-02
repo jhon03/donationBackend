@@ -46,14 +46,19 @@ const obtenerImagenId = async(req, res = response) => {
 const subirImgCloud = async(req= request, res= response) =>{
 
   const {coleccion, id} = req.params;
+  console.log('subir img')
 
   try {     //siempre usar bloque try-catch al trabajar con promesas
       const modelo = await buscarModelo(coleccion, id);
+      console.log('error modelo')
 
       const {tempFilePath} = req.files.archivo;   //url de imagen cloudinary
+      console.log('error file')
       const secure_url = await subirImagen(tempFilePath, coleccion);   //subimos imagen al cloud
+      console.log('error subir imagen')
 
       const nuevaImagen = await crearImagen(secure_url, modelo, coleccion);     
+      console.log('error 2')
       modelo.imagenes.push(nuevaImagen._id);    //añadimos la imagen al proyecto o programa
       await modelo.save()
 

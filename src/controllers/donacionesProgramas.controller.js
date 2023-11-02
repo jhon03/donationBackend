@@ -8,6 +8,7 @@ const obtenerDonacionPrograma = async(req = request, res = response) => {
             DonacionPrograma.countDocuments(),  //devuelve los datos por indice
             DonacionPrograma.find()
             .populate('programa','nombre')
+          //.skip(Number(desde))
            //.skip(Number(desde))
            //.limit(Number(limite))
     ]);
