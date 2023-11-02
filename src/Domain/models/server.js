@@ -3,6 +3,7 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
 
+
 const { dbConnection } = require('../../config/database');
 const path = require("path");
 
@@ -21,7 +22,7 @@ class Server{
             donacionPrograma: '/api/donacionPrograma',
             programa : '/api/programa',
             proyecto: '/api/proyecto',
-            uploads: '/api/uploads',
+            uploads: '/api/uploads/cloud',
 
         }
        

@@ -96,8 +96,10 @@ const eliminarImgCloud = async(coleccion = '', id = '') => {
 const buscarModeloImg = async(coleccion = '', id = '') => {
 
   let modelo;
+  console.log('error modelo 1');
   switch (coleccion) {
     case 'programas':
+        console.log('error modelo 2');
         modelo = await Programa.findOne({imagenes: id});
       break;
     case 'proyectos':
@@ -110,15 +112,21 @@ const buscarModeloImg = async(coleccion = '', id = '') => {
         });
 
   }
+  console.log('error modelo 3\n' + modelo);
   return modelo;
 }
 
 
+
+
 const remoImgLista = async (modelo = '', id= '') => {
 
+  console.log('modelo\n' + 'idimg\n' + id);
   if(modelo){
     modelo.imagenes = modelo.imagenes.filter(imagenId => imagenId.toString() !== id);
+    console.log('imagenes del modelo\n' + modelo.imagenes);
     await modelo.save();
+    console.log('error al guardar modelo');
   }
 }
 

@@ -58,6 +58,7 @@ const subirImgCloud = async(req= request, res= response) =>{
       await modelo.save()
 
       res.json({
+        img: 'imagen subida correctamente',
         modelo
       })
 
@@ -74,12 +75,19 @@ const eliminarImagenCloud = async(req, res= response) => {
 
   try {
     const {id, coleccion} = req.params;
-  
-    await eliminarImgCloud(coleccion, id);
-
+    
+    console.log('error 0');
     const modelo = await buscarModeloImg(coleccion, id);
+    console.log('error 1');
+    
+    await eliminarImgCloud(coleccion, id);
+    console.log('error 2');
+
     await remoImgLista(modelo, id);
+    console.log('error 3\n' + id);
+
     await Imagen.findByIdAndRemove(id);
+    console.log('error 4\n' + id);
 
     res.json({
       msg: 'imagen eliminada',
@@ -93,8 +101,34 @@ const eliminarImagenCloud = async(req, res= response) => {
     })
   }
 
-  
+}
 
+const deleteAllImg = async(req, res= response) =>{
+  try {
+    
+    const {coleccion, id} = req.params;
+
+    const imagenes = await Imagen.find( {relacion: id} );
+    for( let img of imagenes){
+      await eliminarImgCloud(coleccion, img._id);
+      await Imagen.findByIdAndRemove(img._id);
+    }
+
+    const modelo = await buscarModelo(coleccion, id);
+    modelo.imagenes = [];
+    await modelo.save();
+
+    return res.json({
+      msg: `se han eliminado todas las imagenes de ${modelo.nombre}`,
+      modelo
+    })
+
+  } catch (error) {
+    return res.status(500).json({
+      msg: 'ha ocurrrido un error',
+      error
+    })
+  }
 }
 
 
@@ -133,6 +167,7 @@ const actualizarImagenCloud = async (req, res = response) => {
 
 module.exports = {
   actualizarImagenCloud,
+  deleteAllImg,
   eliminarImagenCloud,
   obtenerImagenes,
   obtenerImagenId,

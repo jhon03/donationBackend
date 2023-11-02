@@ -35,6 +35,7 @@ const obtenerProgramasId = async(req, res) => {
 
 
     res.json({
+        msg: 'programa obtenido correctamente',
         programa
     });
 }
@@ -83,7 +84,7 @@ const crearPrograma = async (req, res = response) => {
 
 const actualizarPrograma = async(req, res) => {
     const { id } = req.params;
-    const {_id, ...resto } = req.body;
+    const {_id, imagenes, ...resto } = req.body;
 
     resto.fechaModificacion = new Date();
 
