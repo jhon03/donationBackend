@@ -1,4 +1,5 @@
 
+
 const validarImgs = require('./validarImg')
 const validarRoles= require('../middlewares/validar-roles')
 const validarJWT = require('../middlewares/validar-jwt');

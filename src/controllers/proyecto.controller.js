@@ -12,6 +12,7 @@ const obtenerProyectos = async(req = request, res = response) => {
             Proyecto.countDocuments(query),  //devuelve los datos por indice
             Proyecto.find(query)
             .populate('programa','nombre')
+            .populate('imagenes','url')
            //.skip(Number(desde))
            //.limit(Number(limite))
     ]);
@@ -26,7 +27,8 @@ const obtenerProyectoId = async(req, res) => {
 
     const {id} = req.params;
     const proyecto = await Proyecto.findById(id)
-                                    .populate('programa','nombre');
+                                    .populate('programa','nombre')
+                                    .populate('imagenes','url')
     res.json({
         proyecto
     });
@@ -96,14 +98,23 @@ const crearProyecto = async (req, res = response) => {
 
 const actualizarProyecto = async(req, res) => {
     const { id } = req.params;
-    const {_id, estado, programa, ...resto } = req.body;
+    const {_id, estado, programa, imagenes ,...resto } = req.body;
 
-    resto.fechaModificacion = new Date();
+    try {
+        resto.fechaModificacion = new Date();
 
-    const proyecto = await Proyecto.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
-    res.json({
-        proyecto
-    });
+        const proyecto = await Proyecto.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
+        return res.json({
+            proyecto
+        });
+    } catch (error) {
+        return res.status(500).json({
+            msg: 'ha ocurrido un problema',
+            error
+        })
+    }
+
+    
 }
 
 

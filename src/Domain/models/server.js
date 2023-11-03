@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require('cors');
-const fileUpload = require('express-fileupload');
 
 const { dbConnection } = require('../../config/database');
 const path = require("path");
@@ -17,10 +16,9 @@ class Server{
             colaborador: '/api/colaborador',
             donacion: '/api/donacion',
             donacionAno: '/api/donacionAnonima',
-            donacionPrograma: '/api/donacionPrograma/',
+            donacionPrograma: '/api/donacionPrograma',
             programa : '/api/programa',
             proyecto: '/api/proyecto',
-            uploads: '/api/uploads',
         }
        
         this.middlewares();  //middleware
@@ -49,7 +47,6 @@ class Server{
         this.app.use(this.paths.donacionPrograma, require('../../routes/donacionPrograma.routes'))
         this.app.use(this.paths.programa, require('../../routes/programa.routes'));
         this.app.use(this.paths.proyecto, require('../../routes/proyecto.routes'));
-        this.app.use(this.paths.uploads, require('../../routes/uqloads.routes'))
     }
 
     listen(){

@@ -10,6 +10,7 @@ const colaboradorSchema = Schema({
     type: Number,
     required: [true, 'el numero de identificacion es requerido'],
     unique: true
+
   },
   nombre: {
     type: String,

@@ -26,7 +26,7 @@ router.post('/crear', [
     validarCampos
 ],crearPrograma);
 
-router.put('/:id',[
+router.put('/actualizar/:id',[
     validarJWT,
     check('id', 'el id del programa a actualizar no es valido').isMongoId(),
     check('nombre', 'el nombre es requerido').not().isEmpty(),
@@ -37,7 +37,7 @@ router.put('/:id',[
     validarCampos
 ], actualizarPrograma)
 
-router.delete('/:id',[
+router.delete('/eliminar/:id',[
     validarJWT,
     tieneRol('CREADOR'),
     check('id','El id no es valido').isMongoId(),
