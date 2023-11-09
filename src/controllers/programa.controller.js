@@ -2,6 +2,7 @@ const { response, request} = require('express');   //modulo para tipear respuest
 
 
 const {Programa} = require('../Domain/models');
+const {validarOpciones} = require('../helpers');
 
 
 
@@ -52,46 +53,66 @@ const eliminarPrograma = async(req, res= response) => {
 
 const crearPrograma = async (req, res = response) => {
 
-    const nombre = req.body.nombre.toUpperCase();
+    try {
+        const nombre = req.body.nombre.toUpperCase();
+        const opciones = req.body.opcionesColaboracion;
+        validarOpciones(opciones);
 
-    //generar data aqui estan los datos necesarios para crear un programa
-    const data = {nombre, eslogan: req.body.eslogan, descripcion: req.body.descripcion, imagen: req.body.imagen, usuCreador: req.body.usuCreador, usuModificador: req.body.usuModificador, colaborador: req.usuario._id, opcionesColaboracion: req.body.opcionesColaboracion }
+        //generar data aqui estan los datos necesarios para crear un programa
+        const data = {nombre, eslogan: req.body.eslogan, descripcion: req.body.descripcion, imagen: req.body.imagen, usuCreador: req.body.usuCreador, usuModificador: req.body.usuModificador, colaborador: req.usuario._id, opcionesColaboracion: req.body.opcionesColaboracion }
 
-    const programaDB = await Programa.findOne({nombre});
-    if(programaDB ){
-        if(!programaDB.estado){
-    
-            const programaNue = new Programa(data);
-            await programaNue.save();
-            return res.status(201).json({
-                programaNue
+        const programaDB = await Programa.findOne({nombre});
+        if(programaDB ){
+            if(!programaDB.estado){
+        
+                const programaNue = new Programa(data);
+                await programaNue.save();
+                return res.status(201).json({
+                    programaNue
+                });
+            }
+
+            return res.status(400).json({
+                msg: `El programa ${programaDB.nombre} ya existe`
             });
         }
 
+
+        const programa = new Programa(data);
+        
+        //guardar en la base de datos
+        await programa.save();
+
+        res.status(201).json(programa);
+    } catch (error) {
         return res.status(400).json({
-            msg: `El programa ${programaDB.nombre} ya existe`
-        });
+            error: error.message
+        })
     }
 
-
-    const programa = new Programa(data);
     
-    //guardar en la base de datos
-    await programa.save();
-
-    res.status(201).json(programa);
 }
 
 const actualizarPrograma = async(req, res) => {
-    const { id } = req.params;
-    const {_id, imagenes, ...resto } = req.body;
 
-    resto.fechaModificacion = new Date();
+    try {
+        const { id } = req.params;
+        const {_id, imagenes, opcionesColaboracion, ...resto } = req.body;
+        const opciones = req.body.opcionesColaboracion;
+        validarOpciones(opciones);
 
-    const programa = await Programa.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
-    res.json({
-        programa
-    });
+        resto.fechaModificacion = new Date();
+
+        const programa = await Programa.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
+        res.json({
+            programa
+        });
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message
+        })
+    }
+    
 }
 
 

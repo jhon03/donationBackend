@@ -1,6 +1,7 @@
 const { response, request} = require('express');
 
 const {Proyecto} = require('../Domain/models'); 
+const { validarOpciones } = require('../helpers');
 
 const obtenerProyectos = async(req = request, res = response) => {
 
@@ -51,56 +52,68 @@ const eliminarProyecto = async(req, res= response) => {
 
 const crearProyecto = async (req, res = response) => {
 
-    const {idPrograma} = req.params;
+    try {
+        
+        const {idPrograma} = req.params;
 
-    const {nombre, descripcion, imagen, costo, fechaInicio, fechaFinalizacion,colCreador, colModificador, tipoProyecto, opcionesDonacion} = req.body;
+        const {nombre, descripcion, imagen, costo, fechaInicio, fechaFinalizacion,colCreador, colModificador, tipoProyecto, opcionesDonacion} = req.body;
 
+        validarOpciones(opcionesDonacion);
 
-    //generar data aqui estan los datos necesarios para crear un programa
-    const data = {
-        programa:idPrograma,
-        nombre: nombre.toUpperCase(),
-        descripcion, 
-        imagen, 
-        costo,
-        fechaInicio,
-        fechaFinalizacion,
-        colCreador, 
-        colModificador,
-        tipoProyecto,
-        opcionesDonacion
-    }
+        //generar data aqui estan los datos necesarios para crear un programa
+        const data = {
+            programa:idPrograma,
+            nombre: nombre.toUpperCase(),
+            descripcion, 
+            imagen, 
+            costo,
+            fechaInicio,
+            fechaFinalizacion,
+            colCreador, 
+            colModificador,
+            tipoProyecto,
+            opcionesDonacion
+        }
 
-    const proyectoDB = await Proyecto.findOne({nombre});
-    if(proyectoDB ){
-        if(!proyectoDB.estado){
-    
-            const programaNue = new Proyecto(data);
-            await programaNue.save();
-            return res.status(201).json({
-                programaNue
+        const proyectoDB = await Proyecto.findOne({nombre});
+        if(proyectoDB ){
+            if(!proyectoDB.estado){
+        
+                const programaNue = new Proyecto(data);
+                await programaNue.save();
+                return res.status(201).json({
+                    programaNue
+                });
+            }
+
+            return res.status(400).json({
+                msg: `El Proyecto ${proyectoDB.nombre} ya existe`
             });
         }
 
+
+        const proyecto = new Proyecto(data);
+        
+        //guardar en la base de datos
+        await proyecto.save();
+
+        res.status(201).json(proyecto);
+
+    } catch (error) {
         return res.status(400).json({
-            msg: `El Proyecto ${proyectoDB.nombre} ya existe`
-        });
+            error: error.message
+        })
     }
 
-
-    const proyecto = new Proyecto(data);
     
-    //guardar en la base de datos
-    await proyecto.save();
-
-    res.status(201).json(proyecto);
 }
 
 const actualizarProyecto = async(req, res) => {
-    const { id } = req.params;
-    const {_id, estado, programa, imagenes ,...resto } = req.body;
-
     try {
+
+        validarOpciones(req.body.opcionesDonacion);
+        const { id } = req.params;
+        const {_id, estado, programa, imagenes,...resto } = req.body;
         resto.fechaModificacion = new Date();
 
         const proyecto = await Proyecto.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
@@ -108,9 +121,9 @@ const actualizarProyecto = async(req, res) => {
             proyecto
         });
     } catch (error) {
-        return res.status(500).json({
+        return res.status(400).json({
             msg: 'ha ocurrido un problema',
-            error
+            error: error.message
         })
     }
 

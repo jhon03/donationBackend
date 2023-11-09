@@ -7,6 +7,7 @@ const donacionAnonima = require('./donacionAnonima.controller');
 const donacionProgramaController = require('./donacionesProgramas.controller');
 const programaController = require('./programa.controller');
 const proyectoController = require('./proyecto.controller');
+const uqloadController = require('./uqloads.controller')
 
 
 module.exports = {
@@ -17,5 +18,7 @@ module.exports = {
     ...donacionAnonima,
     ...donacionProgramaController,
     ...programaController,
-    ...proyectoController
+    ...proyectoController,
+    ...uqloadController
+
 }

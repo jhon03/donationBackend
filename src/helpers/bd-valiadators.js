@@ -1,6 +1,7 @@
 
 
-const {Role, Colaborador} = require('../Domain/models')
+const { default: mongoose } = require('mongoose');
+const {Role, Colaborador, Imagen} = require('../Domain/models')
 
 
 
@@ -39,12 +40,52 @@ const validarUsername = async(username) =>{
     }
 }
 
+const validarColecciones = async(coleccion = '', colleciones = []) => {
+
+    const incluida = colleciones.includes( coleccion);
+    if(!incluida){
+        throw new Error(`La collecion ${coleccion} no es permitida`);
+    }
+}
+
+const validarColeccionesBD = async(coleccion = '') => {
+
+    const db = mongoose.connection;
+    const colecciones = await db.db.listCollections().toArray();
+    const nombreColecciones = colecciones.map(coleccion => coleccion.name)
+    const incluida = nombreColecciones.includes(coleccion);
+    if(!incluida){
+        throw new Error(`La coleccion ${coleccion} no es permitida, coleciones permitidas ${nombreColecciones}`);
+    }
+}
+
+const validarexisteImg = async(id = '') =>{
+
+    const imagen = await Imagen.findById(id);
+    if(!imagen){
+        throw new Error('no existe la imagen')
+    }
+      
+}
+
+const validarOpciones = (opciones = [] ) =>{
+
+    console.log(opciones.length);
+    if( opciones.length === 0){
+        throw new Error('La opciones de donacion son requeridas');
+    }
+}
+
 
 
 module.exports = {
+    validarexisteImg,
+    validarColecciones,
+    validarColeccionesBD,
     validarRol,
     validarEmail,
     validarId,
     validarNIdentificacion,
+    validarOpciones,
     validarUsername
 }

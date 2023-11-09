@@ -23,6 +23,7 @@ router.post('/crear', [
     check('eslogan', 'El eslogan es requerido').not().isEmpty(),
     check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('usuModificador', 'El usuario modificador es requerido').not().isEmpty(),
+    check('opcionesColaboracion', 'las opciones de donacion son requeridas').not().isEmpty(),
     validarCampos
 ],crearPrograma);
 
@@ -33,6 +34,7 @@ router.put('/actualizar/:id',[
     check('eslogan', 'El eslogan es requerido').not().isEmpty(),
     check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('usuModificador', 'El usuario modificador es requerido').not().isEmpty(),
+    check('opcionesColaboracion', 'las opciones de donacion son requeridas').not().isEmpty(),
     check('id').custom(validarIdPrograma),
     validarCampos
 ], actualizarPrograma)
