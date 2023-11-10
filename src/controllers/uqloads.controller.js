@@ -11,11 +11,10 @@ const obtenerImagenes = async(req = request, res = response) => {
   try {
     const [total, imagenes] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
         Imagen.countDocuments(),
-        Imagen.find()
-        
+        Imagen.find()       
     ]);
 
-    res.json({
+    return res.json({
         total,
         imagenes
     });
@@ -32,7 +31,7 @@ const obtenerImagenId = async(req, res = response) => {
     const {id} = req.params;
     const imagen = await Imagen.findById(id)
 
-    res.json({
+    return res.json({
         imagen
     });
   } catch (error) {
@@ -46,23 +45,15 @@ const obtenerImagenId = async(req, res = response) => {
 const subirImgCloud = async(req= request, res= response) =>{
 
   const {coleccion, id} = req.params;
-  console.log('subir img')
 
   try {     //siempre usar bloque try-catch al trabajar con promesas
       const modelo = await buscarModelo(coleccion, id);
-      console.log('error modelo')
-
       const {tempFilePath} = req.files.archivo;   //url de imagen cloudinary
-      console.log('error file')
       const secure_url = await subirImagen(tempFilePath, coleccion);   //subimos imagen al cloud
-      console.log('error subir imagen')
-
       const nuevaImagen = await crearImagen(secure_url, modelo, coleccion);     
-      console.log('error 2')
       modelo.imagenes.push(nuevaImagen._id);    //añadimos la imagen al proyecto o programa
       await modelo.save()
-
-      res.json({
+      return res.json({
         img: 'imagen subida correctamente',
         modelo
       })
@@ -80,27 +71,16 @@ const eliminarImagenCloud = async(req, res= response) => {
 
   try {
     const {id, coleccion} = req.params;
-    
-    console.log('error 0');
-    const modelo = await buscarModeloImg(coleccion, id);
-    console.log('error 1');
-    
+    const modelo = await buscarModeloImg(coleccion, id);   
     await eliminarImgCloud(coleccion, id);
-    console.log('error 2');
-
     await remoImgLista(modelo, id);
-    console.log('error 3\n' + id);
-
     await Imagen.findByIdAndRemove(id);
-    console.log('error 4\n' + id);
-
-    res.json({
+    return res.json({
       msg: 'imagen eliminada',
       modelo
     })
 
   } catch (error) {
-    console.log(error.message);
     res.status(500).json({
       msg: error.message,
     })
@@ -109,20 +89,16 @@ const eliminarImagenCloud = async(req, res= response) => {
 }
 
 const deleteAllImg = async(req, res= response) =>{
-  try {
-    
+  try {   
     const {coleccion, id} = req.params;
-
     const imagenes = await Imagen.find( {relacion: id} );
     for( let img of imagenes){
       await eliminarImgCloud(coleccion, img._id);
       await Imagen.findByIdAndRemove(img._id);
     }
-
     const modelo = await buscarModelo(coleccion, id);
     modelo.imagenes = [];
     await modelo.save();
-
     return res.json({
       msg: `se han eliminado todas las imagenes de ${modelo.nombre}`,
       modelo
@@ -137,13 +113,10 @@ const deleteAllImg = async(req, res= response) =>{
 }
 
 
-const actualizarImagenCloud = async (req, res = response) => {
-  const { id, coleccion } = req.params;
-  
-
+const actualizarImagenCloud = async (req, res = response) => { 
   try {
+    const { id, coleccion } = req.params;
     const imagen = await Imagen.findById(id);
-
     const { tempFilePath } = req.files.archivo;
     const secure_url = await subirImagen(tempFilePath, coleccion);
 
@@ -152,7 +125,7 @@ const actualizarImagenCloud = async (req, res = response) => {
     imagen.url = secure_url;    // Actualiza la URL de la imagen en el modelo
     await imagen.save();
 
-    res.json({
+    return res.json({
       msg: 'Imagen actualizada correctamente',
       imagen,
     });

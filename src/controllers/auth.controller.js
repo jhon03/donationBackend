@@ -7,9 +7,9 @@ const { Benefactor } = require("../Domain/models");
 
 const login = async(req, res = response) => {
 
-    const {correo, contrasena} = req.body;
-
+    
     try {
+        const {correo, contrasena} = req.body;
 
         let usuario;
         //verificar si existe el correo

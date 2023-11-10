@@ -2,8 +2,8 @@ const {Programa} = require('../Domain/models');
 
 const validarIdPrograma = async(id) =>{
     const programa = await Programa.findById(id);
-    if(!programa || !programa.estado){
-        throw new Error('El programa no existe o esta inactivo -false')
+    if(!programa || programa.estado === 'eliminado'){
+        throw new Error('El programa no existe o esta eliminado -estado')
     }
 }
 

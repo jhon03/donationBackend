@@ -37,8 +37,8 @@ const programaSchema = Schema({
         required:[true,'El nombre es obligatorio'],
     },
     estado: {
-        type: Boolean,
-        default:true,
+        type: String,
+        default:'visible',
         required: true,
     },
     opcionesColaboracion: {

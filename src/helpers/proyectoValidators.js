@@ -4,7 +4,7 @@ const { Proyecto, Colaborador } = require("../Domain/models");
 
 const validarIdProyecto = async(id) =>{
     const proyecto = await Proyecto.findById(id);
-    if(!proyecto || !proyecto.estado){
+    if(!proyecto || proyecto.estado === 'eliminado'){
         throw new Error('El proyecto no existe o esta inactivo -false')
     }
 }

@@ -45,8 +45,8 @@ const proyectoSchema = Schema({
         default: null
     },
     estado: {
-        type: Boolean,
-        default: true,
+        type: String,
+        default: 'visible',
         required: true
     },
     tipoProyecto: {
@@ -67,7 +67,7 @@ const proyectoSchema = Schema({
 });
 
 proyectoSchema.methods.toJSON = function(){
-    const {__v, _id, estado, ...proyecto} =this.toObject();
+    const {__v, _id, ...proyecto} =this.toObject();
     proyecto.uid = _id;
     return proyecto;
 }

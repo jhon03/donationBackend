@@ -68,6 +68,14 @@ const validarexisteImg = async(id = '') =>{
       
 }
 
+const validarOpciones =  (opciones = [] ) =>{
+
+    console.log(opciones.length);
+    if( opciones.length === 0){
+        throw new Error('La opciones de donacion son requeridas');
+    }
+}
+
 
 
 module.exports = {
@@ -78,5 +86,6 @@ module.exports = {
     validarEmail,
     validarId,
     validarNIdentificacion,
+    validarOpciones,
     validarUsername
 }
