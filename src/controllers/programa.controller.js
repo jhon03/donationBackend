@@ -2,7 +2,7 @@ const { response, request} = require('express');   //modulo para tipear respuest
 
 
 const {Programa} = require('../Domain/models');
-const { validarOpciones, validarIdPrograma, buscarProgramas, buscarProgramaId, crearObjetoPrograma, cambiarEstado } = require('../helpers');
+const { validarOpciones, buscarProgramas, buscarProgramaId, crearObjetoPrograma, cambiarEstado } = require('../helpers');
 
 
 

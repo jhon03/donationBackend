@@ -24,6 +24,11 @@ const donacionProgramaSchema = Schema({
     type: Number
   },
 
+  tipo: {
+    type: String,
+    default: 'donacionPrograma'
+  },
+
   programa: {
     type: Schema.Types.ObjectId,
     ref: 'Programa',
@@ -53,7 +58,7 @@ const donacionProgramaSchema = Schema({
 
 //modificar metodo json respuesta
 donacionProgramaSchema.methods.toJSON = function(){
-    const {__v, _id, ...donacionPrograma} = this.toObject();
+    const {__v, _id, tipo, ...donacionPrograma} = this.toObject();
     donacionPrograma.uid = _id;
     return donacionPrograma;
 }

@@ -1,5 +1,6 @@
 
 const bdValidators       = require('./bd-valiadators');
+const donacionesHelpers  = require('./donaciones.helpers');
 const generateJwt        = require('./generate-jwt');
 const globalesHelpers    = require('./globales.helpers');
 const jwtHelpers         = require('./jwt.helpers');
@@ -13,6 +14,7 @@ const validarDonaciones  = require('./validarDonacion');
 
 module.exports = {
     ...bdValidators,
+    ...donacionesHelpers,
     ...generateJwt,
     ...globalesHelpers,
     ...jwtHelpers,

@@ -1,7 +1,7 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const { validarCampos, validarDonacion} = require('../middlewares');  //carpeta donde estan todos los middlewares
+const { validarCampos, validarDonacion, validarJWT} = require('../middlewares');  //carpeta donde estan todos los middlewares
 
 const { validarIdProyecto, validarIdDonacionAno } = require('../helpers');
 const { obtenerDonacionAId, obtenerDonacionesAnonimas, crearDonacionAno } = require('../controllers');
@@ -10,9 +10,13 @@ const { obtenerDonacionAId, obtenerDonacionesAnonimas, crearDonacionAno } = requ
 const router = Router();
 
 
-router.get('/', obtenerDonacionesAnonimas); //cuando se busque este endpoint llamara a controlador userget
+router.get('/',[
+    validarJWT,
+    validarCampos
+] ,obtenerDonacionesAnonimas); //cuando se busque este endpoint llamara a controlador userget
 
 router.get('/:id',[
+    validarJWT,
     check('id', 'El id no es valido').isMongoId(),
     check('id', 'El id es requerido').not().isEmpty(),
     check('id').custom(validarIdDonacionAno),
