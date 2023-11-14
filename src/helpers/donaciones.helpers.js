@@ -1,5 +1,7 @@
 const {DonacionAno, DonacionPrograma} = require('../Domain/models');
 const { findColeccion } = require('./globales.helpers');
+const path = require('path');
+const fs = require('fs');
 
 const listDonaciones = async(pagina = 1, limite = 5)=>{
     try {
@@ -50,7 +52,9 @@ const modificarDonacion = async(id= 0,aceptar=false, rechazar=false) => {
     try {
         const {total, donaciones} = await listDonaciones(1, 2000);
         const donacionEncontrada = findByid(id, donaciones);
+        console.log("donacion encontrada: " + donacionEncontrada);
         const modelo = findColeccion(donacionEncontrada.tipo);
+        console.log(`modelo de la donacion` + modelo);
         console.log(modelo);
         const donacionAct = await cambiarEstadoDonacion(donacionEncontrada, modelo, aceptar, rechazar);
         console.log(`docnacion desde helper: ${donacionAct}`);
@@ -65,14 +69,14 @@ const cambiarEstadoDonacion = async (donacion, modelo, aceptar =false, rechazar=
         let donacionActualizada = donacion;
 
         if(aceptar){
-            if(donacion.estado === 'rechazada'){
-                throw new Error(`ya haz rechazado la donacion`);
+            if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
+                throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
             }
             donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
         }
         if(rechazar){
-            if(donacion.estado === 'terminada'){
-                throw new Error(`No puedes rechazar una donacion terminada`);
+            if(donacion.estado === 'terminada' || donacion.estado === 'rechazada'){
+                throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
             }
             donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'rechazada');
         }
@@ -86,7 +90,7 @@ const cambiarEstadoDonacion = async (donacion, modelo, aceptar =false, rechazar=
 }
 
 //sirve pra actualizar cualquier donacion que este dividida por modelo
-const updateStateDonacion = async(id, modelo, estado = 'abierta') =>{
+const updateStateDonacion = async(id, modelo, estado = 'en proceso') =>{
     try {
         const donacionAct = await modelo.findByIdAndUpdate(id, {estado}, {new:true});
         if(donacionAct == null){
@@ -109,9 +113,28 @@ const buscarDonacion = (id=0, donacion)=>{
     }
 }
 
+const dataCorrreoDonacion = (correo, nombre, id, formEntrega = false) =>{
+    try {
+        let pathPage = path.join(__dirname, '../assets/paginaWelcome.html');
+        let asunto = "Bienvenido al nuestra red de donantes"; 
+        if(formEntrega){
+            pathPage = path.join(__dirname, '../assets/paginaCondiciones.html');
+            asunto = "Formulario de condiciones entrega de donacion"
+        }           
+        let contenido = fs.readFileSync(pathPage, 'utf-8')
+        contenido = contenido.replace('{nombre}', nombre);
+        contenido = contenido.replace('{id}', id);
+        console.log(contenido);
+        return {destinatario: correo, asunto, contenido};
+    } catch (error) {
+        throw new Error(`Error al obtener los datos de la plantilla del correo: ${error.message}`);
+    }
+}
+
 module.exports = {
     buscarDonacion,
     cambiarEstadoDonacion,
+    dataCorrreoDonacion,
     findByid,
     listDonaciones,
     modificarDonacion,

@@ -6,7 +6,7 @@ const
     validarCampos, validarExitsColeccion, validarColeccion, validarJWT
 } = require('../middlewares');  //carpeta donde estan todos los middlewares
 
-const { listAllDonaciones, donacionFindById, abrirDonacion, rechazarDonacion, aceptarDonacion } = require('../controllers');
+const { listAllDonaciones, donacionFindById, abrirDonacion, rechazarDonacion, aceptarDonacion, enviarCorreo, aceptarDonacionBenefactor, rechazarDonacionBenefactor, aceptarDonacionColaborador, rechazarDonacionColaborador, confirmarDonacionColaborador, formDonacion } = require('../controllers');
 
 
 const router = Router();
@@ -23,26 +23,34 @@ router.get('/:id',[
     validarCampos,
 ], donacionFindById);
 
-router.post('/aceptar/:id',[
+router.post('/confirmar/:id',[
     validarJWT,
     check('id', 'El id es requerido').not().isEmpty(),
     check('id', 'El id es ivalido').isMongoId(),
     validarCampos
-], aceptarDonacion);
+], confirmarDonacionColaborador);
 
-router.post('/open/:id', [
+router.delete('/rechazar/:id',[
+    check('id', 'El id es requerido').not().isEmpty(),
+    check('id', 'El id es ivalido').isMongoId(),
+    validarCampos
+], rechazarDonacionColaborador);
+
+router.get('/open/:id', [
     validarJWT,
     check('id', 'el id es requerido').not().isEmpty(),
     check('id', 'El id no es valido').isMongoId(),
     validarCampos,
 ], abrirDonacion);
 
-router.delete('/rechazar/:id', [
-    validarJWT,
+router.get('/formEntrega/:condicion/:id',[
     check('id', 'El id es requerido').not().isEmpty(),
-    check('id', 'El id es invalido').isMongoId(),
+    check('id', 'El id es ivalido').isMongoId(),
     validarCampos
-], rechazarDonacion);
+], formDonacion);
+
+
+router.post('/enviar/:correoBenefactor', enviarCorreo);
 
 
 

@@ -1,6 +1,8 @@
 const { response, request} = require('express');
 
 const {DonacionAno} = require('../Domain/models'); 
+const { dataCorrreoDonacion } = require('../helpers');
+const { sendCorreo } = require('../config/mail');
 
 const obtenerDonacionesAnonimas = async(req = request, res = response) => {
     try {        
@@ -48,9 +50,7 @@ const crearDonacionAno = async (req, res = response) => {
     try {
         const {id} = req.params;
         const {tipoIdentificacion, numeroIdentificacion, nombreBenefactor, correo, celular, aporte} = req.body;
-
-        //generar data aqui estan los datos necesarios para crear un programa
-        const data = {
+        const data = {              //generar data aqui estan los datos necesarios para crear un programa
             tipoIdentificacion,
             numeroIdentificacion,
             nombreBenefactor,
@@ -59,13 +59,13 @@ const crearDonacionAno = async (req, res = response) => {
             proyecto: id,
             aporte      
         }
-
         const donacion = new DonacionAno(data);
-        
-        await donacion.save();      //guardar en la base de datos
+        const donacionProyecto = await donacion.save();      //guardar en la base de datos
+        const {destinatario, asunto, contenido} = dataCorrreoDonacion(donacionProyecto.correo, donacionProyecto.nombreBenefactor , donacionProyecto._id);
+        const enviarCorreo = await sendCorreo(destinatario, asunto, contenido);
         return res.status(201).json({
             msg:'la donacion fue creada con exito',
-            donacion
+            donacionProyecto
         });
     } catch (error) {
         return res.status(400).json({
