@@ -3,10 +3,10 @@ const { check } = require('express-validator');
 
 const 
 { 
-    validarCampos, validarExitsColeccion, validarColeccion, validarJWT
+    validarCampos, validarExitsColeccion, validarColeccion, validarJWT, validarJWTDonacion
 } = require('../middlewares');  //carpeta donde estan todos los middlewares
 
-const { listAllDonaciones, donacionFindById, abrirDonacion, rechazarDonacion, aceptarDonacion, enviarCorreo, aceptarDonacionBenefactor, rechazarDonacionBenefactor, aceptarDonacionColaborador, rechazarDonacionColaborador, confirmarDonacionColaborador, formDonacion } = require('../controllers');
+const { listAllDonaciones, donacionFindById, abrirDonacion, rechazarDonacion, aceptarDonacion, enviarCorreo, aceptarDonacionBenefactor, rechazarDonacionBenefactor, aceptarDonacionColaborador, rechazarDonacionColaborador, confirmarDonacionColaborador, formDonacion, donacionBenefactor } = require('../controllers');
 
 
 const router = Router();
@@ -43,11 +43,23 @@ router.get('/open/:id', [
     validarCampos,
 ], abrirDonacion);
 
-router.get('/formEntrega/:condicion/:id',[
+//respuesta al formulario de oparte del benefactor con token
+router.post('/formEntrega/:condicion/:token/:id',[
+    validarJWTDonacion,
     check('id', 'El id es requerido').not().isEmpty(),
     check('id', 'El id es ivalido').isMongoId(),
     validarCampos
 ], formDonacion);
+
+router.post('/formEntrega/:condicion',[
+    validarJWTDonacion,
+    check('condicion', 'La condicion es requerida').not().isEmpty(),
+    validarCampos
+], formDonacion);
+
+router.get('/InfoDonacion/benefactor',[
+    validarJWTDonacion
+],donacionBenefactor);
 
 
 router.post('/enviar/:correoBenefactor', enviarCorreo);
