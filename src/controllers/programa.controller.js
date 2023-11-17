@@ -14,7 +14,7 @@ const obtenerProgramas = async(req = request, res = response) => {
 
         const {total, programas} = await buscarProgramas(req, false, Number(limite), Number(desde));
         return res.json({
-            total: programas.length,
+            total,
             programas
         });
     } catch (error) {
@@ -33,7 +33,7 @@ const obtenerProgramasVista = async(req=request, res= response)=>{
         
         const {total, programas} = await buscarProgramas(req, vista=true, Number(limite), Number(desde));
         return res.json({
-            total: programas.length,
+            total,
             programas
         });
     } catch (error) {

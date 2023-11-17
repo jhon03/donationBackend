@@ -10,7 +10,7 @@ const obtenerProyectos = async(req = request, res = response) => {
 
         const {total, proyecto} = await buscarProyectos(req, false, Number(limite), Number(desde) );
         return res.json({
-            total: proyecto.length,
+            total,
             proyecto
         });
     } catch (error) {
@@ -27,7 +27,7 @@ const obtenerProyectosVista = async(req = request, res = response) => {
 
         const {total, proyecto} = await buscarProyectos(req, vista=true, Number(limite), Number(desde));
         res.json({
-            total: proyecto.length,
+            total,
             proyecto
         });
     } catch (error) {

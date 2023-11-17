@@ -6,8 +6,8 @@ const path = require('path');
 
 const listAllDonaciones = async(req= request, res= response)=>{
     try {
-        const {pagina, limite} = req.query;
-        const {total, donaciones} = await listDonaciones(pagina, limite);
+        const {page, limite} = req.query;
+        const {total, donaciones} = await listDonaciones(page, limite);
         return res.json({
             total: donaciones.length,
             donaciones,
@@ -41,7 +41,6 @@ const confirmarDonacionColaborador = async (req, res= response)=>{
         const {id} = req.params;
         const donacionAct = await modificarDonacion(id, aceptar=false, rechazar=false);
         const {destinatario, asunto, contenido} = await dataCorrreoDonacion(donacionAct.correo, donacionAct.nombreBenefactor, donacionAct._id, formEntrega=true);
-        console.log(contenido);
         const correoEnv = await sendCorreo(destinatario, asunto, contenido);
         return res.json({
             donacionAct

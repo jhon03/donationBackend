@@ -61,7 +61,7 @@ const crearDonacionAno = async (req, res = response) => {
         }
         const donacion = new DonacionAno(data);
         const donacionProyecto = await donacion.save();      //guardar en la base de datos
-        const {destinatario, asunto, contenido} = dataCorrreoDonacion(donacionProyecto.correo, donacionProyecto.nombreBenefactor , donacionProyecto._id);
+        const {destinatario, asunto, contenido} = await dataCorrreoDonacion(donacionProyecto.correo, donacionProyecto.nombreBenefactor , donacionProyecto._id);
         const enviarCorreo = await sendCorreo(destinatario, asunto, contenido);
         return res.status(201).json({
             msg:'la donacion fue creada con exito',
