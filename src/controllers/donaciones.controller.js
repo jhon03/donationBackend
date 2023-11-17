@@ -1,5 +1,5 @@
 const {response, request} = require('express');
-const { listDonaciones, findByid, findColeccion, updateStateDonacion, validarEstadoDonacion, openDonacion, cambiarEstadoDonacion, modificarDonacion, dataCorrreoDonacion } = require('../helpers');
+const { listDonaciones, findByid, findColeccion, updateStateDonacion, validarEstadoDonacion, openDonacion, cambiarEstadoDonacion, modificarDonacion, dataCorrreoDonacion, validarCorreoDona, enviarCorreo } = require('../helpers');
 const { sendCorreo } = require('../config/mail');
 const fs = require('fs');
 const path = require('path');
@@ -111,7 +111,7 @@ const formDonacion = async (req, res= response)=>{
 
 
 
-const enviarCorreo = async (req, res= response) =>{
+const enviarCorreoElectronico = async (req, res= response) =>{
     try {
         const {correoBenefactor} = req.params;
         console.log(correoBenefactor);
@@ -141,6 +141,34 @@ const donacionBenefactor = (req, res)=>{
     }
 }
 
+const verificarCorreoDonaciones = async (req, res) =>{
+    try {
+        const {correo, codigo} = req.body;
+        const {donacionTemp} = await validarCorreoDona(correo);
+        if(donacionTemp.verificado){
+            throw new Error("el correo ya ha sido verificado");
+        }
+        if(donacionTemp.codigoConfir !== codigo){
+            throw new Error('El codigo que introducite no coincide' + donacionTemp.codigoConfir + " codigo: " + codigo)
+        } 
+        const modelo = findColeccion(donacionTemp.data.tipo);
+        const donacion = new modelo(donacionTemp.data);
+        donacionTemp.verificado = true;
+        await donacionTemp.save();
+        await donacion.save();
+        const correoEnviado = await enviarCorreo(donacion._id, donacion.nombreBenefactor, donacion.correo, donacion ,'bienvenida');
+        console.log(correoEnviado);
+
+        return res.status(201).json({
+            msg: 'donacion creada con exito',
+        })
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message
+        })
+    }
+}
+
 
 
 
@@ -150,7 +178,8 @@ module.exports = {
     donacionBenefactor,
     formDonacion,
     donacionFindById,
-    enviarCorreo,
+    enviarCorreoElectronico,
     listAllDonaciones,
     rechazarDonacionColaborador,
+    verificarCorreoDonaciones,
 }

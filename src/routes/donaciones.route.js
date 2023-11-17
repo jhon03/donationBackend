@@ -6,7 +6,7 @@ const
     validarCampos, validarExitsColeccion, validarColeccion, validarJWT, validarJWTDonacion
 } = require('../middlewares');  //carpeta donde estan todos los middlewares
 
-const { listAllDonaciones, donacionFindById, abrirDonacion, rechazarDonacion, aceptarDonacion, enviarCorreo, aceptarDonacionBenefactor, rechazarDonacionBenefactor, aceptarDonacionColaborador, rechazarDonacionColaborador, confirmarDonacionColaborador, formDonacion, donacionBenefactor, verificarCorreoDona } = require('../controllers');
+const { listAllDonaciones, donacionFindById, abrirDonacion, rechazarDonacion, aceptarDonacion, enviarCorreo, aceptarDonacionBenefactor, rechazarDonacionBenefactor, aceptarDonacionColaborador, rechazarDonacionColaborador, confirmarDonacionColaborador, formDonacion, donacionBenefactor, verificarCorreoDona, verificarCorreoDonaciones, enviarCorreoElectronico } = require('../controllers');
 
 
 const router = Router();
@@ -63,10 +63,10 @@ router.get('/InfoDonacion/benefactor',[
 
 router.post('/verificar/correo/donacion',[
 
-],verificarCorreoDona );
+],verificarCorreoDonaciones );
 
 
-router.post('/enviar/:correoBenefactor', enviarCorreo);
+router.post('/enviar/:correoBenefactor', enviarCorreoElectronico);
 
 
 

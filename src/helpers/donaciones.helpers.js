@@ -30,9 +30,7 @@ const listDonaciones = async(pagina = 1, limite = 5)=>{
         const {total: total1, coleccion: Donacionesprogramas } = await obtenerDonaciones(DonacionPrograma, 'programa');  //primera coleccion(donacion programa)
         const {total: total2, coleccion: Donacionesproyectos } = await obtenerDonaciones(DonacionAno, 'proyecto');       // segunda coleccion (donacion proyecto)
         const listaDonaciones = [...Donacionesprogramas, ...Donacionesproyectos];
-        console.log(listaDonaciones);
         const listaOrdenada = listaDonaciones.sort((a, b) => b.fechaCreacion - a.fechaCreacion );
-        console.log("Lista donaciones ordenada " + listaOrdenada)
         const desde = (pagina-1) * limite;
         const hasta = pagina * limite;
         const donacionesPaginacion = listaOrdenada.slice(desde, hasta);
@@ -140,96 +138,96 @@ const dataCorrreoDonacion = async (correo, nombre, id, formEntrega = false) =>{
 
 
 
-const generarDataCorreo = async(id, nombre, correo, donacion, accion) =>{
-    try {
-        console.log(accion);
-        if(accion === 'bienvenida'){         
-            return await correoBienvenida(id, nombre, correo);
-        } else if(accion === 'confirmar'){
-            return await confirmarCorreo(nombre, correo, donacion);
-        } else if(accion === 'entregar'){
-            return await formEntregaCorreo(id, nombre, correo);
-        } else {
-            throw new Error("Accion incorrecta al manejar el envio del correo");
-        }
-    } catch (error) {
-        throw new Error(error.message);
-    }
-}
+// const generarDataCorreo = async(id, nombre, correo, donacion, accion) =>{
+//     try {
+//         console.log(accion);
+//         if(accion === 'bienvenida'){         
+//             return await correoBienvenida(id, nombre, correo);
+//         } else if(accion === 'confirmar'){
+//             return await confirmarCorreo(nombre, correo, donacion);
+//         } else if(accion === 'entregar'){
+//             return await formEntregaCorreo(id, nombre, correo);
+//         } else {
+//             throw new Error("Accion incorrecta al manejar el envio del correo");
+//         }
+//     } catch (error) {
+//         throw new Error(error.message);
+//     }
+// }
 
-const confirmarCorreo = async (nombre, correo, donacion) =>{
-    try {
-        const codigoConfir = crypto.randomBytes(3).toString('hex');
-        console.log("codigo confirmacion correo: " + codigoConfir);
-        let asunto = "Bienvenido al nuestra red de donantes"; 
-        pathPage = path.join(__dirname, '../assets/confirmarCorreo.html');
-        let contenido = fs.readFileSync(pathPage, 'utf-8');
-        contenido = contenido.replace(/\{nombre\}/g, nombre);
-        contenido = contenido.replace(/\{codigo\}/g, codigoConfir);
+// const confirmarCorreo = async (nombre, correo, donacion) =>{
+//     try {
+//         const codigoConfir = crypto.randomBytes(3).toString('hex');
+//         console.log("codigo confirmacion correo: " + codigoConfir);
+//         let asunto = "Bienvenido al nuestra red de donantes"; 
+//         pathPage = path.join(__dirname, '../assets/confirmarCorreo.html');
+//         let contenido = fs.readFileSync(pathPage, 'utf-8');
+//         contenido = contenido.replace(/\{nombre\}/g, nombre);
+//         contenido = contenido.replace(/\{codigo\}/g, codigoConfir);
 
-        const donacionTemp = new DonacionTemporal({
-            correo: donacion.correo,
-            data:donacion,
-            codigoConfir,
-        })
-        await donacionTemp.save();
+//         const donacionTemp = new DonacionTemporal({
+//             correo: donacion.correo,
+//             data:donacion,
+//             codigoConfir,
+//         })
+//         await donacionTemp.save();
 
-        return {destinatario: correo, asunto, contenido};
+//         return {destinatario: correo, asunto, contenido};
 
-    } catch (error) {
-        throw new Error('error al enviar el correo de confirmacion:' + error.message)
-    }
-}
+//     } catch (error) {
+//         throw new Error('error al enviar el correo de confirmacion:' + error.message)
+//     }
+// }
 
-const formEntregaCorreo = async (id, nombre, correo)=>{
-    try {
-        const token = await generarJWT(id);     //token para confirmar entrega de donacion      
-        pathPage = path.join(__dirname, '../assets/paginaCondiciones.html');
-        asunto = "Formulario de condiciones entrega de donacion"
+// const formEntregaCorreo = async (id, nombre, correo)=>{
+//     try {
+//         const token = await generarJWT(id);     //token para confirmar entrega de donacion      
+//         pathPage = path.join(__dirname, '../assets/paginaCondiciones.html');
+//         asunto = "Formulario de condiciones entrega de donacion"
 
-        let contenido = fs.readFileSync(pathPage, 'utf-8')
-        contenido = contenido.replace('{nombre}', nombre);
-        contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
-        contenido = contenido.replace(/{token}/g, encodeURIComponent(token));
+//         let contenido = fs.readFileSync(pathPage, 'utf-8')
+//         contenido = contenido.replace('{nombre}', nombre);
+//         contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
+//         contenido = contenido.replace(/{token}/g, encodeURIComponent(token));
 
-        return {destinatario: correo, asunto, contenido};
+//         return {destinatario: correo, asunto, contenido};
 
-    } catch (error) {
-        throw new Error('Error al enviar el formulario de entrega donacion: ' + error.message);
-    }
-}
+//     } catch (error) {
+//         throw new Error('Error al enviar el formulario de entrega donacion: ' + error.message);
+//     }
+// }
 
-const correoBienvenida = async (id, nombre, correo)=>{
-    try {
-        let pathPage = path.join(__dirname, '../assets/paginaWelcome.html');
-        let asunto = "Bienvenido al nuestra red de donantes"; 
+// const correoBienvenida = async (id, nombre, correo)=>{
+//     try {
+//         let pathPage = path.join(__dirname, '../assets/paginaWelcome.html');
+//         let asunto = "Bienvenido al nuestra red de donantes"; 
 
-        let contenido = fs.readFileSync(pathPage, 'utf-8')
-        contenido = contenido.replace('{nombre}', nombre);
-        contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
-        return {destinatario: correo ,asunto, contenido};
-    } catch (error) {
-        throw new Error('error al enviar el correo de bienvenida: ' + error.message);
-    }
-}
+//         let contenido = fs.readFileSync(pathPage, 'utf-8')
+//         contenido = contenido.replace('{nombre}', nombre);
+//         contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
+//         return {destinatario: correo ,asunto, contenido};
+//     } catch (error) {
+//         throw new Error('error al enviar el correo de bienvenida: ' + error.message);
+//     }
+// }
 
-const validarCorreo = async (correo) =>{
-    try {
-        const donacionTemp = await DonacionTemporal.findOne({correo});
-        let estado = 'verificado';
-        if(!donacionTemp){
-            estado = 'inexistente';
-            return {donacionTemp,  estado};
-        }
-        if(!donacionTemp.verificado){
-            estado = 'verificar';
-            return {donacionTemp,  estado};
-        }
-        return {donacionTemp, estado};
-    } catch (error) {
-        throw new Error('Error al intentar validar el correo: ' + correo);
-    }
-}
+// const validarCorreo = async (correo) =>{
+//     try {
+//         const donacionTemp = await DonacionTemporal.findOne({correo});
+//         let estado = 'verificado';
+//         if(!donacionTemp){
+//             estado = 'inexistente';
+//             return {donacionTemp,  estado};
+//         }
+//         if(!donacionTemp.verificado){
+//             estado = 'verificar';
+//             return {donacionTemp,  estado};
+//         }
+//         return {donacionTemp, estado};
+//     } catch (error) {
+//         throw new Error('Error al intentar validar el correo: ' + correo);
+//     }
+// }
 
 module.exports = {
     buscarDonacion,
@@ -241,9 +239,9 @@ module.exports = {
     obtenerDonaciones,
     updateStateDonacion,
 
-    correoBienvenida,
-    confirmarCorreo,
-    formEntregaCorreo,
-    generarDataCorreo,
-    validarCorreo,
+    // correoBienvenida,
+    // confirmarCorreo,
+    // formEntregaCorreo,
+    //generarDataCorreo,
+    //validarCorreo,
 }

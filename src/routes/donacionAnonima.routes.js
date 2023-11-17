@@ -25,7 +25,7 @@ router.get('/:id',[
 
 
 
-router.post('/:id/crear', [              //arreglo de middlewares para verificar campos
+router.post('/proyecto/:id/crear', [              //arreglo de middlewares para verificar campos
     check('id', 'El id del proyecto es invalido').isMongoId(),
     check('id', 'El id del proyecto es requerido').not().isEmpty(),
     check('nombreBenefactor','El nombre es requerido').not().isEmpty(),
