@@ -66,18 +66,10 @@ const crearDonacionPrograma = async (req, res = response) => {
             accion = 'bienvenida';
             msg= "donacion creada con exito " + donacion.nombreBenefactor;
         }
-        
-        //await donacion.save();      //guardar en la base de datos
-        
-        //enviamos correo de confirmacion 
-        //const {destinatario, asunto, contenido} = await dataCorrreoDonacion(data.correo, data.nombreBenefactor, data._id, formEntrega=false);
+
         const {destinatario, asunto, contenido} = await generarDataCorreo(donacion._id, donacion.nombreBenefactor, donacion.correo, donacion ,accion);
         console.log(`destinatario: ${destinatario}\nasunto: ${asunto}\ncontenido: ${contenido}`);
         const correoEnv = await sendCorreo(destinatario, asunto, contenido);
-        // return res.status(201).json({
-        //     msg:'la donacion fue creada con exito',
-        //     donacion
-        // });
         return res.json({
             accion,
             msg
@@ -92,10 +84,7 @@ const crearDonacionPrograma = async (req, res = response) => {
 const verificarCorreoDona = async (req, res) =>{
     try {
         const {correo, codigo} = req.body;
-        console.log(`correo: ${correo},\ncodigo: ${codigo}`);
         const {donacionTemp} = await validarCorreo(correo);
-        console.log(donacionTemp);
-        console.log(donacionTemp.codigoConfir)
         if(donacionTemp.verificado){
             throw new Error("el correo ya ha sido verificado");
         }
