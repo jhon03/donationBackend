@@ -7,7 +7,7 @@ const {validarIdPrograma, validarIdProyecto, validarOpciones} = require('../help
 
 const router = new Router();
 
-router.get('/',obtenerProyectos)
+router.get('/', validarJWT ,obtenerProyectos)
 
 router.get('/vista',obtenerProyectosVista)
 

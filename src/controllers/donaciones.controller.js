@@ -6,11 +6,14 @@ const path = require('path');
 
 const listAllDonaciones = async(req= request, res= response)=>{
     try {
-        const {pagina, limite} = req.query;
-        const {total, donaciones} = await listDonaciones(pagina, limite);
+        const {page, limite} = req.query;
+
+        const {total, donaciones} = await listDonaciones(page, limite);
+        console.log(total);
+        console.log(donaciones);
         return res.json({
             total: donaciones.length,
-            donaciones,
+            donacion: donaciones,
         })
     } catch (error) {
         return res.status(400).json({

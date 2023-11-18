@@ -9,6 +9,7 @@ const obtenerProyectos = async(req = request, res = response) => {
         const desde = (page-1) * limite;
 
         const {total, proyecto} = await buscarProyectos(req, false, Number(limite), Number(desde) );
+        console.log(proyecto);
         return res.json({
             total: proyecto.length,
             proyecto

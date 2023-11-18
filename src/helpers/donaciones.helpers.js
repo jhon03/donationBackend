@@ -26,12 +26,15 @@ const obtenerDonaciones = async(modelo, CampoRelacion)=>{
 
 const listDonaciones = async(pagina = 1, limite = 5)=>{
     try {
+        console.log(pagina);
         const {total: total1, coleccion: Donacionesprogramas } = await obtenerDonaciones(DonacionPrograma, 'programa');  //primera coleccion(donacion programa)
         const {total: total2, coleccion: Donacionesproyectos } = await obtenerDonaciones(DonacionAno, 'proyecto');       // segunda coleccion (donacion proyecto)
         const listaDonaciones = [...Donacionesprogramas, ...Donacionesproyectos];
+        const listaOrdenada = listaDonaciones.sort((a, b) => b.fechaCreacion - a.fechaCreacion );
         const desde = (pagina-1) * limite;
         const hasta = pagina * limite;
-        const donacionesPaginacion = listaDonaciones.slice(desde, hasta);
+        const donacionesPaginacion = listaOrdenada.slice(desde, hasta);
+        console.log(donacionesPaginacion);
         return {total: listaDonaciones.length, donaciones: donacionesPaginacion};
     } catch (error) {
         throw new Error('ha ocurrido un error al devolver la lista de donaciones ' + error.message);

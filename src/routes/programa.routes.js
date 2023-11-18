@@ -9,7 +9,7 @@ const { validarIdPrograma, validarOpciones } = require('../helpers');
 const router = new Router();
 
 
-router.get('/',obtenerProgramas)
+router.get('/', validarJWT ,obtenerProgramas)
 
 router.get('/vista', obtenerProgramasVista)
 
@@ -31,7 +31,7 @@ router.post('/crear', [
     check('eslogan', 'El eslogan es requerido').not().isEmpty(),
     check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('usuModificador', 'El usuario modificador es requerido').not().isEmpty(),
-    check('opcionesColaboracion', 'las opciones de donacion son requeridas').not().isEmpty(),
+    check('opcionesColaboracion', 'la opciones de colaboracion son requeridas').not().isEmpty(),
     validarCampos
 ],crearPrograma);
 
@@ -42,7 +42,6 @@ router.put('/actualizar/:id',[
     check('eslogan', 'El eslogan es requerido').not().isEmpty(),
     check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('usuModificador', 'El usuario modificador es requerido').not().isEmpty(),
-    check('opcionesColaboracion', 'las opciones de donacion son requeridas').not().isEmpty(),
     check('opcionesColaboracion', 'la opciones de colaboracion son requeridas').not().isEmpty(),
     check('opcionesColaboracion').custom(validarOpciones),
     check('id').custom(validarIdPrograma),
