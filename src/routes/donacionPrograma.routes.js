@@ -1,7 +1,7 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const { validarCampos, validarJWT} = require('../middlewares');  //carpeta donde estan todos los middlewares
+const { validarCampos, validarJWT, validarDonacion} = require('../middlewares');  //carpeta donde estan todos los middlewares
 
 const {validarIdPrograma, validarIdDonacionPrograma } = require('../helpers');
 const { obtenerDonacionPrograma, crearDonacionPrograma, obtenerDonacionProgramId } = require('../controllers');
@@ -26,9 +26,9 @@ router.get('/donacion/:id',[
 
 
 
-router.post('/:idPrograma/crear', [              //arreglo de middlewares para verificar campos
-        check('idPrograma', 'El id del programa es invalido').isMongoId(),
-        check('idPrograma', 'El id del programa es requerido').not().isEmpty(),
+router.post('/programa/:id/crear', [              //arreglo de middlewares para verificar campos
+        check('id', 'El id del programa es invalido').isMongoId(),
+        check('id', 'El id del programa es requerido').not().isEmpty(),
         check('nombreBenefactor','El nombre es requerido').not().isEmpty(),
         check('tipoIdentificacion', 'el tipo de identificacion es requerido').not().isEmpty(),
         check('numeroIdentificacion', 'El numero de indentificación es requerido').not().isEmpty(),
@@ -37,8 +37,9 @@ router.post('/:idPrograma/crear', [              //arreglo de middlewares para v
         check('celular', 'El celular es requerido').not().isEmpty(),
         check('celular','El celualr debe ser numerico').isNumeric(),
         check('aporte','El aporte es requerido').not().isEmpty(),
-        check('idPrograma').custom(validarIdPrograma),
-        validarCampos
+        check('id').custom(validarIdPrograma),
+        validarCampos,
+        validarDonacion,
 ],crearDonacionPrograma);
 
 
