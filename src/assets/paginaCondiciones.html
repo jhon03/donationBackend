@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form donacion</title>
+</head>
+<body>
+    <div style="background-image: url('https://res.cloudinary.com/dxlmosojh/image/upload/f_auto,q_auto/v1/donacion/fondos/kykfeikfyv94knrzxmup'); background-size: cover; background-position: center; height: 626px; width: 626px; display: flex; justify-content: center; align-items: center;">
+        <div style="text-align: center; color: black; padding: 20px;">
+            <h1 style="font-weight: bold;">Bienvenido a nuestra fundación <span style="color: blue;">Gracias por su solicitud de donación</span></h1>
+            <p style="color: black; font-weight: bold; font-size: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                {nombre}  agradecemos infinitamente tu solicitud de donacion hemos analizado la solicitud,
+                y nos encantaria que formaras parte de nustra causa acontinuacion, tienes un boton de terminar donacion,
+                el cual te llevara a nuestro pagina web para terminar tu solicitud !!GRACIAS!!
+                ID donacion: {id}
+            </p>
+            <div style="margin-top: 20px;">
+                <form action="http://localhost:4200/donaciones/formulario/terminar/{token}/{id}" method="get">
+                    <button type="submit" style="display: inline-block; padding: 15px 20px; background-color: #2dca4f; color: white; text-decoration: none; border-radius: 18px; cursor: pointer;">
+                        Terminar Proceso de Donación
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        section {
+            justify-content: center;
+            align-items: center;
+        }
+
+        .background {
+            background-image: url('https://res.cloudinary.com/dxlmosojh/image/upload/f_auto,q_auto/v1/donacion/fondos/kykfeikfyv94knrzxmup');
+            background-size: cover; /* Ajustar tamaño de la imagen para cubrir el contenedor */
+            background-position: center; /* Centrar la imagen */
+            height: 626px; /* Ajustar la altura al 100% del viewport */
+            width: 626px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .text-container {
+            text-align: center;
+        }
+
+        .text-container h1 {
+            font-weight: bold;
+            color: rgb(0, 0, 0); /* Cambia el color del texto según tu preferencia */
+        }
+
+        .text-container span {
+            color: rgb(35, 65, 146);
+            font-weight: bold;
+        }
+
+        .text-container p {
+            color: rgb(0, 0, 0) ;
+            font-size: 3vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: bold;
+        }
+    </style>
+    <title>Welcome</title>
+</head>
+<body>
+    <section class="background">
+        <div class="text-container my-5 mx-5">
+            <h1 class="fw-bold" style="color: black;">Bienvenido {nombre} a nuestra fundación <span style="color: blue;">Gracias por su solicitud de donación</span></h1>
+            <div class="texto">
+                <p style="color: black;">
+                    Agradecemos su intención de realizar una donación a nuestro proyecto/programa, 
+                    estaremos evaluando su donación para después contactarnos con usted para hacer el trámite final de la donación.
+                    Id Donacion = {id}.
+                </p>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

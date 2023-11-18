@@ -1,80 +1,115 @@
 const { response, request} = require('express');
 
 const {Proyecto} = require('../Domain/models'); 
-const { validarOpciones } = require('../helpers');
+const { buscarProyectos, buscarProyectoId, crearObjetoProyecto,cambiarEstado, updateProyecto } = require('../helpers');
 
 const obtenerProyectos = async(req = request, res = response) => {
+    try {
+        const {page = 1, limite = 5} = req.query;
+        const desde = (page-1) * limite;
 
-    const { limite = 5, desde = 0 } = req.query;
-    const query = {estado: true};   //buscar solo programas activos
-    
+        const {total, proyecto} = await buscarProyectos(req, false, Number(limite), Number(desde) );
+        return res.json({
+            total: proyecto.length,
+            proyecto
+        });
+    } catch (error) {
+        return res.status(400).json({
+           error: error.message
+        })
+    }    
+}
 
-    const [total, proyecto] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
-            Proyecto.countDocuments(query),  //devuelve los datos por indice
-            Proyecto.find(query)
-            .populate('programa','nombre')
-            .populate('imagenes','url')
-           //.skip(Number(desde))
-           //.limit(Number(limite))
-    ]);
+const obtenerProyectosVista = async(req = request, res = response) => {
+    try {
+        const {page = 1, limite = 5} = req.query;
+        const desde = (page-1) * limite;
 
-    res.json({
-        total,
-        proyecto
-    });
+        const {total, proyecto} = await buscarProyectos(req, vista=true, Number(limite), Number(desde));
+        res.json({
+            total: proyecto.length,
+            proyecto
+        });
+    } catch (error) {
+        return res.status(400).json({
+           error: error.message
+        })
+    }    
 }
 
 const obtenerProyectoId = async(req, res) => {
+    try {
+        const proyecto = await buscarProyectoId(req);
+        res.json({
+            proyecto
+        });
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message
+        })
+    }    
+}
 
-    const {id} = req.params;
-    const proyecto = await Proyecto.findById(id)
-                                    .populate('programa','nombre')
-                                    .populate('imagenes','url')
-    res.json({
-        proyecto
-    });
+const obtenerProyectoIdVista = async(req, res) => {
+    try {
+        const proyecto = await buscarProyectoId(req, vista=true);
+        res.json({
+            proyecto
+        });
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message
+        })
+    }    
 }
 
 const eliminarProyecto = async(req, res= response) => {
-
-    const {id} = req.params;
-    const proyecto = await Proyecto.findByIdAndUpdate(id, {estado:false}, {new:true} );
-    if (!proyecto ) {
+    try {
+        const proyecto = await cambiarEstado(req, Proyecto);
+        res.json({
+            msg: 'proyecto eliminado correctamenete',
+            proyecto
+        });
+    } catch (error) {
         return res.status(400).json({
-            msg: 'El programa que intentas eliminar no existe'
+            error: error.message
         })
     }
-    res.json({
-        msg: 'proyecto eliminado correctamenete',
-        proyecto
-    });
+    
 }
 
-const crearProyecto = async (req, res = response) => {
-
+const ocultarProyecto = async(req, res= response) => {
     try {
-        
-        const {idPrograma} = req.params;
+        const proyecto = await cambiarEstado(req, Proyecto, ocultar=true);
+        res.json({
+            msg: 'proyecto ocultado correctamenete',
+            proyecto
+        });
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message
+        })
+    }    
+}
 
-        const {nombre, descripcion, imagen, costo, fechaInicio, fechaFinalizacion,colCreador, colModificador, tipoProyecto, opcionesDonacion} = req.body;
+const habilitarProyecto = async(req, res= response)=>{
+    try {
+        const proyecto = await cambiarEstado(req, Proyecto, false ,habilitar=true)
+        return res.json({
+            msg: 'proyecto habilitado correctamente',
+            proyecto
+        })
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message
+        })
+    }
+}
 
-        validarOpciones(opcionesDonacion);
 
-        //generar data aqui estan los datos necesarios para crear un programa
-        const data = {
-            programa:idPrograma,
-            nombre: nombre.toUpperCase(),
-            descripcion, 
-            imagen, 
-            costo,
-            fechaInicio,
-            fechaFinalizacion,
-            colCreador, 
-            colModificador,
-            tipoProyecto,
-            opcionesDonacion
-        }
-
+const crearProyecto = async (req, res = response) => {
+    try {
+        const {data, nombre} = crearObjetoProyecto(req);
         const proyectoDB = await Proyecto.findOne({nombre});
         if(proyectoDB ){
             if(!proyectoDB.estado){
@@ -91,39 +126,27 @@ const crearProyecto = async (req, res = response) => {
             });
         }
 
-
-        const proyecto = new Proyecto(data);
-        
-        //guardar en la base de datos
-        await proyecto.save();
-
+        const proyecto = new Proyecto(data);  
+        await proyecto.save();  //guardar en la base de datos
         res.status(201).json(proyecto);
-
     } catch (error) {
         return res.status(400).json({
             error: error.message
         })
     }
-
     
 }
 
 const actualizarProyecto = async(req, res) => {
     try {
-
-        validarOpciones(req.body.opcionesDonacion);
-        const { id } = req.params;
-        const {_id, estado, programa, imagenes,...resto } = req.body;
-        resto.fechaModificacion = new Date();
-
-        const proyecto = await Proyecto.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
+        const proyecto = await updateProyecto(req);
         return res.json({
             proyecto
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             msg: 'ha ocurrido un problema',
-            error: error.message
+            error
         })
     }
 
@@ -131,10 +154,14 @@ const actualizarProyecto = async(req, res) => {
 }
 
 
-module.exports = {
-    obtenerProyectos,
-    obtenerProyectoId,
-    eliminarProyecto,
+module.exports = {   
+    actualizarProyecto,
     crearProyecto,
-    actualizarProyecto
+    eliminarProyecto,
+    habilitarProyecto,
+    obtenerProyectos,
+    obtenerProyectosVista,
+    obtenerProyectoId,
+    obtenerProyectoIdVista,
+    ocultarProyecto,
 }

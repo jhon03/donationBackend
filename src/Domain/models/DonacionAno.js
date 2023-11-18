@@ -24,6 +24,11 @@ const donacionAnoSchema = Schema({
     type: Number
   },
 
+  tipo: {
+    type: String,
+    default: 'donacionAnonima'
+  },
+
   proyecto: {
     type: Schema.Types.ObjectId,
     ref: 'Proyecto',
@@ -54,7 +59,7 @@ const donacionAnoSchema = Schema({
 
 //modificar metodo json respuesta
 donacionAnoSchema.methods.toJSON = function(){
-    const {__v, _id, ...donacionA} = this.toObject();
+    const {__v, _id, tipo, ...donacionA} = this.toObject();
     donacionA.uid = _id;
     return donacionA;
 }

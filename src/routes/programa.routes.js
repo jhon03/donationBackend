@@ -3,19 +3,27 @@ const { check } = require('express-validator');
 
 const {validarCampos, validarJWT, tieneRol} = require('../middlewares');   //importamos todos los middlewares desde del index
 
-const { crearPrograma, obtenerProgramas, actualizarPrograma, eliminarPrograma, obtenerProgramasId } = require('../controllers');
-const { validarIdPrograma } = require('../helpers');
+const { crearPrograma, obtenerProgramas, actualizarPrograma, eliminarPrograma, obtenerProgramasId, obtenerProgramasVista, obtenerProgramaIdVista, ocultarPrograma, habilitarPrograma } = require('../controllers');
+const { validarIdPrograma, validarOpciones } = require('../helpers');
 
 const router = new Router();
 
 
 router.get('/',obtenerProgramas)
 
+router.get('/vista', obtenerProgramasVista)
+
 router.get('/:id',[
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdPrograma),
     validarCampos
 ], obtenerProgramasId)
+
+router.get('/vista/:id',[
+    check('id', 'El id no es valido').isMongoId(),
+    check('id').custom(validarIdPrograma),
+    validarCampos
+], obtenerProgramaIdVista)
 
 router.post('/crear', [
     validarJWT,
@@ -35,6 +43,8 @@ router.put('/actualizar/:id',[
     check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('usuModificador', 'El usuario modificador es requerido').not().isEmpty(),
     check('opcionesColaboracion', 'las opciones de donacion son requeridas').not().isEmpty(),
+    check('opcionesColaboracion', 'la opciones de colaboracion son requeridas').not().isEmpty(),
+    check('opcionesColaboracion').custom(validarOpciones),
     check('id').custom(validarIdPrograma),
     validarCampos
 ], actualizarPrograma)
@@ -46,6 +56,26 @@ router.delete('/eliminar/:id',[
     check('id').custom(validarIdPrograma),
     validarCampos
 ],eliminarPrograma)
+
+router.delete('/ocultar/:id',[
+    validarJWT,
+    tieneRol('CREADOR'),
+    check('id','El id no es valido').isMongoId(),
+    check('id').custom(validarIdPrograma),
+    validarCampos
+],ocultarPrograma)
+
+router.put('/habilitar/:id',[
+    validarJWT,
+    tieneRol('CREADOR'),
+    check('id','El id no es valido').isMongoId(),
+    check('id').custom(validarIdPrograma),
+    validarCampos
+],habilitarPrograma)
+
+
+
+
 
 
 
