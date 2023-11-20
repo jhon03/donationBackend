@@ -99,15 +99,19 @@ const confirmarCorreo = async (donacion, nombrePro) =>{
 
 const formEntregaCorreo = async (donacion, nombrePro)=>{
     try {
-        const { _id: id , nombreBenefactor: nombre, correo} = donacion;
+        const { _id: id , nombreBenefactor: nombre, correo, tipo, aporte} = donacion;
         const token = await generarJWT(id, '365d');     //token para confirmar entrega de donacion      
         pathPage = path.join(__dirname, '../assets/paginaCondiciones.html');
         asunto = "Formulario de condiciones entrega de donacion"
+        let tipoC = tipoColeccion(tipo);
 
         let contenido = fs.readFileSync(pathPage, 'utf-8')
         contenido = contenido.replace('{nombre}', nombre);
         contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
         contenido = contenido.replace(/{token}/g, encodeURIComponent(token));
+        contenido = contenido.replace('{tipoC}', tipoC);
+        contenido = contenido.replace('{nombreC}', nombrePro);
+        contenido = contenido.replace(/\{opcionDona\}/g, aporte);
 
         return {destinatario: correo, asunto, contenido};
 
@@ -121,6 +125,7 @@ const correoBienvenida = async (donacion, nombrePro)=>{
         const { _id: id, nombreBenefactor: nombre, correo, tipo } = donacion;
         const pathPage = path.join(__dirname, '../assets/paginaWelcome.html');
         const asunto = "Bienvenido al nuestra red de donantes"; 
+
         let tipoC = tipoColeccion(tipo);
         let contenido = fs.readFileSync(pathPage, 'utf-8')
         contenido = contenido.replace('{nombre}', nombre);

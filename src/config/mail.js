@@ -14,18 +14,6 @@ const sendCorreo = async (destinatario, asunto, contenido) => {
     }
 };
 
-const sendCorreoMicrosoft = async (destinatario, asunto, contenido) => {
-    try {
-        let transporter = dataTrasporter();
-        let mailOptions = dataMessage( destinatario, asunto, contenido);
-        const resultado = await transporter.sendMail(mailOptions);
-        console.log("Correo enviado correctamente:", resultado);
-        return resultado;
-    } catch (error) {
-        console.log("Error al enviar el correo: " +  error)
-        throw new Error(`error al enviar el correo ${error}`);
-    }
-};
 
 //metodo conexion servidor de correo con autenticacion por token( mas seguro)
 const dataTrasporter = (servidor = 'gmail') =>{

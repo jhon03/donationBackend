@@ -72,9 +72,6 @@ const cambiarEstadoDonacion = async (donacion, modelo, condicion = '') =>{
         if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
             throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
         }
-        // if( condicion === 'aceptar'){
-        //     donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
-        // }
         if( condicion === 'rechazar'){
             donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'rechazada');
         }

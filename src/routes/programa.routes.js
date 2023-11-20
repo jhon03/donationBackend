@@ -9,11 +9,12 @@ const { validarIdPrograma, validarOpciones } = require('../helpers');
 const router = new Router();
 
 
-router.get('/',obtenerProgramas)
+router.get('/', validarJWT ,obtenerProgramas)
 
 router.get('/vista', obtenerProgramasVista)
 
 router.get('/:id',[
+    validarJWT,
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdPrograma),
     validarCampos

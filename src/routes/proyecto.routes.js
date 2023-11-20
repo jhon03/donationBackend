@@ -7,11 +7,12 @@ const {validarIdPrograma, validarIdProyecto, validarOpciones} = require('../help
 
 const router = new Router();
 
-router.get('/',obtenerProyectos)
+router.get('/', validarJWT ,obtenerProyectos)
 
 router.get('/vista',obtenerProyectosVista)
 
 router.get('/:id',[
+    validarJWT,
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdProyecto),
     validarCampos
