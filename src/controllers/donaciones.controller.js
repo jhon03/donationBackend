@@ -172,6 +172,24 @@ const correoRecibido = async (req, res = response) =>{
 }
 
 
+//controlador de prueba
+const enviarCorreoPr = async (req, res) =>{
+    try {
+        const { correo } = req.params;
+        let asunto = 'correo de prueba ';
+        let contenido = '<h1> hola como estas </h1>'
+        const correoEnv = await sendCorreo(correo, asunto, contenido );
+        res.json({
+            msg: 'correo enviado correctamente',
+        })
+    } catch (error) {
+        return res.status(400).json({
+            msg: 'Error al enviar el correo: ' + error.message
+        });
+    }
+}
+
+
 
 
 module.exports = {
@@ -179,6 +197,7 @@ module.exports = {
     confirmarDonacionColaborador,
     correoRecibido,
     donacionBenefactor,
+    enviarCorreoPr,
     formDonacion,
     donacionFindById,
     listAllDonaciones,
