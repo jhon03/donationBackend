@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 const sendCorreo = async (destinatario, asunto, contenido) => {
     try {
-        let transporter = dataTrasporter();
+        let transporter = dataTrasporterGoogle();
         let mailOptions = dataMessage( destinatario, asunto, contenido);
         const resultado = await transporter.sendMail(mailOptions);
         console.log("Correo enviado correctamente:", resultado);
@@ -14,6 +14,25 @@ const sendCorreo = async (destinatario, asunto, contenido) => {
 };
 
 const dataTrasporter = (servidor = 'gmail') =>{
+    try {
+        let transporter = nodemailer.createTransport({
+            service: servidor,
+            auth: {
+                type: 'OAuth2',
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD,
+                clientId: process.env.OAUTH_CLIENTID,
+                clientSecret: process.env.OAUTH_CLIENT_SECRET,
+                refreshToken: process.env.OAUTH_REFRESH_TOKEN
+            }
+        });
+        return transporter;
+    } catch (error) {
+        throw new Error('Ha ocurrido un error en la comunicacion con el servicor');
+    }
+};
+
+const dataTrasporterMicrosoft = (servidor = 'oficce365') =>{
     try {
         let transporter = nodemailer.createTransport({
             service: servidor,

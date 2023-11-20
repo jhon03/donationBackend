@@ -64,7 +64,7 @@ router.delete('/ocultar/:id',[
     validarCampos
 ],ocultarPrograma)
 
-router.put('/habilitar/:id',[
+router.get('/habilitar/:id',[
     validarJWT,
     tieneRol('CREADOR'),
     check('id','El id no es valido').isMongoId(),

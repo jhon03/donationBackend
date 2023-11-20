@@ -52,7 +52,7 @@ router.put('/:id',[
     validarCampos
 ], actualizarProyecto)
 
-router.put('/habilitar/:id',[
+router.get('/habilitar/:id',[
     validarJWT,
     check('id','El id no es valido').isMongoId(),
     check('id').custom(validarIdProyecto),

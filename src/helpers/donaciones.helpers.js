@@ -1,5 +1,5 @@
 const {DonacionAno, DonacionPrograma, DonacionTemporal} = require('../Domain/models');
-const { findColeccion } = require('./globales.helpers');
+const { findColeccion, obtenermodeloUrl } = require('./globales.helpers');
 const path = require('path');
 const fs = require('fs');
 const { generarJWT } = require('./generate-jwt');
@@ -53,36 +53,36 @@ const findByid = (id, donaciones)=>{
     }
 }
 
-const modificarDonacion = async(id= 0,aceptar=false, rechazar=false) => {
+const modificarDonacion = async(id, condicion = '') => {
     try {
-        const {total, donaciones} = await listDonaciones(1, 2000);
+        const {total, donaciones} = await listDonaciones(1, 200000);
         const donacionEncontrada = findByid(id, donaciones);
         const modelo = findColeccion(donacionEncontrada.tipo);
-        const donacionAct = await cambiarEstadoDonacion(donacionEncontrada, modelo, aceptar, rechazar);
+        const donacionAct = await cambiarEstadoDonacion(donacionEncontrada, modelo, condicion);
         return donacionAct;
     } catch (error) {
         throw new Error(error.message);
     }
 }
 
-const cambiarEstadoDonacion = async (donacion, modelo, aceptar =false, rechazar=false) =>{
+const cambiarEstadoDonacion = async (donacion, modelo, condicion = '') =>{
     try {
         let donacionActualizada = donacion;
 
-        if(aceptar){
-            if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
-                throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
-            }
-            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
+        if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
+            throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
         }
-        if(rechazar){
-            if(donacion.estado === 'terminada' || donacion.estado === 'rechazada'){
-                throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
-            }
+        // if( condicion === 'aceptar'){
+        //     donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
+        // }
+        if( condicion === 'rechazar'){
             donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'rechazada');
         }
-        if(donacion.estado === 'en proceso'){
+        if(donacion.estado === 'en proceso' || condicion === 'aceptar'){
            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'abierta');
+        }
+        if( condicion === 'recibido'){
+            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
         }
         return donacionActualizada;
     } catch (error) {
@@ -114,134 +114,38 @@ const buscarDonacion = (id=0, donacion)=>{
     }
 }
 
-const dataCorrreoDonacion = async (correo, nombre, id, formEntrega = false) =>{
+const mapearData = (req)=>{
     try {
-        const token = await generarJWT(id);     //token para confirmar entrega de donacion
-        let pathPage = path.join(__dirname, '../assets/paginaWelcome.html');
-        let asunto = "Bienvenido al nuestra red de donantes"; 
-        if(formEntrega){
-            pathPage = path.join(__dirname, '../assets/paginaCondiciones.html');
-            asunto = "Formulario de condiciones entrega de donacion"
-        }          
-        let contenido = fs.readFileSync(pathPage, 'utf-8')
-        contenido = contenido.replace('{nombre}', nombre);
-        contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
-        if(formEntrega){
-            contenido = contenido.replace(/\{token\}/g, encodeURIComponent(token) );
+        const {id} = req.params;
+        const modelo = obtenermodeloUrl(req);
+        const data = {                      //generar data aqui estan los datos necesarios para crear un programa
+            tipoIdentificacion: req.body.tipoIdentificacion,
+            numeroIdentificacion: req.body.numeroIdentificacion,
+            nombreBenefactor: req.body.nombreBenefactor,
+            correo: req.body.correo,
+            celular: req.body.celular,
+            aporte: req.body.aporte,   
         }
-        return {destinatario: correo, asunto, contenido};
+        if(modelo === 'proyecto'){
+            data.proyecto = id;
+        } else if(modelo === 'programa'){
+            data.programa = id;
+        }
+        console.log(data.programa + "data")
+        return data;
     } catch (error) {
-        throw new Error(`Error al obtener los datos de la plantilla del correo: ${error.message}`);
+        throw new Error('Error al mapear la data: ' + error.message);
     }
 }
 
 
-
-
-// const generarDataCorreo = async(id, nombre, correo, donacion, accion) =>{
-//     try {
-//         console.log(accion);
-//         if(accion === 'bienvenida'){         
-//             return await correoBienvenida(id, nombre, correo);
-//         } else if(accion === 'confirmar'){
-//             return await confirmarCorreo(nombre, correo, donacion);
-//         } else if(accion === 'entregar'){
-//             return await formEntregaCorreo(id, nombre, correo);
-//         } else {
-//             throw new Error("Accion incorrecta al manejar el envio del correo");
-//         }
-//     } catch (error) {
-//         throw new Error(error.message);
-//     }
-// }
-
-// const confirmarCorreo = async (nombre, correo, donacion) =>{
-//     try {
-//         const codigoConfir = crypto.randomBytes(3).toString('hex');
-//         console.log("codigo confirmacion correo: " + codigoConfir);
-//         let asunto = "Bienvenido al nuestra red de donantes"; 
-//         pathPage = path.join(__dirname, '../assets/confirmarCorreo.html');
-//         let contenido = fs.readFileSync(pathPage, 'utf-8');
-//         contenido = contenido.replace(/\{nombre\}/g, nombre);
-//         contenido = contenido.replace(/\{codigo\}/g, codigoConfir);
-
-//         const donacionTemp = new DonacionTemporal({
-//             correo: donacion.correo,
-//             data:donacion,
-//             codigoConfir,
-//         })
-//         await donacionTemp.save();
-
-//         return {destinatario: correo, asunto, contenido};
-
-//     } catch (error) {
-//         throw new Error('error al enviar el correo de confirmacion:' + error.message)
-//     }
-// }
-
-// const formEntregaCorreo = async (id, nombre, correo)=>{
-//     try {
-//         const token = await generarJWT(id);     //token para confirmar entrega de donacion      
-//         pathPage = path.join(__dirname, '../assets/paginaCondiciones.html');
-//         asunto = "Formulario de condiciones entrega de donacion"
-
-//         let contenido = fs.readFileSync(pathPage, 'utf-8')
-//         contenido = contenido.replace('{nombre}', nombre);
-//         contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
-//         contenido = contenido.replace(/{token}/g, encodeURIComponent(token));
-
-//         return {destinatario: correo, asunto, contenido};
-
-//     } catch (error) {
-//         throw new Error('Error al enviar el formulario de entrega donacion: ' + error.message);
-//     }
-// }
-
-// const correoBienvenida = async (id, nombre, correo)=>{
-//     try {
-//         let pathPage = path.join(__dirname, '../assets/paginaWelcome.html');
-//         let asunto = "Bienvenido al nuestra red de donantes"; 
-
-//         let contenido = fs.readFileSync(pathPage, 'utf-8')
-//         contenido = contenido.replace('{nombre}', nombre);
-//         contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
-//         return {destinatario: correo ,asunto, contenido};
-//     } catch (error) {
-//         throw new Error('error al enviar el correo de bienvenida: ' + error.message);
-//     }
-// }
-
-// const validarCorreo = async (correo) =>{
-//     try {
-//         const donacionTemp = await DonacionTemporal.findOne({correo});
-//         let estado = 'verificado';
-//         if(!donacionTemp){
-//             estado = 'inexistente';
-//             return {donacionTemp,  estado};
-//         }
-//         if(!donacionTemp.verificado){
-//             estado = 'verificar';
-//             return {donacionTemp,  estado};
-//         }
-//         return {donacionTemp, estado};
-//     } catch (error) {
-//         throw new Error('Error al intentar validar el correo: ' + correo);
-//     }
-// }
-
 module.exports = {
     buscarDonacion,
     cambiarEstadoDonacion,
-    dataCorrreoDonacion,
     findByid,
     listDonaciones,
+    mapearData,
     modificarDonacion,
     obtenerDonaciones,
     updateStateDonacion,
-
-    // correoBienvenida,
-    // confirmarCorreo,
-    // formEntregaCorreo,
-    //generarDataCorreo,
-    //validarCorreo,
 }

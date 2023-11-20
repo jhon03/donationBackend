@@ -6,7 +6,7 @@ const { validarCampos,
         tieneRol} = require('../middlewares');  //carpeta donde estan todos los middlewares
 
 const { validarRol, validarEmail, validarId, validarEstado, validarIdProyecto } = require('../helpers');
-const { obtenerDonaciones, obtenerDonacionId, eliminarDonacion, crearDonacion, actualizarDonacion, enviarCorreo } = require('../controllers');
+const { obtenerDonaciones, obtenerDonacionId, eliminarDonacion, crearDonacion, actualizarDonacion       } = require('../controllers');
 
 
 const router = Router();
