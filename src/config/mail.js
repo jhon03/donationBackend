@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { OAuth2Client } = require ('google-auth-library');
 
 const sendCorreo = async (destinatario, asunto, contenido) => {
     try {
@@ -64,6 +65,14 @@ const dataMessage = (destinatario, asunto, contenido, emisor = process.env.MAIL_
         return mailOptions;
     } catch (error) {
         throw new Error(`ha ocurrido un error al generar el mensaje del correo ${error.message}`);
+    }
+}
+
+const getAuthenticatedClient = async () =>{
+    try {
+        
+    } catch (error) {
+        throw new Error("Ha ocurrido un error: en la autenticacion de google: " + error.message);
     }
 }
 
