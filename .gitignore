@@ -1,7 +1,6 @@
 node_modules/
 dist/
 source/
-nodemon-ts.json
 
 uploads/proyectos/**.*
 uploads/programas/**.*
