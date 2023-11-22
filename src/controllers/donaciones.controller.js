@@ -1,8 +1,9 @@
 const {response, request} = require('express');
 const { listDonaciones, findByid, findColeccion, updateStateDonacion, validarEstadoDonacion, openDonacion, cambiarEstadoDonacion, modificarDonacion, validarCorreoDona, enviarCorreo, generarDataCorreo } = require('../helpers');
-const { sendCorreo } = require('../config/mail');
+const { sendCorreo } = require('../config');
 const fs = require('fs');
 const path = require('path');
+
 
 const listAllDonaciones = async(req= request, res= response)=>{
     try {

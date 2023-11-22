@@ -1,5 +1,5 @@
 const { DonacionPrograma, DonacionTemporal } = require("../Domain/models");
-const { sendCorreo } = require("../config/mail");
+const { sendCorreo } = require("../config");
 const {  validarCorreo } = require("./donaciones.helpers");
 const crypto = require('crypto');
 const path = require('path');

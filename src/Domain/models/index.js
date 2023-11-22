@@ -10,6 +10,7 @@ const Programa         = require('./Programa.models');
 const Proyecto         = require('./Proyecto.models');
 const Role             = require('./role');
 const Server           = require('./server');
+const TokenG           = require('./TokenGoogle');
 const TokenR           = require('./TokenRefresco');
 
 
@@ -25,5 +26,6 @@ module.exports = {
     Proyecto,
     Role,
     Server,
+    TokenG,
     TokenR,
 }

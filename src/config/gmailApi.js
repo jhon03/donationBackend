@@ -138,27 +138,6 @@ const getToken = async () =>{
 }
 
 
-
-
-
-//metodo autenticacion por credenciales
-const dataTrasporterMicrosoft = () =>{
-    try {
-        let transporter = nodemailer.createTransport({
-            host: 'smtp.office365.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.MICROSOFT_MAIL_USERNAME,
-                pass: process.env.MICROSOFT_MAIL_PASSWORD,
-            }
-        });
-        return transporter;
-    } catch (error) {
-        throw new Error('Ha ocurrido un error en la comunicacion con el servicor');
-    }
-};
-
 module.exports = {
     sendCorreo,
 }
