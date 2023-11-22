@@ -16,41 +16,42 @@
             height: 626px; /* Ajustar la altura al 100% del viewport */
             width: 626px;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: justify;
+            align-items: justify;
         }
 
         .text-container {
             text-align: center;
             padding: 20px;
             border-radius: 10px; /* Bordes redondeados */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra ligera */
+            /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra ligera */
         }
 
         .text-container h1 {
             font-weight: bold;
-            color: rgb(0, 0, 0); /* Cambia el color del texto según tu preferencia */
+            /*color: black/* Cambia el color del texto según tu preferencia */
         }
 
         .text-container span {
-            color: rgb(35, 65, 146);
+            /*color: black;*/
             font-weight: bold;
         }
 
         .text-container p {
-            color: rgb(0, 0, 0);
+            /*color: black;*/
             font-size: 3vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Montserrat';
             font-weight: bold;
         }
 
         .confirmation-code {
-            background-color: #4fe83e; /* Fondo azul */
-            color: #fff; /* Texto blanco */
+            background-color: #FB9850; 
+          /*  color: black; /* Texto blanco */
             font-size: 1em;
             padding: 5px;
             border-radius: 15px; /* Bordes redondeados */
             margin-top: 20px;
+            text-align: center;
         }
     </style>
     <title>Bienvenido</title>
@@ -58,12 +59,13 @@
 <body>
     <section class="background">
         <div class="text-container my-5 mx-5">
-            <h1 class="fw-bold" style="color: black;">Bienvenido {nombre} a nuestra fundación <span style="color: blue;">Gracias por su solicitud de donación</span></h1>
-            <div class="texto">
-                <p style="color: black;">
-                    Agradecemos su intención de realizar una donación a nuestro proyecto/programa, 
-                    Para continuar con el proceso necesitamos validar tu correo, el cual será
-                    fundamental para el proceso de la donación.
+            <h1 class="fw-bold" style="color: #193A6F; font-family: 'Montserrat';">{nombre}</h1>
+
+            <span style="color: #193A6F; font-family: 'Montserrat'; font-size: 24px;">Gracias por tu intención de realizar una donación a nuestro proyecto/programa esto nos ayuda a contribuir al cambio positivo de las comunidades más vulnerables.</span>
+            <div class="texto">   
+                <p style="color: #193A6F; font-family: 'Montserrat'; font-size: 24px;">
+                     Para continuar con el proceso es necesario validar tu correo electrónico, el cual será fundamental para el proceso de la donación.<br><br>
+                    "Den, y se les dará: se les echará en el regazo una medida llena, apretada, rebosante. Porque con la medida que midan a otros, se les medirá a ustedes." - Lucas 6:38 
                 </p>
             </div>
             <div class="confirmation-code">

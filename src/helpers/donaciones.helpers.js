@@ -67,18 +67,15 @@ const modificarDonacion = async(id= 0,aceptar=false, rechazar=false) => {
 
 const cambiarEstadoDonacion = async (donacion, modelo, aceptar =false, rechazar=false) =>{
     try {
+        if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
+            throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
+        }
         let donacionActualizada = donacion;
 
-        if(aceptar){
-            if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
-                throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
-            }
+        if(aceptar){          
             donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
         }
         if(rechazar){
-            if(donacion.estado === 'terminada' || donacion.estado === 'rechazada'){
-                throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
-            }
             donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'rechazada');
         }
         if(donacion.estado === 'en proceso'){

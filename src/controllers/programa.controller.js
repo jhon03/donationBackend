@@ -117,6 +117,7 @@ const crearPrograma = async (req, res = response) => {
         res.status(201).json(programa);
 
     } catch (error) {
+        mag: 'error al crear el programa'
         res.status(400).json({
             error: error.message
         })
