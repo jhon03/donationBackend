@@ -52,7 +52,7 @@ const confirmarDonacionColaborador = async (req, res= response)=>{
     }
 }
 
-//en caso de ser necesario eliminar ya que este haria lo mismo que confirmar
+//en caso de ser necesario eliminar ya que este haria lo mismo que confirmar ( colaborador )
 const abrirDonacion = async (req, res= response)=>{
 
     try {
@@ -71,11 +71,11 @@ const abrirDonacion = async (req, res= response)=>{
 const rechazarDonacionColaborador = async (req, res = response) =>{
     try {
         const {id} = req.params;
-        const {msg} = req.body;
+        const {mensaje} = req.body;
         const donacion = await modificarDonacion(id, 'rechazar');
-        const correoEnv = await enviarCorreo(donacionRechazada, 'rechazar');
+        const correoEnv = await enviarCorreo(donacionRechazada, 'rechazar', mensaje);
         return res.json({
-            msg,
+            mensaje,
             donacion
         });
     } catch (error) {
@@ -85,12 +85,11 @@ const rechazarDonacionColaborador = async (req, res = response) =>{
     }
 };
 
-//controlador respuesta del benefactor
+//controlador respuesta del benefactor a donacion
 const formDonacion = async (req, res= response)=>{
     try {
         const {condicion} = req.params;
         const donacion = req.donacion;
-        console.log('donacion: ' + donacion);
         const modelo = findColeccion(donacion.tipo);
         let donacionAct;
         switch (condicion) {
@@ -99,6 +98,7 @@ const formDonacion = async (req, res= response)=>{
                 break;
             case 'rechazar':
                 donacionAct = await cambiarEstadoDonacion(donacion, modelo, 'rechazar');
+                await enviarCorreo(donacionRechazada, 'rechazar');
                 break;
             default:
                 throw new Error(`Parametro no aceptado: ${condicion}` );
@@ -144,7 +144,6 @@ const verificarCorreoDonaciones = async (req, res) =>{
         await donacionTemp.save();
         await donacion.save();
         const correoEnviado = await enviarCorreo(donacion ,'bienvenida');
-        console.log(correoEnviado);
 
         return res.status(201).json({
             msg: 'donacion creada con exito',

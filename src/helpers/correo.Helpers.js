@@ -46,7 +46,7 @@ const validarCorreoDona = async (correo) =>{
     try {
         const donacionTemp = await DonacionTemporal.findOne({correo});
         let estado = 'verificado';
-        if(!donacionTemp){
+        if(!donacionTemp || donacionTemp == null){
             estado = 'inexistente';
         } else if(!donacionTemp.verificado){
             estado = 'verificar';
@@ -66,11 +66,13 @@ const generarDataCorreo = async(donacion, accion, mensaje = '') =>{
             case 'confirmar':
               return await confirmarCorreo(donacion, nombrepro);
             case 'entregar':
-              return await formEntregaCorreo(donacion, nombrepro);
+              return await formEntregaCorreo(donacion, nombrepro, mensaje);
             case 'rechazar':
               return await correoRechazarDona(donacion, nombrepro, mensaje);
             case 'recibido':
               return await correoRecibido(donacion, nombrepro);
+            case 'rechazar_benefactor':
+                return await correoDonacionRechada(donacion, nombrepro);
             default:
               throw new Error("Accion incorrecta al manejar el envio del correo");
         } 
@@ -97,7 +99,7 @@ const confirmarCorreo = async (donacion, nombrePro) =>{
     }
 }
 
-const formEntregaCorreo = async (donacion, nombrePro)=>{
+const formEntregaCorreo = async (donacion, nombrePro, mensaje = 'chat')=>{
     try {
         const { _id: id , nombreBenefactor: nombre, correo, tipo, aporte} = donacion;
         const token = await generarJWT(id, '365d');     //token para confirmar entrega de donacion      
@@ -112,6 +114,7 @@ const formEntregaCorreo = async (donacion, nombrePro)=>{
         contenido = contenido.replace('{tipoC}', tipoC);
         contenido = contenido.replace('{nombreC}', nombrePro);
         contenido = contenido.replace(/\{opcionDona\}/g, aporte);
+        contenido = contenido.replace('{mensaje}', mensaje);
 
         return {destinatario: correo, asunto, contenido};
 
@@ -138,6 +141,7 @@ const correoBienvenida = async (donacion, nombrePro)=>{
     }
 }
 
+//correo rechazo donacion colaborador
 const correoRechazarDona = async (donacion, nombrePro, mensaje = '') =>{
     try {
         const { _id: id, nombreBenefactor: nombre, correo, tipo } = donacion;
@@ -174,6 +178,24 @@ const correoRecibido = async (donacion, nombrePro, mensaje = '') =>{
     }
 }
 
+//correo donacion rechaza por el benefactor
+const correoDonacionRechada = async(donacion, nombrePro, mensaje = '') =>{
+    try {
+        const { _id: id, nombreBenefactor: nombre, correo, tipo } = donacion;
+        const pathPage = path.join(__dirname, '../assets/rechazaBenefactor.html');
+        const asunto = "Termino del proceso de donacion"; 
+        let tipoC = tipoColeccion(tipo);
+        let contenido = fs.readFileSync(pathPage, 'utf-8')
+        contenido = contenido.replace('{nombre}', nombre);
+        contenido = contenido.replace('{tipoC}', tipoC);
+        contenido = contenido.replace('{nombreC}', nombrePro);
+        contenido = contenido.replace('{mensaje}', mensaje);
+        return {destinatario: correo ,asunto, contenido};
+    } catch (error) {
+        throw new Error('error al enviar el correo de rechazo de la donación: ' + error.message);
+    }
+}
+
 const tipoColeccion = (tipo) => {
     try {
         let tipoC;
@@ -190,15 +212,26 @@ const tipoColeccion = (tipo) => {
     }
 }
 
+//dos opciones o mandar una alerta que ya tienes un codigo o crar uno nuevo
 const crearDonacionTemp = async(donacion, codigoConfir) => {
     try {
-        const donacionTemp = new DonacionTemporal({
+        const exitsDonacion = await DonacionTemporal.findOne({correo: donacion.correo});
+        if(exitsDonacion){
+            if(!exitsDonacion.verificado){
+                exitsDonacion.codigoConfir = codigoConfir;
+                exitsDonacion.data = donacion;
+                return await exitsDonacion.save();
+            } else{
+                throw new Error(`El correo ya ha sido verificado no puedes modificar su estado`);
+            }           
+        } 
+        const donacionTemporal = new DonacionTemporal({
             correo: donacion.correo,
             data:donacion,
             codigoConfir,
         })
-        await donacionTemp.save();
-        return donacionTemp;
+        await donacionTemporal.save();
+        return donacionTemporal;
     } catch (error) {
         throw new Error('Error al crear la donacion temporal: ' + error.message);
     }

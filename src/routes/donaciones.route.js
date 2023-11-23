@@ -19,7 +19,7 @@ router.get('/:id',[
     validarCampos,
 ], donacionFindById);
 
-router.post('/confirmar/:id',[
+router.get('/confirmar/:id',[
     validarJWT,
     check('id', 'El id es requerido').not().isEmpty(),
     check('id', 'El id es ivalido').isMongoId(),
@@ -29,6 +29,7 @@ router.post('/confirmar/:id',[
 router.put('/rechazar/:id',[
     check('id', 'El id es requerido').not().isEmpty(),
     check('id', 'El id es ivalido').isMongoId(),
+    check('mensaje','El mensaje de motivo es requerido').not().isEmpty(),
     validarCampos
 ], rechazarDonacionColaborador);
 

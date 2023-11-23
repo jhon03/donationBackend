@@ -160,5 +160,4 @@ const dataTrasporterMicrosoft = () =>{
 };
 
 module.exports = {
-    sendCorreo,
 }
