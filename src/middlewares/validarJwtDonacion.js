@@ -16,7 +16,6 @@ const validarJWTDonacion = async (req=request, res= response, next) =>{
         const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
         const {total, donaciones} = await listDonaciones(1, 2000);
         const donacionEncontrada = findByid(uid, donaciones);
-        console.log('donacion desde verificacion token ' + donacionEncontrada);
         if(!donacionEncontrada || donacionEncontrada.estado != 'abierta'){
             throw new Error(`No existe la donacion o no puedes modificar su estado: ${donacionEncontrada.estado}`);
         }

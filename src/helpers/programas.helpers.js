@@ -25,9 +25,8 @@ const buscarProgramas = async (req , vista = false, limite = 5, desde = 0,) => {
     
 };
 
-const buscarProgramaId = async(req, vista=false) =>{
+const buscarProgramaId = async(id, vista=false) =>{
     try {
-        const {id} = req.params;
         const programa = await Programa.findOne({ _id : id, ...obtenerEstado(req, vista) })
                                    .populate('colaborador','nombre')
                                    .populate('imagenes','url');
@@ -78,10 +77,23 @@ const crearObjetoPrograma = (req) =>{
     
 }
 
+const programaFindById = async(id='') =>{
+    try {
+        const programa = await Programa.findById(id);
+        if(!programa){
+            throw new Error(`El programa no existe: ${error.message}`);
+        }
+        return programa;
+    } catch (error) {
+        throw new Error('Error al buscar el programa: ' + error.message);
+    }
+}
+
 
 module.exports = {
     buscarProgramas,
     buscarProgramaId,
     crearObjetoPrograma,
     obtenerEstado,
+    programaFindById,
 };

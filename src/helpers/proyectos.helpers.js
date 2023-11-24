@@ -105,11 +105,24 @@ const buscarEstado = (ocultar = false, habilitar = false) =>{
     return query;
 }
 
+const proyectoFindById = async(id= '') =>{
+    try {
+        const proyecto = await Proyecto.findById(id);
+        if(!proyecto){
+            throw new Error(`El proyecto no existe`);
+        }
+        return proyecto;
+    } catch (error) {
+        throw new Error('Error al buscar el proyecto: ' + error.message);
+    }
+}
+
 module.exports = {
     buscarProyectos,
     buscarEstado,
     buscarProyectoId,
     crearObjetoProyecto,
     cambiarEstado,
+    proyectoFindById,
     updateProyecto,
 }

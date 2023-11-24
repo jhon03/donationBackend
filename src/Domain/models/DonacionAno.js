@@ -53,6 +53,11 @@ const donacionAnoSchema = Schema({
     type: String,
     default: "en proceso",
     required: [true, 'el estado es requerido'],
+  },
+  
+  detalles: {
+    type: String,
+    default: null
   }
 });
 

@@ -5,8 +5,7 @@ const { json } = require('express');
 
 const sendCorreo = async (destinatario, asunto, contenido) => {
     try {
-        const transporter = await dataTrasporter();    //servidor de gmail
-        //const transporter = dataTrasporterMicrosoft();    //servidor microsoft
+        const transporter = await dataTrasporter();  
         let mailOptions = dataMessage( destinatario, asunto, contenido);
         const resultado = await transporter.sendMail(mailOptions);
         console.log("Correo enviado correctamente:", resultado);
@@ -66,10 +65,10 @@ const getAuthenticatedClient = async () =>{
 
 
 
-const dataMessage = (destinatario, asunto, contenido, emisor = process.env.MAIL_USERNAME ) =>{
+const dataMessage = (destinatario, asunto, contenido ) =>{
     try {
         let mailOptions = {
-            from: emisor,
+            from: `Fundación CDC San Francisco ${process.env.MAIL_USERNAME}`,
             to: destinatario,
             subject: asunto,
             html: contenido
@@ -138,26 +137,6 @@ const getToken = async () =>{
 }
 
 
-
-
-
-//metodo autenticacion por credenciales
-const dataTrasporterMicrosoft = () =>{
-    try {
-        let transporter = nodemailer.createTransport({
-            host: 'smtp.office365.com',
-            port: 587,
-            secure: false,
-            auth: {
-                user: process.env.MICROSOFT_MAIL_USERNAME,
-                pass: process.env.MICROSOFT_MAIL_PASSWORD,
-            }
-        });
-        return transporter;
-    } catch (error) {
-        throw new Error('Ha ocurrido un error en la comunicacion con el servicor');
-    }
-};
-
 module.exports = {
+    sendCorreo,
 }

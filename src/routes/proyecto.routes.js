@@ -12,6 +12,7 @@ router.get('/', validarJWT ,obtenerProyectos)
 router.get('/vista',obtenerProyectosVista)
 
 router.get('/:id',[
+    validarJWT,
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdProyecto),
     validarCampos
@@ -52,7 +53,7 @@ router.put('/:id',[
     validarCampos
 ], actualizarProyecto)
 
-router.put('/habilitar/:id',[
+router.get('/habilitar/:id',[
     validarJWT,
     check('id','El id no es valido').isMongoId(),
     check('id').custom(validarIdProyecto),
