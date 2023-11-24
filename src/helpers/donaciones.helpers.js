@@ -84,16 +84,6 @@ const cambiarEstadoDonacion = async (donacion, modelo, condicion = '',  detalles
             default:
                 throw new Error(`condicion no validada: ${condicion}`);
         }
-        if( condicion === 'rechazar'){
-            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'rechazada');
-        }
-        if(donacion.estado === 'en proceso'){
-           donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'abierta');
-        }
-        if( condicion === 'recibido'){
-            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
-        }
-        return donacionActualizada;
     } catch (error) {
         throw new Error(error.message);
     }

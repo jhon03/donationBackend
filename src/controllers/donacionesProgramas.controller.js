@@ -1,6 +1,6 @@
 const { response, request} = require('express');
-const {DonacionPrograma} = require('../Domain/models'); 
-const {validarCorreoDona, enviarCorreo, mapearData, obtenerDonaciones } = require('../helpers');
+const {DonacionPrograma, DonacionTemporal} = require('../Domain/models'); 
+const {validarCorreoModel, enviarCorreo, mapearData, obtenerDonaciones } = require('../helpers');
 
 
 const obtenerDonacionPrograma = async(req = request, res = response) => {
@@ -40,7 +40,7 @@ const crearDonacionPrograma = async (req, res = response) => {
         let accion =  'confirmar';
         let msg = 'la donacion esta en espera mientras se confirma su correo';
         const donacion = new DonacionPrograma(data);   //prueba primero verificar correo
-        const {donacionTemp, estado} = await validarCorreoDona(data.correo);
+        const {coleccion, estado} = await validarCorreoModel(data.correo, DonacionTemporal);
         if(estado === 'verificado'){
             await donacion.save();
             accion = 'bienvenida';

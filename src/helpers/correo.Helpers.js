@@ -42,16 +42,16 @@ const enviarCorreo = async (donacion, accion, mensaje = '') =>{
 
 
 
-const validarCorreoDona = async (correo) =>{
+const validarCorreoModel = async (correo, modelo) =>{
     try {
-        const donacionTemp = await DonacionTemporal.findOne({correo});
+        const coleccion = await modelo.findOne({correo});
         let estado = 'verificado';
-        if(!donacionTemp || donacionTemp == null){
+        if(!coleccion || coleccion == null){
             estado = 'inexistente';
-        } else if(!donacionTemp.verificado){
+        } else if(!coleccion.verificado){
             estado = 'verificar';
         }
-        return {donacionTemp, estado};
+        return {coleccion, estado};
     } catch (error) {
         throw new Error('Error al intentar validar el correo: ' + correo);
     }
@@ -274,6 +274,6 @@ module.exports = {
     enviarCorreo,
     generarDataCorreo,
     tipoColeccion,
-    validarCorreoDona,
+    validarCorreoModel,
     verificarCorreoDona,
 }

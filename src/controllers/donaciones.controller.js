@@ -1,6 +1,7 @@
 const {response, request} = require('express');
-const { listDonaciones, findByid, findColeccion, updateStateDonacion, validarEstadoDonacion, openDonacion, cambiarEstadoDonacion, modificarDonacion, validarCorreoDona, enviarCorreo, generarDataCorreo } = require('../helpers');
+const { listDonaciones, findByid, findColeccion, updateStateDonacion, validarEstadoDonacion, openDonacion, cambiarEstadoDonacion, modificarDonacion, validarCorreoModel, enviarCorreo, generarDataCorreo } = require('../helpers');
 const { sendCorreo } = require('../config');
+const { DonacionTemporal } = require('../Domain/models');
 
 
 
@@ -115,17 +116,17 @@ const donacionBenefactor = (req, res)=>{
 const verificarCorreoDonaciones = async (req, res) =>{
     try {
         const {correo, codigo} = req.body;
-        const {donacionTemp} = await validarCorreoDona(correo);
-        if(donacionTemp.verificado){
+        const {coleccion} = await validarCorreoModel(correo, DonacionTemporal);
+        if(coleccion.verificado){
             throw new Error("el correo ya ha sido verificado");
         }
-        if(donacionTemp.codigoConfir !== codigo){
-            throw new Error('El codigo que introducite no coincide' + donacionTemp.codigoConfir + " codigo: " + codigo)
+        if(coleccion.codigoConfir !== codigo){
+            throw new Error('El codigo que introducite no coincide' + coleccion.codigoConfir + " codigo: " + codigo)
         } 
-        const modelo = findColeccion(donacionTemp.data.tipo);
-        const donacion = new modelo(donacionTemp.data);
-        donacionTemp.verificado = true;
-        await donacionTemp.save();
+        const modelo = findColeccion(coleccion.data.tipo);
+        const donacion = new modelo(coleccion.data);
+        coleccion.verificado = true;
+        await coleccion.save();
         await donacion.save();
         const correoEnviado = await enviarCorreo(donacion ,'bienvenida');
 
