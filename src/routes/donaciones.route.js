@@ -21,8 +21,9 @@ router.get('/:id',[
 
 router.get('/confirmar/:id',[
     validarJWT,
-    check('id', 'El id es requerido').not().isEmpty(),
-    check('id', 'El id es ivalido').isMongoId(),
+    check('id', 'El id de la donacion es requerido').not().isEmpty(),
+    check('id', 'El id de la donacion es invalido').isMongoId(),
+    check('detalles', 'Los detalles de la donacion son requeridos').not().isEmpty(),
     validarCampos
 ], confirmarDonacionColaborador);
 
@@ -32,14 +33,6 @@ router.put('/rechazar/:id',[
     check('mensaje','El mensaje de motivo es requerido').not().isEmpty(),
     validarCampos
 ], rechazarDonacionColaborador);
-
-router.get('/open/:id', [
-    validarJWT,
-    check('id', 'el id es requerido').not().isEmpty(),
-    check('id', 'El id no es valido').isMongoId(),
-    validarCampos,
-], abrirDonacion);
-
 
 router.post('/formEntrega/:condicion',[
     validarJWTDonacion,

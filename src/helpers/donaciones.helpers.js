@@ -53,29 +53,41 @@ const findByid = (id, donaciones)=>{
     }
 }
 
-const modificarDonacion = async(id, condicion = '') => {
+const modificarDonacion = async(id, condicion = '', detalles= '') => {
     try {
         const {total, donaciones} = await listDonaciones(1, 200000);
         const donacionEncontrada = findByid(id, donaciones);
         const modelo = findColeccion(donacionEncontrada.tipo);
-        const donacionAct = await cambiarEstadoDonacion(donacionEncontrada, modelo, condicion);
+        const donacionAct = await cambiarEstadoDonacion(donacionEncontrada, modelo, condicion, detalles);
         return donacionAct;
     } catch (error) {
         throw new Error(error.message);
     }
 }
 
-const cambiarEstadoDonacion = async (donacion, modelo, condicion = '') =>{
+const cambiarEstadoDonacion = async (donacion, modelo, condicion = '',  detalles = '') =>{
     try {
-        let donacionActualizada = donacion;
-
         if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
             throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
+        }
+        switch (condicion) {
+            case 'rechazar':
+                return await updateStateDonacion(donacion._id, modelo, 'rechazada');
+            case 'recibido':
+                return await updateStateDonacion(donacion._id, modelo, 'terminada');
+            case 'abrir':
+                donacion.detalles = detalles;
+                donacion.estado = 'abierta'
+                return await donacion.save();
+            case 'aceptar':
+                return donacion;
+            default:
+                throw new Error(`condicion no validada: ${condicion}`);
         }
         if( condicion === 'rechazar'){
             donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'rechazada');
         }
-        if(donacion.estado === 'en proceso' || condicion === 'aceptar'){
+        if(donacion.estado === 'en proceso'){
            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'abierta');
         }
         if( condicion === 'recibido'){

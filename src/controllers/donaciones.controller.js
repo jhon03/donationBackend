@@ -1,8 +1,7 @@
 const {response, request} = require('express');
 const { listDonaciones, findByid, findColeccion, updateStateDonacion, validarEstadoDonacion, openDonacion, cambiarEstadoDonacion, modificarDonacion, validarCorreoDona, enviarCorreo, generarDataCorreo } = require('../helpers');
 const { sendCorreo } = require('../config');
-const fs = require('fs');
-const path = require('path');
+
 
 
 const listAllDonaciones = async(req= request, res= response)=>{
@@ -23,7 +22,6 @@ const listAllDonaciones = async(req= request, res= response)=>{
 const donacionFindById = async(req= request, res= response)=>{
     try {
         const {id} = req.params;
-        const {pagina, limite} = req.query;
         const {total, donaciones} = await listDonaciones(1, 2000);
         const donacionEncontrada = findByid(id, donaciones);
         return res.json({
@@ -40,7 +38,8 @@ const donacionFindById = async(req= request, res= response)=>{
 const confirmarDonacionColaborador = async (req, res= response)=>{
     try {
         const {id} = req.params;
-        const donacionAct = await modificarDonacion(id);
+        const {detalles} = req.body;
+        const donacionAct = await modificarDonacion(id, 'abrir', detalles);
         const correoE = await enviarCorreo(donacionAct, 'entregar');
         return res.json({
             donacionAct
@@ -52,21 +51,6 @@ const confirmarDonacionColaborador = async (req, res= response)=>{
     }
 }
 
-//en caso de ser necesario eliminar ya que este haria lo mismo que confirmar ( colaborador )
-const abrirDonacion = async (req, res= response)=>{
-
-    try {
-        const {id} = req.params;
-        const donacionAct = await modificarDonacion(id);
-        return res.json({
-            donacion: donacionAct
-        })
-    } catch (error) {
-        return res.status(400).json({
-            error: error.message
-        })
-    }
-}
 
 const rechazarDonacionColaborador = async (req, res = response) =>{
     try {
@@ -98,7 +82,7 @@ const formDonacion = async (req, res= response)=>{
                 break;
             case 'rechazar':
                 donacionAct = await cambiarEstadoDonacion(donacion, modelo, 'rechazar');
-                await enviarCorreo(donacionRechazada, 'rechazar');
+                await enviarCorreo(donacionAct, 'rechazar_benefactor');
                 break;
             default:
                 throw new Error(`Parametro no aceptado: ${condicion}` );
@@ -193,7 +177,6 @@ const enviarCorreoPr = async (req, res) =>{
 
 
 module.exports = {
-    abrirDonacion,
     confirmarDonacionColaborador,
     correoRecibido,
     donacionBenefactor,

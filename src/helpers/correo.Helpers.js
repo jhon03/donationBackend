@@ -131,10 +131,10 @@ const correoBienvenida = async (donacion, nombrePro)=>{
 
         let tipoC = tipoColeccion(tipo);
         let contenido = fs.readFileSync(pathPage, 'utf-8')
-        contenido = contenido.replace('{nombre}', nombre);
+        contenido = contenido.replace(/\{nombre\}/g, nombre);
         contenido = contenido.replace(/\{id\}/g, encodeURIComponent(id) );
-        contenido = contenido.replace('{tipoC}', tipoC);
-        contenido = contenido.replace('{nombreC}', nombrePro);
+        contenido = contenido.replace(/\{tipoC\}/g, tipoC);
+        contenido = contenido.replace(/\{nombreC\}/g, nombrePro);
         return {destinatario: correo ,asunto, contenido};
     } catch (error) {
         throw new Error('error al enviar el correo de bienvenida: ' + error.message);
@@ -149,10 +149,10 @@ const correoRechazarDona = async (donacion, nombrePro, mensaje = '') =>{
         const asunto = "Motivo rechazo de donacion"; 
         let tipoC = tipoColeccion(tipo);
         let contenido = fs.readFileSync(pathPage, 'utf-8')
-        contenido = contenido.replace('{nombre}', nombre);
-        contenido = contenido.replace('{tipoC}', tipoC);
-        contenido = contenido.replace('{nombreC}', nombrePro);
-        contenido = contenido.replace('{mensaje}', mensaje);
+        contenido = contenido.replace(/\{nombre\}/g, nombre);
+        contenido = contenido.replace(/\{tipoC\}/g, tipoC);
+        contenido = contenido.replace(/\{nombreC\}/g, nombrePro);
+        contenido = contenido.replace(/\{mensaje\}/g, mensaje);
         return {destinatario: correo ,asunto, contenido};
     } catch (error) {
         throw new Error('error al enviar el correo de rechazo de la donación: ' + error.message);
@@ -168,7 +168,7 @@ const correoRecibido = async (donacion, nombrePro, mensaje = '') =>{
         const asunto = "Donacion Recibida"; 
         let tipoC = tipoColeccion(tipo);
         let contenido = fs.readFileSync(pathPage, 'utf-8')
-        contenido = contenido.replace(/\{nombre\}/g, nombre); /\{id\}/g
+        contenido = contenido.replace(/\{nombre\}/g, nombre);
         contenido = contenido.replace(/\{tipoC\}/g, tipoC);
         contenido = contenido.replace(/\{nombreC\}/g, nombrePro);
         contenido = contenido.replace(/\{opcionDona\}/g, aporte);
@@ -186,10 +186,10 @@ const correoDonacionRechada = async(donacion, nombrePro, mensaje = '') =>{
         const asunto = "Termino del proceso de donacion"; 
         let tipoC = tipoColeccion(tipo);
         let contenido = fs.readFileSync(pathPage, 'utf-8')
-        contenido = contenido.replace('{nombre}', nombre);
-        contenido = contenido.replace('{tipoC}', tipoC);
-        contenido = contenido.replace('{nombreC}', nombrePro);
-        contenido = contenido.replace('{mensaje}', mensaje);
+        contenido = contenido.replace(/\{nombre\}/g, nombre);
+        contenido = contenido.replace(/\{tipoC\}/g, tipoC);
+        contenido = contenido.replace(/\{nombreC\}/g, nombrePro);
+        contenido = contenido.replace(/\{mensaje\}/g, mensaje);
         return {destinatario: correo ,asunto, contenido};
     } catch (error) {
         throw new Error('error al enviar el correo de rechazo de la donación: ' + error.message);
