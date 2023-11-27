@@ -1,7 +1,7 @@
 const { response, request} = require('express');
 
 const {Proyecto} = require('../Domain/models'); 
-const { buscarProyectos, buscarProyectoId, crearObjetoProyecto,cambiarEstado, updateProyecto } = require('../helpers');
+const { buscarProyectos, buscarProyectoId, crearObjetoProyecto,cambiarEstado, updateProyecto, validarOpciones } = require('../helpers');
 
 const obtenerProyectos = async(req = request, res = response) => {
     try {
@@ -140,6 +140,9 @@ const crearProyecto = async (req, res = response) => {
 
 const actualizarProyecto = async(req, res) => {
     try {
+        const opciones = req.body.opcionesDonacion;
+        console.log(opciones);
+        validarOpciones(opciones);
         const proyecto = await updateProyecto(req);
         return res.json({
             proyecto
@@ -147,7 +150,7 @@ const actualizarProyecto = async(req, res) => {
     } catch (error) {
         return res.status(500).json({
             msg: 'ha ocurrido un problema',
-            error
+            error: error.message
         })
     }
 

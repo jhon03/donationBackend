@@ -25,8 +25,9 @@ const buscarProgramas = async (req , vista = false, limite = 5, desde = 0,) => {
     
 };
 
-const buscarProgramaId = async(id, vista=false) =>{
+const buscarProgramaId = async(req, vista=false) =>{
     try {
+        const {id} = req.params;
         const programa = await Programa.findOne({ _id : id, ...obtenerEstado(req, vista) })
                                    .populate('colaborador','nombre')
                                    .populate('imagenes','url');
@@ -88,6 +89,7 @@ const programaFindById = async(id='') =>{
         throw new Error('Error al buscar el programa: ' + error.message);
     }
 }
+
 
 
 module.exports = {

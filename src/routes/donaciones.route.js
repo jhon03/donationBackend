@@ -2,7 +2,7 @@ const {Router} = require('express');
 const { check } = require('express-validator');
 
 const { validarCampos, validarJWT, validarJWTDonacion} = require('../middlewares');  //carpeta donde estan todos los middlewares
-const { listAllDonaciones, donacionFindById, abrirDonacion,  rechazarDonacionColaborador, confirmarDonacionColaborador, formDonacion, donacionBenefactor, verificarCorreoDonaciones, correoRecibido, enviarCorreoPr} = require('../controllers');
+const { listAllDonaciones, donacionFindById, rechazarDonacionColaborador, confirmarDonacionColaborador, formDonacion, donacionBenefactor, verificarCorreoDonaciones, correoRecibido, enviarCorreoPr} = require('../controllers');
 
 
 const router = Router();
@@ -19,7 +19,7 @@ router.get('/:id',[
     validarCampos,
 ], donacionFindById);
 
-router.get('/confirmar/:id',[
+router.post('/confirmar/:id',[
     validarJWT,
     check('id', 'El id de la donacion es requerido').not().isEmpty(),
     check('id', 'El id de la donacion es invalido').isMongoId(),
@@ -34,12 +34,6 @@ router.put('/rechazar/:id',[
     validarCampos
 ], rechazarDonacionColaborador);
 
-router.get('/open/:id', [
-    validarJWT,
-    check('id', 'el id es requerido').not().isEmpty(),
-    check('id', 'El id no es valido').isMongoId(),
-    validarCampos,
-], abrirDonacion);
 
 //respuesta al formulario de oparte del benefactor con token
 router.post('/formEntrega/:condicion/:token/:id',[

@@ -128,6 +128,7 @@ const crearPrograma = async (req, res = response) => {
 
 const actualizarPrograma = async(req, res) => {
     try {
+        console.log(req.params)
         const { id } = req.params;
         const {_id, imagenes, opcionesColaboracion, ...resto } = req.body;
         const opciones = req.body.opcionesColaboracion;

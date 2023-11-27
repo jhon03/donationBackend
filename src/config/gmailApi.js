@@ -36,7 +36,7 @@ const dataTrasporter = async (servidor = 'gmail') =>{
         });
         return transporter;
     } catch (error) {
-        throw new Error('Ha ocurrido un error en la comunicacion con el servicor');
+        throw new Error('Ha ocurrido un error en la comunicacion con el servicor' + error.message);
     }
 };
 

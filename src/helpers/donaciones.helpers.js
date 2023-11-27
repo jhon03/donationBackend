@@ -67,27 +67,24 @@ const modificarDonacion = async(id, condicion = '', detalles= '') => {
 
 const cambiarEstadoDonacion = async (donacion, modelo, condicion = '',  detalles = '') =>{
     try {
-        let donacionActualizada = donacion;
-
-        if(aceptar){
-            if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
-                throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
-            }
-            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
+        if(donacion.estado === 'rechazada' || donacion.estado === 'terminada'){
+            throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
         }
-        if(rechazar){
-            if(donacion.estado === 'terminada' || donacion.estado === 'rechazada'){
-                throw new Error(`Ya se resolvio la donacion estado: ${donacion.estado}`);
-            }
-            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'rechazada');
+        switch (condicion) {
+            case 'rechazar':
+                return await updateStateDonacion(donacion._id, modelo, 'rechazada');
+            case 'recibido':
+                return await updateStateDonacion(donacion._id, modelo, 'terminada');
+            case 'abrir':
+                donacion.detalles = detalles;
+                donacion.estado = 'abierta'
+                return await donacion.save();
+            case 'aceptar':
+               //return donacion;
+                return await updateStateDonacion(donacion._id, modelo, 'Aceptada');
+            default:
+                throw new Error(`condicion no validada: ${condicion}`);
         }
-        if(donacion.estado === 'en proceso'){
-           donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'abierta');
-        }
-        if( condicion === 'recibido'){
-            donacionActualizada = await updateStateDonacion(donacion._id, modelo, 'terminada');
-        }
-        return donacionActualizada;
     } catch (error) {
         throw new Error(error.message);
     }

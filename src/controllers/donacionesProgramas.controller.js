@@ -5,14 +5,6 @@ const {validarCorreoDona, enviarCorreo, mapearData, obtenerDonaciones } = requir
 
 const obtenerDonacionPrograma = async(req = request, res = response) => {
     try {
-        const [total, donacion] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
-            DonacionPrograma.countDocuments(),  //devuelve los datos por indice
-            DonacionPrograma.find().sort({fechaCreacion: -1})
-            .populate('programa','nombre')
-           //.skip(Number(desde))
-            //.limit(Number(limite))
-        ]);
-
         const {total, coleccion: donacion} = await obtenerDonaciones(DonacionPrograma, 'programa');
         res.json({
             total,
