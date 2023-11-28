@@ -60,13 +60,8 @@ class Server{
 
     listen(){
         this.app.listen(this.port, () => {
-            console.log(`Servidor iniciado en http://localhost:${this.port}`);
-            console.log(`Servidor en Heroku: https://secret-sierra-49778-7127c3bb9c8b.herokuapp.com/`);
-           
-            if (process.env.PORT) {
-                console.log(`Servidor en Heroku: https://secret-sierra-49778-7127c3bb9c8b.herokuapp.com/`);
-            }
-        
+            console.log(`Servidor iniciado en ${this.port}`);
+                
         })
     }
 
