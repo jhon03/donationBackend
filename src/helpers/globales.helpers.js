@@ -97,9 +97,21 @@ const obtenermodeloUrl = (req) => {
   }
 };
 
+const listPaginada = (listaOrdenada, pagina = 1, limite = 5) =>{
+  try {
+    const desde = (pagina-1) * limite;
+    const hasta = pagina * limite;
+    const paginacionList = listaOrdenada.slice(desde, hasta);
+    return paginacionList;
+  } catch (error) {
+    throw new Error(`Error al devolver la lista paginada: ${error.message}`);
+  }
+}
+
 module.exports = {
   buscarColeccion,
   findColeccion,
+  listPaginada,
   obtenerColeccionUrl,
   obtenermodeloUrl,
   validarFechaDonacion,

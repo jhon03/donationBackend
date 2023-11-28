@@ -49,7 +49,9 @@ const crearDonacionAno = async (req, res = response) => {
             accion = 'bienvenida';
             msg= "donacion creada con exito " + donacion.nombreBenefactor;
         }
+        console.log(donacion);
         const correoEnviado = await enviarCorreo(donacion ,accion);
+        console.log(correoEnviado);
         return res.json({
             accion,
             msg

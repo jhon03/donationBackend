@@ -2,6 +2,8 @@ const { response, request} = require('express');   //modulo para tipear respuest
 const bcryptjs = require('bcryptjs');
 
 const Colaborador = require('../Domain/models/Colaborador.models');
+const { ColaboradorTemp, Role } = require('../Domain/models');
+const { enviarCorreo, validarCorreoModel } = require('../helpers');
 
 
 
@@ -14,6 +16,7 @@ const colaboradorGet = async(req = request, res = response) => {
         const [total, colaboradores] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
             Colaborador.countDocuments(query),
             Colaborador.find(query)
+            .populate('rol', 'rol')
                 //.skip(Number(desde))
                 //.limit(Number(limite))
         ]);
@@ -44,12 +47,20 @@ const colaboradorDelete = async(req, res= response) => {
 
 const colaboradorPost = async (req, res = response) => {
     try {
-        const {fechaModificacion, fechaCreacion, estado, ...resto} = req.body;
+        const {fechaModificacion, fechaCreacion, estado, rol,  ...resto} = req.body;
+        const role = await Role.findOne({rol});
+        if(role && role !== null){
+            resto.rol = role;
+        } else {
+            throw new Error("rol: " + role + error.message)
+        }
+
         const colaborador = new Colaborador(resto);
         const salt = bcryptjs.genSaltSync();  //encriptar contraseña
         colaborador.contrasena= bcryptjs.hashSync( resto.contrasena, salt);
-        await colaborador.save(); //guardar en base de datos
+        await enviarCorreo(colaborador ,'confirmar');
         return res.json({
+            msg: 'EL registro esta en espera mientras se confirma su correo',
             colaborador
         });
     } catch (error) {
@@ -91,10 +102,35 @@ const colaboradorPut = async(req, res) => {
     }
 }
 
+const verficarCorreoCol = async(req, res) => {
+    try {
+        const {correo, codigo} = req.body;
+        const {coleccion} = await validarCorreoModel(correo, ColaboradorTemp);
+        if(coleccion.verificado){
+            throw new Error("el correo ya ha sido verificado");
+        }
+        if(coleccion.codigoConfir !== codigo){
+            throw new Error('El codigo que introducite no coincide' + coleccion.codigoConfir + " codigo: " + codigo)
+        } 
+        const colaborador = new Colaborador(coleccion.data);
+        coleccion.verificado = true;
+        await coleccion.save();
+        await colaborador.save();
+        return res.status(201).json({
+            msg: `Se ha verificado el correo, bienvenido: ${colaborador.nombre}`
+        })
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message,
+        })
+    }
+}
+
 
 module.exports = {
     colaboradorGet,
     colaboradorDelete,
     colaboradorPost,
-    colaboradorPut
+    colaboradorPut,
+    verficarCorreoCol
 }

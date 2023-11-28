@@ -1,7 +1,8 @@
 const { request, response } = require("express");
+const { Role } = require("../Domain/models");
 
 
-const validarRole = (req= request, res= response, next) => {
+const validarRole = async (req= request, res= response, next) => {
 
     if(!req.usuario){
         return res.status(500).json({
@@ -10,7 +11,9 @@ const validarRole = (req= request, res= response, next) => {
     }
 
     const {rol, nombre} = req.usuario;
-    if(rol !== 'CREADOR'){
+    const role = await Role.findById(rol);
+    console.log(role.rol);
+    if(role.rol !== 'CREADOR' || role === null){
         return res.status(401).json({
             msg: `${nombre} no tienes permiso para hacer esto -rol`
         });

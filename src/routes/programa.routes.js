@@ -44,7 +44,6 @@ router.put('/actualizar/:id',[
     check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('usuModificador', 'El usuario modificador es requerido').not().isEmpty(),
     check('opcionesColaboracion', 'la opciones de colaboracion son requeridas').not().isEmpty(),
-    check('opcionesColaboracion').custom(validarOpciones),
     check('id').custom(validarIdPrograma),
     validarCampos
 ], actualizarPrograma)

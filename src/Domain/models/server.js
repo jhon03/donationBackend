@@ -14,21 +14,20 @@ class Server{
         this.port = process.env.PORT;
 
         this.paths = {
-            auth: '/api/auth',
-            benefactor: '/api/benefactor',
-            colaborador: '/api/colaborador',
-            donacion: '/api/donacion',
-            donaciones: '/api/donaciones',
-            donacionAno: '/api/donacionAnonima',
-            donacionPrograma: '/api/donacionPrograma',
-            programa : '/api/programa',
-            proyecto: '/api/proyecto',
-            uploads: '/api/uploads/cloud',
+            auth:              '/api/auth',
+            benefactor:        '/api/benefactor',
+            colaborador:       '/api/colaborador',
+            donacion:          '/api/donacion',
+            donaciones:        '/api/donaciones',
+            donacionAno:       '/api/donacionAnonima',
+            donacionPrograma:  '/api/donacionPrograma',
+            programa :         '/api/programa',
+            proyecto:          '/api/proyecto',
+            uploads:           '/api/uploads/cloud',
 
         }
        
         this.middlewares();  //middleware
-        this.connectDB();   //conectar a base de datos
         this.routes(); //rutas de la aplicacion
     }
 
@@ -58,14 +57,11 @@ class Server{
 
     }
 
-    listen(){
+    async listen(){
+        await dbConnection();
         this.app.listen(this.port, () => {
             console.log(`Servidor iniciado en http://localhost:${this.port}`);
           })
-    }
-
-    async connectDB(){
-        await dbConnection();
     }
 
 }

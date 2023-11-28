@@ -1,4 +1,4 @@
-const { DonacionPrograma, DonacionTemporal } = require("../Domain/models");
+const { DonacionPrograma, DonacionTemporal, ColaboradorTemp } = require("../Domain/models");
 const { sendCorreo } = require("../config");
 const {  validarCorreo } = require("./donaciones.helpers");
 const crypto = require('crypto');
@@ -29,9 +29,9 @@ const verificarCorreoDona = async (req, res) =>{
 }
 
 
-const enviarCorreo = async (donacion, accion, mensaje = '') =>{
+const enviarCorreo = async (coleccion, accion, mensaje = '') =>{
     try {
-        const {destinatario, asunto, contenido} = await generarDataCorreo(donacion ,accion, mensaje);
+        const {destinatario, asunto, contenido} = await generarDataCorreo(coleccion ,accion, mensaje);
         const correoEnv = await sendCorreo(destinatario, asunto, contenido);
         return correoEnv;
     } catch (error) {
@@ -57,22 +57,22 @@ const validarCorreoModel = async (correo, modelo) =>{
     }
 }
 
-const generarDataCorreo = async(donacion, accion, mensaje = '') =>{
+const generarDataCorreo = async(coleccion, accion, mensaje = '') =>{
     try {
-        const nombrepro = await encontrarNombrePro(donacion);  
+        const nombrepro = await encontrarNombrePro(coleccion);  
         switch (accion) {
             case 'bienvenida':
-              return await correoBienvenida(donacion, nombrepro);
+              return await correoBienvenida(coleccion, nombrepro);
             case 'confirmar':
-              return await confirmarCorreo(donacion, nombrepro);
+              return await confirmarCorreo(coleccion, nombrepro);
             case 'entregar':
-              return await formEntregaCorreo(donacion, nombrepro, mensaje);
+              return await formEntregaCorreo(coleccion, nombrepro, mensaje);
             case 'rechazar':
-              return await correoRechazarDona(donacion, nombrepro, mensaje);
+              return await correoRechazarDona(coleccion, nombrepro, mensaje);
             case 'recibido':
-              return await correoRecibido(donacion, nombrepro);
+              return await correoRecibido(coleccion, nombrepro);
             case 'rechazar_benefactor':
-                return await correoDonacionRechada(donacion, nombrepro);
+                return await correoDonacionRechada(coleccion, nombrepro);
             default:
               throw new Error("Accion incorrecta al manejar el envio del correo");
         } 
@@ -81,17 +81,22 @@ const generarDataCorreo = async(donacion, accion, mensaje = '') =>{
     }
 }
 
-const confirmarCorreo = async (donacion, nombrePro) =>{
+const confirmarCorreo = async (coleccion, nombrePro) =>{
     try {
-        const {nombreBenefactor: nombre, correo} = donacion;
-        const codigoConfir = crypto.randomBytes(3).toString('hex');
-        let asunto = "Bienvenido al nuestra red de donantes"; 
+        const {nombre, correo} = validarTipoCol(coleccion);  //devuleve los datos necesarios dependiendo la coleccion
+        console.log(`nombre: ${nombre}, correo: ${correo}`);
+        const codigoConfir = crearCodigoConfir();
+        let asunto = "Codigo de confirmacion registro de correo"; 
         pathPage = path.join(__dirname, '../assets/confirmarCorreo.html');
         let contenido = fs.readFileSync(pathPage, 'utf-8');
         contenido = contenido.replace(/\{nombre\}/g, nombre);
         contenido = contenido.replace(/\{codigo\}/g, codigoConfir);
 
-        await crearDonacionTemp(donacion, codigoConfir);
+        if(!coleccion.tipo){
+            await crearDataTemporal(ColaboradorTemp ,coleccion, codigoConfir);
+        } else {
+            await crearDataTemporal(DonacionTemporal ,coleccion, codigoConfir);
+        }
         return {destinatario: correo, asunto, contenido};
 
     } catch (error) {
@@ -114,7 +119,7 @@ const formEntregaCorreo = async (donacion, nombrePro, mensaje = 'chat')=>{
         contenido = contenido.replace('{tipoC}', tipoC);
         contenido = contenido.replace('{nombreC}', nombrePro);
         contenido = contenido.replace(/\{opcionDona\}/g, aporte);
-        contenido = contenido.replace('{mensaje}', mensaje);
+        // contenido = contenido.replace('{mensaje}', mensaje);
 
         return {destinatario: correo, asunto, contenido};
 
@@ -161,9 +166,7 @@ const correoRechazarDona = async (donacion, nombrePro, mensaje = '') =>{
 
 const correoRecibido = async (donacion, nombrePro, mensaje = '') =>{
     try {
-        console.log(donacion);
         const { _id: id, nombreBenefactor: nombre, correo, tipo, aporte } = donacion;
-        console.log(nombre)
         const pathPage = path.join(__dirname, '../assets/correoRecibido.html');
         const asunto = "Donacion Recibida"; 
         let tipoC = tipoColeccion(tipo);
@@ -213,43 +216,45 @@ const tipoColeccion = (tipo) => {
 }
 
 //dos opciones o mandar una alerta que ya tienes un codigo o crar uno nuevo
-const crearDonacionTemp = async(donacion, codigoConfir) => {
+const crearDataTemporal = async(modelo, coleccion, codigoConfir) => {
     try {
-        const exitsDonacion = await DonacionTemporal.findOne({correo: donacion.correo});
-        if(exitsDonacion){
-            if(!exitsDonacion.verificado){
-                exitsDonacion.codigoConfir = codigoConfir;
-                exitsDonacion.data = donacion;
-                return await exitsDonacion.save();
+        const documento = await modelo.findOne({correo: coleccion.correo});
+        if(documento || documento !== null){
+            if(!documento.verificado){
+                documento.codigoConfir = codigoConfir;
+                documento.data = coleccion;
+                return await documento.save();
             } else{
                 throw new Error(`El correo ya ha sido verificado no puedes modificar su estado`);
             }           
         } 
-        const donacionTemporal = new DonacionTemporal({
-            correo: donacion.correo,
-            data:donacion,
+        const nuevoDocumento = new modelo({
+            correo: coleccion.correo,
+            data:coleccion,
             codigoConfir,
         })
-        await donacionTemporal.save();
-        return donacionTemporal;
+        console.log(nuevoDocumento);
+        await nuevoDocumento.save();
+        return nuevoDocumento;
     } catch (error) {
         throw new Error('Error al crear la donacion temporal: ' + error.message);
     }
 }
 
-const validarCodigoYEstadoCorreo = (donacion, codigo) =>{
+const validarCodigoYEstadoCorreo = (coleccion, codigo) =>{
     try {
-        if(donacion.verificado){
+        if(coleccion.verificado){
             throw new Error("el correo ya ha sido verificado");
         }
-        if(donacion.codigoConfir !== codigo){
-            throw new Error('El codigo que introducite no coincide' + donacionTemp.codigoConfir + " codigo: " + codigo)
+        if(coleccion.codigoConfir !== codigo){
+            throw new Error('El codigo que introducite no coincide' + coleccion.codigoConfir + " codigo: " + codigo)
         }
     } catch (error) {
         throw new Error('Error al validar el correo: ' + error.message);
     }
 }
 
+//funcion para encontrar nombre de tipo de donacion
 const encontrarNombrePro = async(donacion) =>{
     try {
         let nombrepro;
@@ -259,6 +264,8 @@ const encontrarNombrePro = async(donacion) =>{
         } else if(donacion.tipo === 'donacionPrograma'){
             const programa = await programaFindById(donacion.programa._id);
             nombrepro = programa.nombre;
+        } else if(!donacion.tipo){
+            nombrepro = 'colaorador';
         } else {
             throw new Error('El parametro no esta validado: ' + donacion.tipo);
         }
@@ -268,9 +275,30 @@ const encontrarNombrePro = async(donacion) =>{
     }
 }
 
+const crearCodigoConfir = () =>{
+    try {
+        const codigo = crypto.randomBytes(3).toString('hex');
+        return codigo;
+    } catch (error) {
+        throw new Error(`Error al crear el codigo de confirmacion: ${error.message}`);
+    }
+}
+
+const validarTipoCol = (coleccion) => {
+    try {
+        if(coleccion.tipo){
+            return {nombre: coleccion.nombreBenefactor, correo: coleccion.correo};
+        } else {
+            return {nombre: coleccion.nombre, correo: coleccion.correo};
+        }
+    } catch (error) {
+        throw new Error(`Error al devolver la coleccion desectructurada: ${error.message}`);
+    }
+}
+
 module.exports = {
     confirmarCorreo,
-    crearDonacionTemp,
+    crearDataTemporal,
     enviarCorreo,
     generarDataCorreo,
     tipoColeccion,

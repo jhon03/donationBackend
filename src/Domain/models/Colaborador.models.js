@@ -46,8 +46,9 @@ const colaboradorSchema = Schema({
     default: Date.now
   },
   rol:{
-    type: String,
-    required: true
+    type: Schema.Types.ObjectId,
+    ref: 'Role',
+    required: [true, 'el rol es requerido'],
   },
   estado: {
     type: Boolean,

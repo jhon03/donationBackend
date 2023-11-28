@@ -3,6 +3,7 @@ const { OAuth2Client } = require ('google-auth-library');
 const { TokenR, TokenG } = require('../Domain/models');
 const { json } = require('express');
 
+//para envios de correo a outlook trabajar cn la plantilla de pagina condiciones
 const sendCorreo = async (destinatario, asunto, contenido) => {
     try {
         const transporter = await dataTrasporter();  
@@ -36,7 +37,7 @@ const dataTrasporter = async (servidor = 'gmail') =>{
         });
         return transporter;
     } catch (error) {
-        throw new Error('Ha ocurrido un error en la comunicacion con el servicor');
+        throw new Error('Ha ocurrido un error en la comunicacion con el servicor: '+ error.message);
     }
 };
 
@@ -108,11 +109,10 @@ const refreshedAcessToken = async (oAuth2Client) => {
 
 const saveToken = async (tokens) =>{
     try {
-        const { access_token, expiry_date, refresh_token } = tokens
+        const { access_token, expiry_date} = tokens
         const existeToken = await TokenG.findOne();
         if( existeToken ){
             existeToken.accessToken = access_token;
-            existeToken.refreshToken = refresh_token;
             existeToken.expiryDate =  expiry_date;
             await existeToken.save();
         } else {

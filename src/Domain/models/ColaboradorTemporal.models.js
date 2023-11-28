@@ -20,7 +20,7 @@ const colaboradorTemporalSchema = Schema({
 
   codigoConfir: {
     type: String,
-    required: [true, 'el ncodigo de confirmacion es requerido'],
+    required: [true, 'el codigo de confirmacion es requerido'],
   },
 
 });

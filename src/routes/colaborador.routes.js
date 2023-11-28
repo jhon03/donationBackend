@@ -10,7 +10,8 @@ const { validarRol, validarEmail, validarId, validarEstado, validarNIdentificaci
 const { colaboradorGet, 
         colaboradorDelete, 
         colaboradorPost,
-        colaboradorPut
+        colaboradorPut,
+        verficarCorreoCol
 } = require('../controllers');
 
 
@@ -18,7 +19,7 @@ const { colaboradorGet,
 const router = Router();
 
 
-router.get('/', colaboradorGet); //cuando se busque este endpoint llamara a controlador userget
+router.get('/', validarJWT, colaboradorGet); //cuando se busque este endpoint llamara a controlador userget
 
 router.put('/:id', [
         validarJWT,
@@ -49,13 +50,21 @@ router.post('/', [              //arreglo de middlewares para verificar campos
         check('cargo', 'El cargo es requerido').not().isEmpty(),
         check('celular', 'El numero de celular es requerido').not().isEmpty(),
         check('contrasena', 'el password deber ser de mas de 6 letras').isLength( {min: 6}),
-        check('correo','el corrreo no es valido').isEmail(),
+        check('correo').isEmail().withMessage('Correo no valido'),
         check('correo').custom(validarEmail),   //validacion personalizada
         check('rol').custom( validarRol ),
         check('numeroIdentificacion').custom(validarNIdentificacion),
         check('username').custom(validarUsername),
         validarCampos           //middleware personalizado
 ],colaboradorPost);
+
+router.post('/verificar/correo', [
+        validarJWT,
+        check('correo', 'el correo es requerido').not().isEmpty(),
+        check('codigo', 'el codigo es requerido').not().isEmpty(),
+        check('correo', 'No es una direccion de correo electronico valida').isEmail(),
+        validarCampos,
+], verficarCorreoCol)
 
 
 

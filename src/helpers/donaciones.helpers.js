@@ -80,7 +80,7 @@ const cambiarEstadoDonacion = async (donacion, modelo, condicion = '',  detalles
                 donacion.estado = 'abierta'
                 return await donacion.save();
             case 'aceptar':
-                return donacion;
+                return await updateStateDonacion(donacion._id, modelo, 'aceptada');
             default:
                 throw new Error(`condicion no validada: ${condicion}`);
         }
@@ -130,7 +130,6 @@ const mapearData = (req)=>{
         } else if(modelo === 'programa'){
             data.programa = id;
         }
-        console.log(data.programa + "data")
         return data;
     } catch (error) {
         throw new Error('Error al mapear la data: ' + error.message);

@@ -8,7 +8,7 @@ const {Role, Colaborador, Imagen} = require('../Domain/models')
 const validarRol = async(rol = '') =>{        //verificacion personalizada de rol contra la bd
     try {
         const existeRol = await Role.findOne({rol});
-        if(!existeRol){
+        if(!existeRol || existeRol === null){
             throw new Error(`El rol ${rol} que intenta asignar no esta registrado en la base de datos`)
         }
     } catch (error) {

@@ -148,7 +148,7 @@ const actualizarPrograma = async(req, res) => {
 const ocultarPrograma = async(req = request, res = response)=>{
     try {
         const programa = await cambiarEstado(req, Programa, vista=true);
-        res.json({
+        return res.json({
             msg: 'programa ocultado correctamenete',
             programa
         });

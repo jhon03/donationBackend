@@ -1,6 +1,7 @@
 
 const Benefactor       = require('./Benefactor.models');
 const Colaborador      = require('./Colaborador.models');
+const ColaboradorTemp  = require('./ColaboradorTemporal.models')
 const Donacion         = require('./Donacion.models');
 const DonacionAno      = require('./DonacionAno');
 const DonacionPrograma = require('./DonacionPrograma.models');
@@ -17,6 +18,7 @@ const TokenR           = require('./TokenRefresco');
 module.exports = {
     Benefactor,
     Colaborador,
+    ColaboradorTemp,
     Donacion,
     DonacionAno,
     DonacionPrograma,

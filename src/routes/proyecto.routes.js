@@ -1,7 +1,7 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const {validarCampos, validarJWT, tieneRol} = require('../middlewares');
+const {validarCampos, validarJWT, tieneRol, validarRole} = require('../middlewares');
 const { crearProyecto, actualizarProyecto, eliminarProyecto, obtenerProyectos, obtenerProyectoId, obtenerProyectosVista, obtenerProyectoIdVista, ocultarProyecto, habilitarProyecto } = require('../controllers');
 const {validarIdPrograma, validarIdProyecto, validarOpciones} = require('../helpers');
 
@@ -28,7 +28,6 @@ router.get('/vista/:id',[
 router.post('/:idPrograma/crear', [
     validarJWT,
     check('idPrograma', 'el id del proyecto no es valido').isMongoId(),
-    tieneRol("CREADOR"),
     check('tipoProyecto', 'el tipo de programa es requerido').not().isEmpty(),
     check('costo', 'el costo del proyecto es requerido').not().isEmpty(),
     check('opcionesDonacion', 'las opciones de donacion son requeridas'),
@@ -37,7 +36,8 @@ router.post('/:idPrograma/crear', [
     check('colModificador', 'El usuario modificador es requerido').not().isEmpty(),
     check('opcionesDonacion', 'las opciones de donacion son requeridas').not().isEmpty(),
     check('idPrograma').custom(validarIdPrograma),
-    validarCampos
+    validarCampos,
+    validarRole,
 ],crearProyecto);
 
 

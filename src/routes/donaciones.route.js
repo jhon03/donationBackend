@@ -54,7 +54,10 @@ router.get('/correo/recibido/:id', [
     validarCampos,
 ], correoRecibido);
 
-router.post('/enviar/correo/:correo', []
+router.post('/enviar/correo/:correo', [
+    check('correo').isEmail().withMessage('Correo no valido'),
+    validarCampos,
+]
 , enviarCorreoPr);
 
 
