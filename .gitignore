@@ -5,6 +5,6 @@ source/
 uploads/proyectos/**.*
 uploads/programas/**.*
 
-.env
+
 
 keys.json
