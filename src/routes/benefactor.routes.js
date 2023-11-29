@@ -10,6 +10,13 @@ const router = new Router();
 
 router.get('/',obtenerBenefactores)
 
+//endpoint de prueba para validar(servicios de verificación)
+router.get('/up', (req, res) => {
+    
+    const response = {message: "Hola app"};
+    res.json(response);
+});
+
 router.get('/:id',[
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdBenefactor),
