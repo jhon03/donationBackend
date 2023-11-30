@@ -4,22 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        section {
-            justify-content: center;
-            align-items: center;
-        }
-
-        .background {
-            background-image: url('https://res.cloudinary.com/dxlmosojh/image/upload/f_auto,q_auto/v1/donacion/fondos/kykfeikfyv94knrzxmup');
-            background-size: cover; /* Ajustar tamaño de la imagen para cubrir el contenedor */
-            background-position: center; /* Centrar la imagen */
-            height: 626px; /* Ajustar la altura al 100% del viewport */
-            width: 626px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
         .text-container {
             text-align: center;
         }
@@ -41,12 +25,12 @@
             font-weight: bold;
         }
     </style>
-    <title>Welcome</title>
+    <title>welcome</title>
 </head>
 <body>
-    <section class="background">
-        <div class="text-container my-5 mx-5">
-            <h1 class="fw-bold" style="color: black;">Bienvenido {nombre} a nuestra fundación <span style="color: blue;">Gracias por su solicitud de donación</span></h1>
+    <div style="background-image: url('https://res.cloudinary.com/dxlmosojh/image/upload/f_auto,q_auto/v1/donacion/fondos/kykfeikfyv94knrzxmup'); background-size: cover; background-position: center; height: 626px; width: 626px; display: flex; justify-content: center; align-items: center;">
+        <div class="text-container" style="text-align: center; color: black; padding: 20px; text-align: center; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); ">
+            <h1 class="fw-bold" style="color: black; font-weight: bold;">Gracias {nombre} <span style="color: blue;">por completar tu donacion</span></h1>
             <div class="texto">
                 <p style="color: black;">
                     Agradecemos su intención de realizar una donación a nuestro {tipoC}: {nombreC}, 
@@ -55,6 +39,6 @@
                 </p>
             </div>
         </div>
-    </section>
+    </div>
 </body>
 </html>

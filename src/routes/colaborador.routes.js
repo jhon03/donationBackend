@@ -3,7 +3,8 @@ const { check } = require('express-validator');
 
 const { validarCampos,
         validarJWT,
-        tieneRol} = require('../middlewares');  //carpeta donde estan todos los middlewares
+        tieneRol,
+        validarRole} = require('../middlewares');  //carpeta donde estan todos los middlewares
 
 const { validarRol, validarEmail, validarId, validarEstado, validarNIdentificacion, validarUsername } = require('../helpers');
 
@@ -32,8 +33,8 @@ router.put('/:id', [
 
 router.delete('/:id', [
         validarJWT,     //middlewar para validar el token
-        //validarRole,   middleware para validar el rol
-        tieneRol('CREADOR','ADMINISTRADOR'),   //middlewarepara verificzr varios roles
+        validarRole,   //middleware para validar el rol
+        // tieneRol('CREADOR','ADMINISTRADOR'),   //middlewarepara verificzr varios roles
         check('id', 'no es un id valido').isMongoId(),
         check('id').custom( validarId),
         validarCampos

@@ -49,7 +49,45 @@ const validarJWT = async(req= request, res = response, next) => {
 
 }
 
+const validarJWTCookie = async(req= request, res = response, next) => {
+
+    const token = req.cookies.jwt;
+    console.log(token);
+    if(!token){
+        return res.status(401).json({
+            msg: 'no hay token en la peticion'
+        })
+    }
+
+    try {       
+        const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY)
+        const usuario = await Colaborador.findById(uid);
+        if(!usuario){
+            return res.status(401).json({
+                msg: 'token no valido -usuario no exite en la db'
+            })
+        }     
+        if(!usuario.estado){            //verificar usuario activo
+            return res.status(401).json({
+                msg:'token no valido -usuario inactivo'
+            })
+        }
+         
+        req.usuario = usuario;
+
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            msg: 'token no valido',
+            error
+        })
+    }
+
+
+}
+
 
 module.exports = {
-    validarJWT
+    validarJWT,
+    validarJWTCookie,
 }

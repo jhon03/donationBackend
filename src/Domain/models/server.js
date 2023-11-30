@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
@@ -33,8 +34,9 @@ class Server{
 
     middlewares(){
 
-        this.app.use(cors());  //cors
+        this.app.use(cors({origin: process.env.ORIGIN_WEB, credentials:true}));  //cors
         this.app.use( express.json());  //lectura y parseo del body
+        this.app.use(cookieParser())  //lectura de cookies en la req
         this.app.use(express.static(path.join(__dirname, '../public')));   //directorio publico
         this.app.use(fileUpload({     //maneja la carga de archivos 
             useTempFiles : true,

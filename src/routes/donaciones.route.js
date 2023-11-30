@@ -1,16 +1,13 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const { validarCampos, validarJWT, validarJWTDonacion} = require('../middlewares');  //carpeta donde estan todos los middlewares
+const { validarCampos, validarJWT, validarJWTDonacion, validarJWTCookie} = require('../middlewares');  //carpeta donde estan todos los middlewares
 const { listAllDonaciones, donacionFindById, abrirDonacion,  rechazarDonacionColaborador, confirmarDonacionColaborador, formDonacion, donacionBenefactor, verificarCorreoDonaciones, correoRecibido, enviarCorreoPr} = require('../controllers');
 
 
 const router = Router();
 
-router.get('/', [
-    validarJWT,
-    validarCampos
-] ,listAllDonaciones); //cuando se busque este endpoint llamara a controlador userget
+router.get('/', validarJWT ,listAllDonaciones); //cuando se busque este endpoint llamara a controlador userget
 
 router.get('/:id',[
     validarJWT,

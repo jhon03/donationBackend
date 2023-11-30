@@ -3,84 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        section {
-            position: absolute;
-            width: 626px;
-            margin: 0 auto;
-        }
-
-        .background img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .text-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            color: rgb(0, 0, 0);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            width: 80%;
-            max-width: 600px; /* Ajusta el ancho máximo según tus necesidades */
-        }
-
-        .text-container h1 {
-            font-weight: bold;
-            color: rgb(0, 0, 0);
-            margin-bottom: 10px;
-        }
-
-        .text-container span {
-            color: rgb(35, 65, 146);
-            font-weight: bold;
-            font-weight: bold;
-        }
-
-        .text-container p {
-            color: rgb(0, 0, 0);
-            font-size: 20px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .confirmation-code {
-            background-color: #4fe83e;
-            color: #fff;
-            font-size: 1em;
-            padding: 5px;
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-    </style>
-    <title>Bienvenido</title>
+    <title>Confirmar Correo</title>
 </head>
-<body style="margin: 0px; padding: 0px; background-image: url('https://res.cloudinary.com/dxlmosojh/image/upload/f_auto,q_auto/v1/donacion/fondos/kykfeikfyv94knrzxmup'); background-color: #0D679C; background-position: top center; justify-content: center; align-items: center;" >
-    <table style="width: 100%;">
-        <tr>
-            <td style="width: 50%;">
-                <div class="text-container my-5 mx-5">
-                    <h1 class="fw-bold" style="color: black;">Bienvenido {nombre} a nuestra fundación <span style="color: blue;">Gracias por su solicitud de donación</span></h1>
-                    <div class="texto">
-                        <p style="color: black;">
-                            Agradecemos su intención de realizar una donación a nuestro proyecto/programa, 
-                            Para continuar con el proceso necesitamos validar tu correo, el cual será
-                            fundamental para el proceso de la donación.
-                        </p>
-                    </div>
-                    <div class="confirmation-code">
-                        <p>{codigo}</p>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </table>
-    
+<body>
+    <div style="background-image: url('https://res.cloudinary.com/dxlmosojh/image/upload/f_auto,q_auto/v1/donacion/fondos/kykfeikfyv94knrzxmup'); background-size: cover; background-position: center; height: 626px; width: 626px; display: flex; justify-content: center; align-items: center;">
+        <div style="text-align: center; color: black; padding: 20px; text-align: center; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); ">
+            <h1 style="font-weight: bold;">Bienvenido a nuestra fundación <span style="color: blue; font-weight: bold;">Gracias por su solicitud de donación</span></h1>
+            <p style="color: black; font-weight: bold; font-size: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                Agradecemos su intención de realizar una donación a nuestro proyecto/programa, 
+                Para continuar con el proceso necesitamos validar tu correo, el cual será
+                fundamental para el proceso de la donación.
+            </p>
+            <div class="confirmation-code" style="background-color: #4fe83e; color: #fff; font-size: 1em; padding: 5px; border-radius: 15px; margin-top: 20px;" >
+                <p>{codigo}</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
+
+
+
