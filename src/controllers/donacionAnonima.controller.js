@@ -39,10 +39,12 @@ const obtenerDonacionAId = async(req, res) => {
 
 const crearDonacionAno = async (req, res = response) => {
     try {
+        console.log(`inicia la donacion`);
         const data = mapearData(req);      
         let accion =  'confirmar';
         let msg = 'la donacion esta en espera mientras se confirma su correo';
         const donacion = new DonacionAno(data);   //prueba primero verificar correo
+        console.log("datos de la donacion: " + data);
         const {donacionTemp, estado} = await validarCorreoDona(data.correo);
         if(estado === 'verificado'){
             await donacion.save();

@@ -15,6 +15,7 @@ const validarDonacion = async(req = request, res, next)=>{
         const coleccionDona = await buscarColeccion(coleccion, modelo, id);
         console.log("coleccion domacion: " + coleccionDona)
         validarEstadoColeccion(coleccionDona, modelo);
+        console.log("paso validacion de estado de coleccion");
         if(modelo === 'proyecto'){
             validarFechaDonacion(coleccionDona, modelo);
         }

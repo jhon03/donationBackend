@@ -25,6 +25,7 @@ const buscarColeccion = async (modelo, NomRelacion, id = 0) => {
 
 const validarEstadoColeccion = (coleccion, NomRelacion) => {
   try {
+    console.log('coleccion:\n' + coleccion);
       if (coleccion.estado === "oculto" || coleccion.estado === "eliminado") {
         throw new Error(`El ${NomRelacion}, esta oculto o eliminado`);
       }
