@@ -16,7 +16,7 @@ router.get('/:id',[
     validarCampos,
 ], donacionFindById);
 
-router.get('/confirmar/:id',[
+router.post('/confirmar/:id',[
     validarJWT,
     check('id', 'El id de la donacion es requerido').not().isEmpty(),
     check('id', 'El id de la donacion es invalido').isMongoId(),

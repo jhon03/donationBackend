@@ -60,10 +60,10 @@ router.post('/', [              //arreglo de middlewares para verificar campos
 ],colaboradorPost);
 
 router.post('/verificar/correo', [
-        validarJWT,
         check('correo', 'el correo es requerido').not().isEmpty(),
         check('codigo', 'el codigo es requerido').not().isEmpty(),
-        check('correo', 'No es una direccion de correo electronico valida').isEmail(),
+        check('correo').isEmail().withMessage('No es una direccion de correo electronico valida'),
+        check('correo').custom(validarEmail),
         validarCampos,
 ], verficarCorreoCol)
 

@@ -58,7 +58,7 @@ const rechazarDonacionColaborador = async (req, res = response) =>{
         const {id} = req.params;
         const {mensaje} = req.body;
         const donacion = await modificarDonacion(id, 'rechazar');
-        const correoEnv = await enviarCorreo(donacionRechazada, 'rechazar', mensaje);
+        const correoEnv = await enviarCorreo(donacion, 'rechazar', mensaje);
         return res.json({
             mensaje,
             donacion

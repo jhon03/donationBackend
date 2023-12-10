@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const generarJWT = (uid ='', expiracion= '4h') =>{
+const generarJWT = (uid ='', expiracion= '4h') => {
 
     return new Promise( (resolve, rejec) =>{
         const payload = {uid};

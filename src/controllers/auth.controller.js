@@ -126,6 +126,8 @@ const renovarToken = async(req, res) =>{
     }
 }
 
+
+//cerrar cesion de usuario por medio de cookie
 const cerrarCesion = (req, res=response) =>{
     try {
         res.clearCookie('jwt');

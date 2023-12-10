@@ -28,6 +28,7 @@ const colaboradorSchema = Schema({
   correo: {
     type: String,
     required: [true, 'el correo es requerido'],
+    unique: true
   },
   celular: {
     type: Number,

@@ -128,8 +128,10 @@ const crearPrograma = async (req, res = response) => {
 const actualizarPrograma = async(req, res) => {
     try {
         const { id } = req.params;
-        const {_id, imagenes, opcionesColaboracion, ...resto } = req.body;
+        const {_id, imagenes, ...resto } = req.body;
         const opciones = req.body.opcionesColaboracion;
+        console.log("opciones: " + opciones);
+        console.log("actualizar programa: " + resto);
         validarOpciones(opciones);
         resto.fechaModificacion = new Date();
 

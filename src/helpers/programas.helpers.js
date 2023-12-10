@@ -25,8 +25,9 @@ const buscarProgramas = async (req , vista = false, limite = 5, desde = 0,) => {
     
 };
 
-const buscarProgramaId = async(id, vista=false) =>{
+const buscarProgramaId = async(req, vista=false) =>{
     try {
+        const {id} = req.params;
         const programa = await Programa.findOne({ _id : id, ...obtenerEstado(req, vista) })
                                    .populate('colaborador','nombre')
                                    .populate('imagenes','url');
@@ -42,10 +43,10 @@ const buscarProgramaId = async(id, vista=false) =>{
 const obtenerEstado = (req = request, vista) =>{
 
     let query = { estado: 'visible' }; // Utiliza el estado proporcionado
-    const token = obtenerToken(req);
     if(vista){
         return query;
     }
+    const token = obtenerToken(req);
     if(token != undefined || token != null){
         query = { estado: { $in: ['visible', 'oculto'] } };
     }

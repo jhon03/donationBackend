@@ -84,7 +84,6 @@ const generarDataCorreo = async(coleccion, accion, mensaje = '') =>{
 const confirmarCorreo = async (coleccion, nombrePro) =>{
     try {
         const {nombre, correo} = validarTipoCol(coleccion);  //devuleve los datos necesarios dependiendo la coleccion
-        console.log(`nombre: ${nombre}, correo: ${correo}`);
         const codigoConfir = crearCodigoConfir();
         let asunto = "Codigo de confirmacion registro de correo"; 
         pathPage = path.join(__dirname, '../assets/confirmarCorreo.html');
