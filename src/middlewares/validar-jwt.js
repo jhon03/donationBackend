@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const Colaborador = require('../Domain/models/Colaborador.models');
 const { Benefactor } = require('../Domain/models');
+const { validarExpiracionToken, validarTokenRe, generarJWT } = require('../helpers');
 
 const validarJWT = async(req= request, res = response, next) => {
 
@@ -15,6 +16,12 @@ const validarJWT = async(req= request, res = response, next) => {
 
     try {       
         const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY)
+        const tokenDecoded = jwt.decode(token);
+        if(validarExpiracionToken(tokenDecoded.exp) ){
+            await validarTokenRe(uid);
+            const tokenAcessoRenovado = await generarJWT(uid);
+            req.tokenRenovado = tokenAcessoRenovado;
+        }
 
         let usuario;
 
@@ -42,7 +49,7 @@ const validarJWT = async(req= request, res = response, next) => {
     } catch (error) {
         res.status(401).json({
             msg: 'token no valido',
-            error
+            error: error.message
         })
     }
 

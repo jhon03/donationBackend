@@ -10,9 +10,9 @@ const { enviarCorreo, validarCorreoModel } = require('../helpers');
 const colaboradorGet = async(req = request, res = response) => {
     try {
         const { limite = 5, desde = 0 } = req.query;
+        const tokenNuevo = req.tokenRenovado;
         const query = {estado: true};            //buscar solo usuarios activos
         
-
         const [total, colaboradores] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
             Colaborador.countDocuments(query),
             Colaborador.find(query)
@@ -20,6 +20,13 @@ const colaboradorGet = async(req = request, res = response) => {
                 //.skip(Number(desde))
                 //.limit(Number(limite))
         ]);
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({
+                tokenNuevo,
+                total,
+                colaboradores
+            });
+        }
 
         return res.json({
             total,
@@ -35,8 +42,12 @@ const colaboradorGet = async(req = request, res = response) => {
 
 const colaboradorDelete = async(req, res= response) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const {id} = req.params;
         const colaborador = await Colaborador.findByIdAndUpdate(id, {estado:false}, {new:true});
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, colaborador});
+        }
         return res.json(colaborador);
     } catch (error) {
         return res.status(400).json({
@@ -73,6 +84,7 @@ const colaboradorPost = async (req, res = response) => {
 
 const colaboradorPut = async(req, res) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const { id } = req.params;
         const {_id, rol, username, contrasena, estado, ...resto } = req.body;
        //validar
@@ -94,6 +106,9 @@ const colaboradorPut = async(req, res) => {
         }
         resto.fechaModificacion = new Date();
         const colaborador = await Colaborador.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, colaborador});
+        }
         return res.json(colaborador);
     } catch (error) {
         return res.status(400).json({

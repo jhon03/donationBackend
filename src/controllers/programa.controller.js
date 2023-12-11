@@ -8,11 +8,14 @@ const { validarOpciones, buscarProgramas, buscarProgramaId, crearObjetoPrograma,
 
 const obtenerProgramas = async(req = request, res = response) => {
     try {
-        
+        const tokenNuevo = req.tokenRenovado;
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
 
         const {total, programas} = await buscarProgramas(req, false, Number(limite), Number(desde));
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, total, programas});
+        }
         return res.json({
             total,
             programas
@@ -46,7 +49,11 @@ const obtenerProgramasVista = async(req=request, res= response)=>{
 const obtenerProgramasId = async(req, res) => {
 
     try {
+        const tokenNuevo = req.tokenRenovado;
         const programa = await buscarProgramaId(req);
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, msg: 'programa obtenido correctamente', programa});
+        }
         return res.json({
             msg: 'programa obtenido correctamente',
             programa
@@ -92,7 +99,7 @@ const eliminarPrograma = async(req, res= response) => {
 const crearPrograma = async (req, res = response) => {
 
     try {
-           
+        const tokenNuevo = req.tokenRenovado;
         const {data, nombre} = crearObjetoPrograma(req);        //generar data aqui estan los datos necesarios para crear un programa
         const programaDB = await Programa.findOne({nombre});
         if(programaDB ){
@@ -100,6 +107,9 @@ const crearPrograma = async (req, res = response) => {
         
                 const programaNue = new Programa(data);
                 await programaNue.save();
+                if(tokenNuevo && tokenNuevo !== null){
+                    return res.json({tokenNuevo, programaNue});
+                }
                 return res.status(201).json({
                     programaNue
                 });
@@ -113,8 +123,10 @@ const crearPrograma = async (req, res = response) => {
 
         const programa = new Programa(data);
         await programa.save();  //guardar en la base de datos
-
-        res.status(201).json(programa);
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, programa});
+        }
+        return res.status(201).json(programa);
 
     } catch (error) {
         res.status(400).json({
@@ -127,6 +139,7 @@ const crearPrograma = async (req, res = response) => {
 
 const actualizarPrograma = async(req, res) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const { id } = req.params;
         const {_id, imagenes, ...resto } = req.body;
         const opciones = req.body.opcionesColaboracion;
@@ -136,6 +149,9 @@ const actualizarPrograma = async(req, res) => {
         resto.fechaModificacion = new Date();
 
         const programa = await Programa.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, programa});
+        }
         res.json({
             programa
          });
@@ -149,7 +165,11 @@ const actualizarPrograma = async(req, res) => {
 
 const ocultarPrograma = async(req = request, res = response)=>{
     try {
+        const tokenNuevo = req.tokenRenovado;
         const programa = await cambiarEstado(req, Programa, vista=true);
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, msg: 'programa ocultado correctamenete', programa});
+        }
         return res.json({
             msg: 'programa ocultado correctamenete',
             programa
@@ -163,7 +183,11 @@ const ocultarPrograma = async(req = request, res = response)=>{
 
 const habilitarPrograma = async(req = request, res = response) =>{
     try {
+        const tokenNuevo = req.tokenRenovado;
         const programa = await cambiarEstado(req, Programa, false ,habilitar=true)
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, msg: 'programa habilitado correctamente', programa});
+        }
         return res.json({
             msg: 'programa habilitado correctamente',
             programa

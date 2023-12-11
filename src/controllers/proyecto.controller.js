@@ -5,10 +5,14 @@ const { buscarProyectos, buscarProyectoId, crearObjetoProyecto,cambiarEstado, up
 
 const obtenerProyectos = async(req = request, res = response) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
 
         const {total, proyecto} = await buscarProyectos(req, false, Number(limite), Number(desde) );
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, total, proyecto});
+        }
         return res.json({
             total,
             proyecto
@@ -39,8 +43,12 @@ const obtenerProyectosVista = async(req = request, res = response) => {
 
 const obtenerProyectoId = async(req, res) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const proyecto = await buscarProyectoId(req);
-        res.json({
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, proyecto});
+        }
+        return res.json({
             proyecto
         });
     } catch (error) {
@@ -80,8 +88,12 @@ const eliminarProyecto = async(req, res= response) => {
 
 const ocultarProyecto = async(req, res= response) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const proyecto = await cambiarEstado(req, Proyecto, ocultar=true);
-        res.json({
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, msg: 'proyecto ocultado correctamenete', proyecto});
+        }
+        return res.json({
             msg: 'proyecto ocultado correctamenete',
             proyecto
         });
@@ -94,7 +106,11 @@ const ocultarProyecto = async(req, res= response) => {
 
 const habilitarProyecto = async(req, res= response)=>{
     try {
+        const tokenNuevo = req.tokenRenovado;
         const proyecto = await cambiarEstado(req, Proyecto, false ,habilitar=true)
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, msg: 'proyecto habilitado correctamente', proyecto});
+        }
         return res.json({
             msg: 'proyecto habilitado correctamente',
             proyecto
@@ -109,6 +125,7 @@ const habilitarProyecto = async(req, res= response)=>{
 
 const crearProyecto = async (req, res = response) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const {data, nombre} = crearObjetoProyecto(req);
         const proyectoDB = await Proyecto.findOne({nombre});
         if(proyectoDB ){
@@ -116,6 +133,9 @@ const crearProyecto = async (req, res = response) => {
         
                 const programaNue = new Proyecto(data);
                 await programaNue.save();
+                if(tokenNuevo && tokenNuevo !== null){
+                    return res.json({tokenNuevo, programaNue});
+                }
                 return res.status(201).json({
                     programaNue
                 });
@@ -128,6 +148,9 @@ const crearProyecto = async (req, res = response) => {
 
         const proyecto = new Proyecto(data);  
         await proyecto.save();  //guardar en la base de datos
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, proyecto});
+        }
         res.status(201).json(proyecto);
     } catch (error) {
         return res.status(400).json({
@@ -139,7 +162,11 @@ const crearProyecto = async (req, res = response) => {
 
 const actualizarProyecto = async(req, res) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const proyecto = await updateProyecto(req);
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, proyecto});
+        }
         return res.json({
             proyecto
         });

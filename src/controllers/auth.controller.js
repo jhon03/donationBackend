@@ -6,8 +6,7 @@ const { generarJWT, generarJWTRefresh } = require("../helpers/generate-jwt");
 const { Benefactor, TokenR } = require("../Domain/models");
 
 const login = async(req, res = response) => {
-
-    
+   
     try {
         const {correo, contrasena} = req.body;
 
@@ -56,7 +55,6 @@ const login = async(req, res = response) => {
         return res.json({
             usuario,
             token,
-            refreshToken,
         })
         
     } catch (error) {
@@ -114,6 +112,10 @@ const loginCookies = async(req, res = response) => {
 const renovarToken = async(req, res) =>{
     try {
         const usuario = req.usuario;
+        const refreshToken = TokenR.findOne({userId: usuario.id});
+        if(!refreshToken || refreshToken === null){
+            throw new Error('No posees un token de refreco')
+        }
         const nuevoTokenAcesso = await generarJWT(usuario.id);
         return res.json({
             msg: 'token renovado con exito',

@@ -7,8 +7,13 @@ const { DonacionTemporal } = require('../Domain/models');
 
 const listAllDonaciones = async(req= request, res= response)=>{
     try {
+        const tokenNuevo = req.tokenRenovado;
+        console.log("token de acesso renovado: " + tokenNuevo);
         const {page, limite} = req.query;
         const {total, donaciones} = await listDonaciones(page, limite);
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, total: donaciones.length, donaciones,});
+        }
         return res.json({
             total: donaciones.length,
             donaciones,
@@ -22,9 +27,13 @@ const listAllDonaciones = async(req= request, res= response)=>{
 
 const donacionFindById = async(req= request, res= response)=>{
     try {
+        const tokenNuevo = req.tokenRenovado;
         const {id} = req.params;
         const {total, donaciones} = await listDonaciones(1, 2000);
         const donacionEncontrada = findByid(id, donaciones);
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, donacion: donacionEncontrada});
+        }
         return res.json({
             donacion: donacionEncontrada
         })
@@ -38,10 +47,14 @@ const donacionFindById = async(req= request, res= response)=>{
 //enviar formulario al benefactor para rechazar o confirmar
 const confirmarDonacionColaborador = async (req, res= response)=>{
     try {
+        const tokenNuevo = req.tokenRenovado;
         const {id} = req.params;
         const {detalles} = req.body;
         const donacionAct = await modificarDonacion(id, 'abrir', detalles);
         const correoE = await enviarCorreo(donacionAct, 'entregar');
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, donacionAct});
+        }
         return res.json({
             donacionAct
         })
@@ -142,9 +155,13 @@ const verificarCorreoDonaciones = async (req, res) =>{
 
 const correoRecibido = async (req, res = response) =>{
     try {
+        const tokenNuevo = req.tokenRenovado;
         const {id} = req.params;
         const donacion = await modificarDonacion(id, 'recibido');
         const correoEnv = await enviarCorreo(donacion, 'recibido');
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, msg: 'donacion completada con exito', donacion});
+        }
         return res.json({
             msg: 'donacion completada con exito',
             donacion

@@ -7,7 +7,7 @@ const validarExitsColeccion = async(req= request, res= response, next)=>{
         const coleccionUrl =        obtenerColeccionUrl(req);
         console.log(`nombre de coleccion: ${coleccionUrl}`);
         if(coleccionUrl !== 'donaciones'){
-            const coleccion =           findColeccion(coleccionUrl);
+            const coleccion = findColeccion(coleccionUrl);
             console.log(coleccion);
             const coleccionEncontrada = await buscarColeccion(coleccion, coleccionUrl, id);
             req.coleccion = coleccionEncontrada;

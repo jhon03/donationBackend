@@ -25,12 +25,23 @@ router.post('/confirmar/:id',[
 ], confirmarDonacionColaborador);
 
 router.put('/rechazar/:id',[
+    validarJWT,
     check('id', 'El id es requerido').not().isEmpty(),
     check('id', 'El id es ivalido').isMongoId(),
     check('mensaje','El mensaje de motivo es requerido').not().isEmpty(),
     validarCampos
 ], rechazarDonacionColaborador);
 
+//endpoint denacion recibida
+router.get('/correo/recibido/:id', [
+    validarJWT,
+    check('id', 'el id es requerido').not().isEmpty(),
+    check('id', 'El id no es valido').isMongoId(),
+    validarCampos,
+], correoRecibido);
+
+
+//endponitns de donacion en la parte del benefactor
 router.post('/formEntrega/:condicion',[
     validarJWTDonacion,
     check('condicion', 'La condicion es requerida').not().isEmpty(),
@@ -41,16 +52,11 @@ router.get('/InfoDonacion/benefactor',[
     validarJWTDonacion
 ],donacionBenefactor);
 
+//end point verficar correo de benfactor
 router.post('/verificar/correo/donacion',[],verificarCorreoDonaciones );
 
-//endpoint denacion recibida
-router.get('/correo/recibido/:id', [
-    validarJWT,
-    check('id', 'el id es requerido').not().isEmpty(),
-    check('id', 'El id no es valido').isMongoId(),
-    validarCampos,
-], correoRecibido);
 
+//endpoint de enviar correo de prueba
 router.post('/enviar/correo/:correo', [
     check('correo').isEmail().withMessage('Correo no valido'),
     validarCampos,

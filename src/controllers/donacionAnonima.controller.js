@@ -5,8 +5,12 @@ const { enviarCorreo, validarCorreoModel, obtenerDonaciones, mapearData } = requ
 const { sendCorreo } = require('../config/mail');
 
 const obtenerDonacionesAnonimas = async(req = request, res = response) => {
-    try {        
+    try {    
+        const tokenNuevo = req.tokenRenovado;
         const {total, coleccion: donacion} = await obtenerDonaciones(DonacionAno, 'proyecto');
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, total, donacion});
+        }
         return res.json({
             total,
             donacion
@@ -21,10 +25,13 @@ const obtenerDonacionesAnonimas = async(req = request, res = response) => {
 
 const obtenerDonacionAId = async(req, res) => {
     try {
+        const tokenNuevo = req.tokenRenovado;
         const {id} = req.params;
         const donacion = await DonacionAno.findById(id)
                                         .populate('proyecto','nombre');
-                                        
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, donacion});
+        }                                       
         return res.json({
             donacion
         });

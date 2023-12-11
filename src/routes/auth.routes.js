@@ -3,7 +3,7 @@ const { check } = require('express-validator');
 
 const { login, renovarToken, loginCookies, cerrarCesion} = require('../controllers/auth.controller');
 
-const {validarCampos, validarJWTRefresh} = require('../middlewares')   //importamos todos los middlewares desde del index
+const {validarCampos, validarJWTRefresh, validarJWT} = require('../middlewares')   //importamos todos los middlewares desde del index
 
 const router = new Router();
 
@@ -22,7 +22,7 @@ router.post('/login', [
 // ],loginCookies);
 
 router.post('/renovar-token', [
-    validarJWTRefresh,
+    validarJWT,
 ], renovarToken);
 
 router.delete('/cerrar/sesion', cerrarCesion)

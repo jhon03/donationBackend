@@ -7,12 +7,18 @@ const {validarIdPrograma, validarIdProyecto, validarOpciones} = require('../help
 
 const router = new Router();
 
-router.get('/', validarJWT ,obtenerProyectos)
+//los endpoints de vista son los que se muestra a usuarios no logeados
+
+router.get('/', [
+    validarJWT, 
+    tieneRol('CREADOR', 'MODIFICADOR'),
+] ,obtenerProyectos)
 
 router.get('/vista',obtenerProyectosVista)
 
 router.get('/:id',[
     validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdProyecto),
     validarCampos
@@ -43,6 +49,7 @@ router.post('/:idPrograma/crear', [
 
 router.put('/:id',[
     validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'el id del proyecto a actualizar no es valido').isMongoId(),
     check('id').custom(validarIdProyecto),
     check('nombre', 'el nombre es requerido').not().isEmpty(),
@@ -55,24 +62,24 @@ router.put('/:id',[
 
 router.get('/habilitar/:id',[
     validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id','El id no es valido').isMongoId(),
     check('id').custom(validarIdProyecto),
-    tieneRol('CREADOR'),
     validarCampos
 ],habilitarProyecto)
 
 router.delete('/:id',[
     validarJWT,
+    validarRole,
     check('id').custom(validarIdProyecto),
-    tieneRol('CREADOR'),
     check('id','El id no es valido').isMongoId(),
     validarCampos
 ],eliminarProyecto)
 
 router.delete('/ocultar/:id',[
     validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id').custom(validarIdProyecto),
-    tieneRol('CREADOR'),
     check('id','El id no es valido').isMongoId(),
     validarCampos
 ],ocultarProyecto)

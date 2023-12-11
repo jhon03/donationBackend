@@ -1,20 +1,26 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const {validarCampos, validarJWT, tieneRol} = require('../middlewares');   //importamos todos los middlewares desde del index
+const {validarCampos, validarJWT, tieneRol, validarRole} = require('../middlewares');   //importamos todos los middlewares desde del index
 
 const { crearPrograma, obtenerProgramas, actualizarPrograma, eliminarPrograma, obtenerProgramasId, obtenerProgramasVista, obtenerProgramaIdVista, ocultarPrograma, habilitarPrograma } = require('../controllers');
 const { validarIdPrograma, validarOpciones } = require('../helpers');
 
 const router = new Router();
 
+//los endpoint de vista se usan para mostrar informacion a usuarios no logeados
+//hay dos formas de verficar el rol, una para solo creador y otra para creador y modificador
 
-router.get('/', validarJWT ,obtenerProgramas)
+router.get('/', [
+    validarJWT, 
+    tieneRol('CREADOR', 'MODIFICADOR'),
+] ,obtenerProgramas)
 
 router.get('/vista', obtenerProgramasVista)
 
 router.get('/:id',[
     validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdPrograma),
     validarCampos
@@ -28,6 +34,7 @@ router.get('/vista/:id',[
 
 router.post('/crear', [
     validarJWT,
+    validarRole,
     check('nombre', 'el nombre es requerido').not().isEmpty(),
     check('eslogan', 'El eslogan es requerido').not().isEmpty(),
     check('usuCreador', 'El usuario creador es requerido').not().isEmpty(),
@@ -38,6 +45,7 @@ router.post('/crear', [
 
 router.put('/actualizar/:id',[
     validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'el id del programa a actualizar no es valido').isMongoId(),
     check('nombre', 'el nombre es requerido').not().isEmpty(),
     check('eslogan', 'El eslogan es requerido').not().isEmpty(),
@@ -50,7 +58,7 @@ router.put('/actualizar/:id',[
 
 router.delete('/eliminar/:id',[
     validarJWT,
-    tieneRol('CREADOR'),
+    validarRole,
     check('id','El id no es valido').isMongoId(),
     check('id').custom(validarIdPrograma),
     validarCampos
@@ -58,7 +66,7 @@ router.delete('/eliminar/:id',[
 
 router.delete('/ocultar/:id',[
     validarJWT,
-    tieneRol('CREADOR'),
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id','El id no es valido').isMongoId(),
     check('id').custom(validarIdPrograma),
     validarCampos
@@ -66,7 +74,7 @@ router.delete('/ocultar/:id',[
 
 router.get('/habilitar/:id',[
     validarJWT,
-    tieneRol('CREADOR'),
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id','El id no es valido').isMongoId(),
     check('id').custom(validarIdPrograma),
     validarCampos
