@@ -23,7 +23,6 @@ const obtenerImagenes = async(req = request, res = response) => {
         imagenes
     });
   } catch (error) {
-    console.log(error.message);
     res.status(400).json({
       msg: 'error al obtener las imagenes',
       error: error.message
@@ -112,6 +111,7 @@ const eliminarImagenCloud = async(req, res= response) => {
 
 const deleteAllImg = async(req, res= response) =>{
   try {   
+    const tokenNuevo = req.tokenRenovado;
     const {coleccion, id} = req.params;
     const imagenes = await Imagen.find( {relacion: id} );
     for( let img of imagenes){
@@ -121,6 +121,9 @@ const deleteAllImg = async(req, res= response) =>{
     const modelo = await buscarModelo(coleccion, id);
     modelo.imagenes = [];
     await modelo.save();
+    if(tokenNuevo && tokenNuevo !== null){
+      return res.json({tokenNuevo, msg: `se han eliminado todas las imagenes de ${modelo.nombre}`, modelo});
+    }
     return res.json({
       msg: `se han eliminado todas las imagenes de ${modelo.nombre}`,
       modelo

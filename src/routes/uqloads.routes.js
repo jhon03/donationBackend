@@ -8,10 +8,13 @@ const { validarColeccionesBD, validarexisteImg } = require('../helpers');
 const router = new Router();
 
 router.get('/imagenes',[
-
+    validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
 ], obtenerImagenes);
 
 router.get('/imagenes/:id', [
+    validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'el id es requerido').not().isEmpty(),
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarexisteImg),
@@ -19,8 +22,10 @@ router.get('/imagenes/:id', [
 ], obtenerImagenId)
 
 router.put('/actualizar/:coleccion/:id', [
+    validarJWT,
     validarImg,
     validarExtencion,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'el id debe ser valido').isMongoId(),
     check('id').custom(validarexisteImg),
     check('coleccion').custom( c => validarColeccionesBD( c )),   //validacion colecciones permitadas le mandamos las permitidas como parametro
@@ -29,8 +34,10 @@ router.put('/actualizar/:coleccion/:id', [
 
 
 router.post('/crear/:coleccion/:id', [
+    validarJWT,
     validarImg,  //middleware personalizado para verificar archivos en la peticion
     validarExtencion,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('coleccion').custom( c => validarColeccionesBD( c )), 
     check('id', 'el id debe ser valido').isMongoId(),
     validarCampos,
@@ -38,6 +45,8 @@ router.post('/crear/:coleccion/:id', [
 
 
 router.delete('/eliminar/:coleccion/:id', [
+    validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'el id debe ser valido').isMongoId(),
     check('id', 'El id de la imagen es requerido').not().isEmpty(),
     check('coleccion').custom( c => validarColeccionesBD( c )),  
@@ -46,6 +55,8 @@ router.delete('/eliminar/:coleccion/:id', [
 ],eliminarImagenCloud);
 
 router.delete('/eliminarAll/:coleccion/:id', [
+    validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'el id debe ser valido').isMongoId(),
     check('id', 'El id de la imagen es requerido').not().isEmpty(),
     validarCampos,

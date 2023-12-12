@@ -1,9 +1,9 @@
 const {Router} = require('express');
 const { check } = require('express-validator');
 
-const { login, renovarToken, loginCookies, cerrarCesion} = require('../controllers/auth.controller');
+const { login, renovarToken, loginCookies, cerrarCesion, validarTokenSesion} = require('../controllers/auth.controller');
 
-const {validarCampos, validarJWTRefresh, validarJWT} = require('../middlewares')   //importamos todos los middlewares desde del index
+const {validarCampos, validarJWT, tieneRol} = require('../middlewares')   //importamos todos los middlewares desde del index
 
 const router = new Router();
 
@@ -13,6 +13,13 @@ router.post('/login', [
     check('contrasena', 'la contraseña es obligatoria').not().isEmpty(),
     validarCampos
 ],login);
+
+//endpoint para validar sesion del usuario, si esta activa o no
+router.get('/validar/Token/Sesion', [
+    
+], validarTokenSesion);
+
+
 
 //prueba login con cookies
 // router.post('/login', [
@@ -25,6 +32,7 @@ router.post('/renovar-token', [
     validarJWT,
 ], renovarToken);
 
+//endpoint de cerrar cesion con token en cookies
 router.delete('/cerrar/sesion', cerrarCesion)
 
 module.exports = router;

@@ -13,11 +13,13 @@ const router = Router();
 
 router.get('/', [
     validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     validarCampos
 ] ,obtenerDonacionPrograma); //cuando se busque este endpoint llamara a controlador userget
 
 router.get('/donacion/:id',[
     validarJWT,
+    tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'El id es requerido').not().isEmpty(),
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdDonacionPrograma),

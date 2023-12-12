@@ -1,5 +1,6 @@
 const { response } = require("express");
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const Colaborador = require('../Domain/models/Colaborador.models');
 const { generarJWT, generarJWTRefresh } = require("../helpers/generate-jwt");
@@ -129,6 +130,28 @@ const renovarToken = async(req, res) =>{
 }
 
 
+const validarTokenSesion = (req, res) => {
+    try {
+        const token = req.header('x-token');
+        console.log(token);
+        if(!token || token === null){
+            return res.status(401).json({
+                msg: 'no hay token en la peticion'
+            })
+        }
+        jwt.verify(token, process.env.SECRETORPRIVATEKEY);
+        return res.json({
+            msg: 'sesion activa token valido'
+        })
+    } catch (error) {
+        return res.status(401).json({
+            msg: 'error al validar el token',
+            error: error.message
+        })
+    }
+}
+
+
 //cerrar cesion de usuario por medio de cookie
 const cerrarCesion = (req, res=response) =>{
     try {
@@ -150,4 +173,5 @@ module.exports = {
     login,
     loginCookies,
     renovarToken,
+    validarTokenSesion,
 }

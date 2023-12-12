@@ -19,12 +19,17 @@ const { colaboradorGet,
 
 const router = Router();
 
+//analizar los roles que se necesita para modificar informacon de colaborador
+//ademas de mirar bien quien puede hacer que 
 
-router.get('/', validarJWT, colaboradorGet); //cuando se busque este endpoint llamara a controlador userget
+router.get('/', [
+        validarJWT,
+        validarRole,
+], colaboradorGet); //cuando se busque este endpoint llamara a controlador userget
 
 router.put('/:id', [
         validarJWT,
-        tieneRol('CREADOR','ADMINISTRADOR'),
+        tieneRol('CREADOR','ADMINISTRADOR'),   //middlewarepara verificzr varios roles
         check('id', 'no es un id valido').isMongoId(),
         check('id').custom( validarId),
         validarCampos  //llamamos la validacion
@@ -33,7 +38,7 @@ router.put('/:id', [
 
 router.delete('/:id', [
         validarJWT,     //middlewar para validar el token
-        validarRole,   //middleware para validar el rol
+        validarRole,   //middleware para validar el rol creador
         // tieneRol('CREADOR','ADMINISTRADOR'),   //middlewarepara verificzr varios roles
         check('id', 'no es un id valido').isMongoId(),
         check('id').custom( validarId),

@@ -68,10 +68,14 @@ const confirmarDonacionColaborador = async (req, res= response)=>{
 
 const rechazarDonacionColaborador = async (req, res = response) =>{
     try {
+        const tokenNuevo = req.tokenRenovado;
         const {id} = req.params;
         const {mensaje} = req.body;
         const donacion = await modificarDonacion(id, 'rechazar');
         const correoEnv = await enviarCorreo(donacion, 'rechazar', mensaje);
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, mensaje, donacion});
+        }
         return res.json({
             mensaje,
             donacion
