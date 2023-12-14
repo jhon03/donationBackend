@@ -12,7 +12,8 @@ const { colaboradorGet,
         colaboradorDelete, 
         colaboradorPost,
         colaboradorPut,
-        verficarCorreoCol
+        verficarCorreoCol,
+        colaboradorById
 } = require('../controllers');
 
 
@@ -24,12 +25,17 @@ const router = Router();
 
 router.get('/', [
         validarJWT,
-        validarRole,
+        tieneRol('CREADOR','ADMINISTRADOR', 'MODIFICADOR'),
 ], colaboradorGet); //cuando se busque este endpoint llamara a controlador userget
+
+router.get('/findById/:id', [
+        validarJWT,
+        tieneRol('CREADOR','ADMINISTRADOR', 'MODIFICADOR'),
+], colaboradorById)
 
 router.put('/:id', [
         validarJWT,
-        tieneRol('CREADOR','ADMINISTRADOR'),   //middlewarepara verificzr varios roles
+        tieneRol('CREADOR','ADMINISTRADOR', 'MODIFICADOR'),   //middlewarepara verificzr varios roles
         check('id', 'no es un id valido').isMongoId(),
         check('id').custom( validarId),
         validarCampos  //llamamos la validacion

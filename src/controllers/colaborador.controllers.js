@@ -21,13 +21,8 @@ const colaboradorGet = async(req = request, res = response) => {
                 //.limit(Number(limite))
         ]);
         if(tokenNuevo && tokenNuevo !== null){
-            return res.json({
-                tokenNuevo,
-                total,
-                colaboradores
-            });
+            return res.json({tokenNuevo, total, colaboradores });
         }
-
         return res.json({
             total,
             colaboradores
@@ -35,6 +30,27 @@ const colaboradorGet = async(req = request, res = response) => {
     } catch (error) {
         return res.status(400).json({
             error: error.message
+        })
+    }
+}
+
+const colaboradorById = async (req, res) => {
+    try {
+        const tokenNuevo = req.tokenRenovado;
+        const {id} = req.params;
+        const colaborador = await Colaborador.findOne({_id: id, estado: true})
+                                            .populate('rol', 'rol');
+        if(!colaborador){
+            throw new Error(`El colaborador no existe`);
+        }
+        if(tokenNuevo && tokenNuevo !== null){
+            return res.json({tokenNuevo, msg: 'programa obtenido correctamente', colaborador});
+        }
+        return res.json({colaborador});
+    } catch (error) {
+        return res.status(400).json({
+            msg: 'error al obtener el colaborador',
+            error: error.message,
         })
     }
 }
@@ -147,5 +163,6 @@ module.exports = {
     colaboradorDelete,
     colaboradorPost,
     colaboradorPut,
-    verficarCorreoCol
+    verficarCorreoCol,
+    colaboradorById,
 }
