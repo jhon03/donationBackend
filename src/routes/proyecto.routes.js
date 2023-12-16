@@ -21,7 +21,7 @@ router.get('/:id',[
     tieneRol('CREADOR', 'MODIFICADOR'),
     check('id', 'El id no es valido').isMongoId(),
     check('id').custom(validarIdProyecto),
-    validarCampos
+    validarCampos,
 ], obtenerProyectoId);
 
 router.get('/vista/:id',[
@@ -56,7 +56,6 @@ router.put('/:id',[
     check('colCreador', 'El usuario creador es requerido').not().isEmpty(),
     check('colModificador', 'El usuario modificador es requerido').not().isEmpty(),
     check('opcionesDonacion', 'las opciones de donacion son requeridas').not().isEmpty(),
-    check('opcionesDonacion').custom(validarOpciones),
     validarCampos
 ], actualizarProyecto)
 

@@ -4,10 +4,10 @@ const { obtenerToken } = require('./jwt.helpers');
 const { validarOpciones } = require('./bd-valiadators');
 
 
-const buscarProgramas = async (req , vista = false, limite = 5, desde = 0,) => {
+const buscarProgramas = async (limite = 5, desde = 0, token = '' ) => {
     try {
 
-        let query = obtenerEstado(req, vista);
+        let query = obtenerEstado(token);
 
         const [total, programas] = await Promise.all([
             Programa.countDocuments(query),
@@ -25,13 +25,12 @@ const buscarProgramas = async (req , vista = false, limite = 5, desde = 0,) => {
     
 };
 
-const buscarProgramaId = async(req, vista=false) =>{
+const buscarProgramaId = async(id, token = '') =>{
     try {
-        const {id} = req.params;
-        const programa = await Programa.findOne({ _id : id, ...obtenerEstado(req, vista) })
+        const programa = await Programa.findOne({ _id : id, ...obtenerEstado(token) })
                                    .populate('colaborador','nombre')
                                    .populate('imagenes','url');
-        if(!programa){
+        if(!programa || programa === null){
             throw new Error(`El programa con id ${id} no existe o esta oculto -estado`);
         }
         return programa;
@@ -40,14 +39,14 @@ const buscarProgramaId = async(req, vista=false) =>{
     }
 }
 
-const obtenerEstado = (req = request, vista) =>{
-
+const obtenerEstado = (token = '') =>{
     let query = { estado: 'visible' }; // Utiliza el estado proporcionado
-    if(vista){
+    if(!token || token === null){
+        console.log('solicitud sin token');
         return query;
     }
-    const token = obtenerToken(req);
-    if(token != undefined || token != null){
+    if(token && token !== null ){
+        console.log('solicitud con token');
         query = { estado: { $in: ['visible', 'oculto'] } };
     }
     return query;

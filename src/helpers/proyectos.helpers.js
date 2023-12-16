@@ -3,10 +3,10 @@ const { obtenerEstado } = require("./programas.helpers");
 const { Proyecto, Programa } = require("../Domain/models");
 const { validarOpciones } = require("./bd-valiadators");
 
-const buscarProyectos = async( req= request, vista= false, limite=5, desde=0)=>{
+const buscarProyectos = async( limite=5, desde=0, token ='')=>{
     try {
 
-        let query = obtenerEstado(req, vista);
+        let query = obtenerEstado(token);
         const [total, proyecto] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
             Proyecto.countDocuments(query),  //devuelve los datos por indice
             Proyecto.find(query)
@@ -22,13 +22,13 @@ const buscarProyectos = async( req= request, vista= false, limite=5, desde=0)=>{
     }
 }
 
-const buscarProyectoId = async(req, vista=false) =>{
+const buscarProyectoId = async(id, token = '') =>{
     try {
-        const {id} = req.params;
-        const proyecto = await Proyecto.findOne({ _id : id, ...obtenerEstado(req, vista) })
+        
+        const proyecto = await Proyecto.findOne({ _id : id, ...obtenerEstado(token) })
                                    .populate('programa','nombre')
                                    .populate('imagenes','url');
-        if(!proyecto){
+        if(!proyecto || proyecto === null){
             throw new Error(`El proyecto con id ${id} no existe o esta oculto -estado`);
         }
         return proyecto;
@@ -64,45 +64,23 @@ const crearObjetoProyecto = (req) =>{
   
 }
 
-const cambiarEstado = async (req, modelo ,ocultar=false, habilitar=false) => {
+
+const buscarEstado = (accion) =>{
     try {
-        console.log(modelo);
-        const {id} = req.params;
-        let query = buscarEstado(ocultar, habilitar)
-        const coleccion = await modelo.findByIdAndUpdate(id, query, {new:true} );
-        if (!coleccion ) {
-            throw new Error(`${id}`);
+        switch (accion) {
+            case 'habilitar':           
+                return {estado: 'visible'};
+            case 'ocultar':
+                return {estado: 'oculto'};
+            case 'eliminar':
+                return {estado: 'eliminado'};
+            default:
+                throw new Error(`accion ${accion} no validada`);
         }
-        return coleccion;
     } catch (error) {
-        throw Error(`Error al actualizar el estado de el proyecto ${error.message}`);
+        throw new Error(`Error al validar el estado: ${error.message}`);
     }
-}
-
-const updateProyecto = async(req) =>{
-    try {
-        const { id } = req.params;
-        const {_id, estado, programa, imagenes ,...resto } = req.body;
-
-        resto.fechaModificacion = new Date();
-        const proyecto = await Proyecto.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
-        return proyecto;
-    } catch (error) {
-        throw new Error(`Error al actualizar el proyecto: ${error.message}`)
-    }
-
-}
-
-const buscarEstado = (ocultar = false, habilitar = false) =>{
-
-    let query = {estado: 'eliminado'};
-    if(ocultar){
-        query = {estado: 'oculto'};
-    }
-    if(habilitar){
-        query = {estado: 'visible'};
-    }
-    return query;
+    
 }
 
 const proyectoFindById = async(id= '') =>{
@@ -122,7 +100,5 @@ module.exports = {
     buscarEstado,
     buscarProyectoId,
     crearObjetoProyecto,
-    cambiarEstado,
     proyectoFindById,
-    updateProyecto,
 }

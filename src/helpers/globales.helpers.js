@@ -8,6 +8,7 @@ const {
   Proyecto,
   Imagen,
 } = require("../Domain/models");
+const { buscarEstado } = require("./proyectos.helpers");
 
 const buscarColeccion = async (modelo, NomRelacion, id = 0) => {
   try {
@@ -108,12 +109,39 @@ const listPaginada = (listaOrdenada, pagina = 1, limite = 5) =>{
   }
 }
 
+const cambiarEstadoColeccion = async (modelo, id, accion = '') => {
+  try {
+      let query = buscarEstado(accion);
+      const coleccion = await modelo.findByIdAndUpdate(id, query, {new:true} );
+      if (!coleccion || coleccion === null) {
+          throw new Error(`${id}`);
+      }
+      return coleccion;
+  } catch (error) {
+      throw Error(`Error al actualizar el estado de el proyecto ${error.message}`);
+  }
+}
+
+const updateColeccion = async(modelo, id, resto) =>{
+  try {
+      console.log(modelo);
+      resto.fechaModificacion = new Date();   //seteamos la fecha de modificacion a la de la hora de modificacion
+      const documento = await modelo.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
+      return documento;
+  } catch (error) {
+      throw new Error(`Error al actualizar el proyecto: ${error.message}`)
+  }
+
+}
+
 module.exports = {
   buscarColeccion,
+  cambiarEstadoColeccion,
   findColeccion,
   listPaginada,
   obtenerColeccionUrl,
   obtenermodeloUrl,
   validarFechaDonacion,
   validarEstadoColeccion,
+  updateColeccion,
 };

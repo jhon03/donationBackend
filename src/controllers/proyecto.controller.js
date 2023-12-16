@@ -1,15 +1,16 @@
 const { response, request} = require('express');
 
 const {Proyecto} = require('../Domain/models'); 
-const { buscarProyectos, buscarProyectoId, crearObjetoProyecto,cambiarEstado, updateProyecto } = require('../helpers');
+const { buscarProyectos, buscarProyectoId, crearObjetoProyecto, obtenerToken, cambiarEstadoColeccion, updateColeccion, validarOpciones } = require('../helpers');
 
 const obtenerProyectos = async(req = request, res = response) => {
     try {
         const tokenNuevo = req.tokenRenovado;
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
+        const token = req.params;
 
-        const {total, proyecto} = await buscarProyectos(req, false, Number(limite), Number(desde) );
+        const {total, proyecto} = await buscarProyectos(Number(limite), Number(desde), token );
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, total, proyecto});
         }
@@ -29,8 +30,8 @@ const obtenerProyectosVista = async(req = request, res = response) => {
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
 
-        const {total, proyecto} = await buscarProyectos(req, vista=true, Number(limite), Number(desde));
-        res.json({
+        const {total, proyecto} = await buscarProyectos( Number(limite), Number(desde));    //no se pasa el atributo de token, ya que al ser la vista no es necesario
+        return res.json({
             total,
             proyecto
         });
@@ -44,7 +45,10 @@ const obtenerProyectosVista = async(req = request, res = response) => {
 const obtenerProyectoId = async(req, res) => {
     try {
         const tokenNuevo = req.tokenRenovado;
-        const proyecto = await buscarProyectoId(req);
+        const {id} = req.params;
+        const token = obtenerToken(req);
+
+        const proyecto = await buscarProyectoId(id, token);
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, proyecto});
         }
@@ -60,7 +64,8 @@ const obtenerProyectoId = async(req, res) => {
 
 const obtenerProyectoIdVista = async(req, res) => {
     try {
-        const proyecto = await buscarProyectoId(req, vista=true);
+        const {id} = req.params;
+        const proyecto = await buscarProyectoId(id);
         res.json({
             proyecto
         });
@@ -73,7 +78,8 @@ const obtenerProyectoIdVista = async(req, res) => {
 
 const eliminarProyecto = async(req, res= response) => {
     try {
-        const proyecto = await cambiarEstado(req, Proyecto);
+        const {id} = req.params;
+        const proyecto = await cambiarEstadoColeccion(Proyecto, id, 'eliminar');
         res.json({
             msg: 'proyecto eliminado correctamenete',
             proyecto
@@ -89,7 +95,8 @@ const eliminarProyecto = async(req, res= response) => {
 const ocultarProyecto = async(req, res= response) => {
     try {
         const tokenNuevo = req.tokenRenovado;
-        const proyecto = await cambiarEstado(req, Proyecto, ocultar=true);
+        const {id} = req.params;
+        const proyecto = await cambiarEstadoColeccion(Proyecto ,id, 'ocultar');
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, msg: 'proyecto ocultado correctamenete', proyecto});
         }
@@ -107,7 +114,8 @@ const ocultarProyecto = async(req, res= response) => {
 const habilitarProyecto = async(req, res= response)=>{
     try {
         const tokenNuevo = req.tokenRenovado;
-        const proyecto = await cambiarEstado(req, Proyecto, false ,habilitar=true)
+        const {id} = req.params;
+        const proyecto = await cambiarEstadoColeccion(Proyecto ,id, 'habilitar');
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, msg: 'proyecto habilitado correctamente', proyecto});
         }
@@ -131,10 +139,10 @@ const crearProyecto = async (req, res = response) => {
         if(proyectoDB ){
             if(!proyectoDB.estado){
         
-                const programaNue = new Proyecto(data);
-                await programaNue.save();
+                const proyectoNue = new Proyecto(data);
+                await proyectoNue.save();
                 if(tokenNuevo && tokenNuevo !== null){
-                    return res.json({tokenNuevo, programaNue});
+                    return res.json({tokenNuevo, proyectoNue});
                 }
                 return res.status(201).json({
                     programaNue
@@ -163,7 +171,11 @@ const crearProyecto = async (req, res = response) => {
 const actualizarProyecto = async(req, res) => {
     try {
         const tokenNuevo = req.tokenRenovado;
-        const proyecto = await updateProyecto(req);
+        const { id } = req.params;
+        const {_id, estado, programa, imagenes ,...resto } = req.body;
+        validarOpciones(resto.opcionesDonacion);
+
+        const proyecto = await updateColeccion(Proyecto, id, resto);
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, proyecto});
         }
@@ -171,9 +183,9 @@ const actualizarProyecto = async(req, res) => {
             proyecto
         });
     } catch (error) {
-        return res.status(500).json({
-            msg: 'ha ocurrido un problema',
-            error
+        return res.status(400).json({
+            msg: 'Error al actualizar el proyecto',
+            error: error.message
         })
     }
 

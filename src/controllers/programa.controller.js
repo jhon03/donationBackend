@@ -2,7 +2,7 @@ const { response, request} = require('express');   //modulo para tipear respuest
 
 
 const {Programa} = require('../Domain/models');
-const { validarOpciones, buscarProgramas, buscarProgramaId, crearObjetoPrograma, cambiarEstado } = require('../helpers');
+const { validarOpciones, buscarProgramas, buscarProgramaId, crearObjetoPrograma, obtenerToken, cambiarEstadoColeccion, updateColeccion } = require('../helpers');
 
 
 
@@ -11,8 +11,9 @@ const obtenerProgramas = async(req = request, res = response) => {
         const tokenNuevo = req.tokenRenovado;
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
+        const token = obtenerToken(req);
 
-        const {total, programas} = await buscarProgramas(req, false, Number(limite), Number(desde));
+        const {total, programas} = await buscarProgramas(Number(limite), Number(desde), token);
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, total, programas});
         }
@@ -34,7 +35,7 @@ const obtenerProgramasVista = async(req=request, res= response)=>{
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
         
-        const {total, programas} = await buscarProgramas(req, vista=true, Number(limite), Number(desde));
+        const {total, programas} = await buscarProgramas(Number(limite), Number(desde) ); //no se pasa el argumento del token ya que en vista y no es necesario
         return res.json({
             total,
             programas
@@ -49,8 +50,11 @@ const obtenerProgramasVista = async(req=request, res= response)=>{
 const obtenerProgramasId = async(req, res) => {
 
     try {
+        const {id} = req.params;
         const tokenNuevo = req.tokenRenovado;
-        const programa = await buscarProgramaId(req);
+        const token = obtenerToken(req);
+        const programa = await buscarProgramaId(id, token);
+
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, msg: 'programa obtenido correctamente', programa});
         }
@@ -68,7 +72,8 @@ const obtenerProgramasId = async(req, res) => {
 
 const obtenerProgramaIdVista = async(req, res) =>{
     try {
-        const programa = await buscarProgramaId(req, vista = true);
+        const {id} = req.params;
+        const programa = await buscarProgramaId(id);    //no se manda el atributo token de la funcion no se necesita
         return res.json({
             msg: 'programa obtenido correctamente',
             programa
@@ -84,8 +89,8 @@ const eliminarPrograma = async(req, res= response) => {
 
     try {
         const {id} = req.params;
-        const programa = await Programa.findByIdAndUpdate(id, {estado:'eliminado'}, {new:true} );
-        res.json({
+        const programa = await cambiarEstadoColeccion(Programa, id, 'eliminar');
+        return res.json({
             msg: 'programa eliminado correctamenete',
             programa
         });
@@ -100,10 +105,10 @@ const crearPrograma = async (req, res = response) => {
 
     try {
         const tokenNuevo = req.tokenRenovado;
-        const {data, nombre} = crearObjetoPrograma(req);        //generar data aqui estan los datos necesarios para crear un programa
+        const {data, nombre} = crearObjetoPrograma(req);        //generar data aqui estan los datos necesarios para crear un programa 'mapper'
         const programaDB = await Programa.findOne({nombre});
         if(programaDB ){
-            if(!programaDB.estado){
+            if(programaDB.estado === 'eliminado'){
         
                 const programaNue = new Programa(data);
                 await programaNue.save();
@@ -115,9 +120,7 @@ const crearPrograma = async (req, res = response) => {
                 });
             }
 
-            return res.status(400).json({
-                msg: `El programa ${programaDB.nombre} ya existe`
-            });
+            throw new Error(`El programa ${programaDB.nombre} ya existe`);
         }
 
 
@@ -143,12 +146,9 @@ const actualizarPrograma = async(req, res) => {
         const { id } = req.params;
         const {_id, imagenes, ...resto } = req.body;
         const opciones = req.body.opcionesColaboracion;
-        console.log("opciones: " + opciones);
-        console.log("actualizar programa: " + resto);
         validarOpciones(opciones);
-        resto.fechaModificacion = new Date();
 
-        const programa = await Programa.findByIdAndUpdate( id, resto, {new: true} );  //usamos el new:true para devolver el objeto actualido
+        const programa = await updateColeccion(Programa, id, resto);  //usamos el new:true para devolver el objeto actualido
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, programa});
         }
@@ -166,7 +166,8 @@ const actualizarPrograma = async(req, res) => {
 const ocultarPrograma = async(req = request, res = response)=>{
     try {
         const tokenNuevo = req.tokenRenovado;
-        const programa = await cambiarEstado(req, Programa, vista=true);
+        const {id} = req.params;
+        const programa = await cambiarEstadoColeccion(Programa, id, 'ocultar');
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, msg: 'programa ocultado correctamenete', programa});
         }
@@ -184,7 +185,8 @@ const ocultarPrograma = async(req = request, res = response)=>{
 const habilitarPrograma = async(req = request, res = response) =>{
     try {
         const tokenNuevo = req.tokenRenovado;
-        const programa = await cambiarEstado(req, Programa, false ,habilitar=true)
+        const {id} = req.params;
+        const programa = await cambiarEstadoColeccion(Programa, id, 'habilitar' )
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, msg: 'programa habilitado correctamente', programa});
         }

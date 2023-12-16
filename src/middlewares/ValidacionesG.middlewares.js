@@ -4,15 +4,13 @@ const { buscarColeccion, obtenerColeccionUrl, findColeccion, validarEstadoColecc
 const validarExitsColeccion = async(req= request, res= response, next)=>{
     try {
         const {id} = req.params;
-        const coleccionUrl =        obtenerColeccionUrl(req);
+        const coleccionUrl =  obtenerColeccionUrl(req);
         console.log(`nombre de coleccion: ${coleccionUrl}`);
         if(coleccionUrl !== 'donaciones'){
             const coleccion = findColeccion(coleccionUrl);
-            console.log(coleccion);
             const coleccionEncontrada = await buscarColeccion(coleccion, coleccionUrl, id);
             req.coleccion = coleccionEncontrada;
             req.nomModelo = coleccionUrl;
-            next();
         }
         next();
     } catch (error) {
@@ -36,6 +34,8 @@ const validarColeccion = async(req, res, next)=>{
         })
     }
 }
+
+
 
 
 module.exports = {

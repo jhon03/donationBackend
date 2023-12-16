@@ -99,7 +99,7 @@ const validarexisteImg = async(id = '') =>{
 const validarOpciones =  (opciones = [] ) =>{
     try {
         console.log(opciones.length);
-        if( opciones.length === 0){
+        if( opciones.length === 0 || !opciones){
             throw new Error('La opciones de donacion son requeridas');
         }
     } catch (error) {
