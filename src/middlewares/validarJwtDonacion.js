@@ -1,7 +1,7 @@
 
 const { request, response } = require('express');
 const jwt = require('jsonwebtoken');
-const { listDonaciones, findByid } = require('../helpers');
+const { listDonaciones, findByid, verificarToken } = require('../helpers');
 
 const validarJWTDonacion = async (req=request, res= response, next) =>{
     try {
@@ -13,7 +13,7 @@ const validarJWTDonacion = async (req=request, res= response, next) =>{
             })
         }
 
-        const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY);
+        const uid = verificarToken(token, process.env.SECRETORPRIVATEKEY);
         const {total, donaciones} = await listDonaciones(1, 2000);
         const donacionEncontrada = findByid(uid, donaciones);
         if(!donacionEncontrada || donacionEncontrada.estado != 'abierta'){

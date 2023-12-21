@@ -1,4 +1,5 @@
 
+const authHelpers        = require('./auth.helpers');
 const bdValidators       = require('./bd-valiadators');
 const correoHelpers      = require('./correo.Helpers');
 const donacionesHelpers  = require('./donaciones.helpers');
@@ -14,6 +15,7 @@ const validarBenefactor  = require('../helpers/validarBenefactor');
 const validarDonaciones  = require('./validarDonacion');
 
 module.exports = {
+    ...authHelpers,
     ...bdValidators,
     ...correoHelpers,
     ...donacionesHelpers,

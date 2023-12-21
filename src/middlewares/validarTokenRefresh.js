@@ -2,6 +2,7 @@ const { response, request } = require('express');
 const jwt = require('jsonwebtoken');
 
 const Colaborador = require('../Domain/models/Colaborador.models');
+const { verificarToken } = require('../helpers');
 
 
 const validarJWTRefresh = async(req= request, res = response, next) => {
@@ -15,7 +16,7 @@ const validarJWTRefresh = async(req= request, res = response, next) => {
     }
 
     try {       
-        const {uid} = jwt.verify(Refres_token, process.env.SECRET_KEY_REFRESH_TOKEN);
+        const uid = verificarToken(Refres_token, process.env.SECRET_KEY_REFRESH_TOKEN);
         const usuario = await Colaborador.findById(uid); 
         if(!usuario){
             return res.status(401).json({

@@ -28,9 +28,18 @@ const validarTokenRe = async (uid) => {
         if(!modelTokenR || modelTokenR === null || !modelTokenR.tokenRefreso){
             throw new Error('El usuario no tiene un token de refresco');
         }
-        jwt.verify(modelTokenR.tokenRefreso, process.env.SECRET_KEY_REFRESH_TOKEN);
+        verificarToken(modelTokenR.tokenRefreso, process.env.SECRET_KEY_REFRESH_TOKEN);
     } catch (error) {
         throw new Error('error al validar el token de refresco : ' + error.message);
+    }
+}
+
+const verificarToken = (token = '', claveSecreta = '') => {
+    try {
+        const {uid} = jwt.verify(token, claveSecreta);
+        return uid;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -38,4 +47,5 @@ module.exports = {
     obtenerToken,
     validarExpiracionToken,
     validarTokenRe,
+    verificarToken,
 }

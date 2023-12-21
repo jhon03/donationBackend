@@ -5,63 +5,27 @@ const jwt = require('jsonwebtoken');
 const Colaborador = require('../Domain/models/Colaborador.models');
 const { generarJWT, generarJWTRefresh } = require("../helpers/generate-jwt");
 const { Benefactor, TokenR } = require("../Domain/models");
+const { validarUsuario, validarContrasenaUsuario, asignarTokenRefresh, expiracionCookie, verificarToken, obtenerToken } = require("../helpers");
 
 const login = async(req, res = response) => {
    
     try {
-        const {correo, contrasena} = req.body;
+        const {correo, contrasena} = req.body;      
+        const usuario = await validarUsuario(correo);
+        validarContrasenaUsuario(usuario, contrasena);
 
-        let usuario;
-        
-        usuario = await Colaborador.findOne({ correo });  //verificar si existe el correo
-        if(!usuario){
-            usuario = await Benefactor.findOne({correo});
-        }
-
-        if(!usuario){
-            return res.status(400).json({
-                msg: 'usuario y/o contraseña incorrectos -correo'
-            })
-        }
-
-        //verificar si el usuario esta activo
-        if(!usuario.estado){
-            return res.status(400).json({
-                msg: 'el usuario esta inctivo -estado'
-            })
-        }
-
-        //verificar la contarseña
-        const validarContrasena = bcryptjs.compareSync( contrasena, usuario.contrasena);
-        if(!validarContrasena){
-            return res.status(400).json({
-                msg: 'la contraseña es incorrecta -contraseña'
-            })
-        }  
         const token = await generarJWT(usuario.id);   //generar el JWT
-        const modelRefreshT = await TokenR.findOne({userId: usuario.id});
-        console.log(modelRefreshT);
         const refreshToken = await generarJWTRefresh(usuario.id);       //genera un token de refresco cada vez que inicia sesion
-        if(!modelRefreshT || modelRefreshT == null ){
-            const data = {
-                userId: usuario.id,
-                tokenRefreso: refreshToken,
-            }
-            const modelToken = new TokenR(data);
-            await modelToken.save();
-        } else {
-            modelRefreshT.tokenRefreso = refreshToken;
-            await modelRefreshT.save();
-        }
+        asignarTokenRefresh(usuario.id, refreshToken);
         return res.json({
             usuario,
             token,
         })
         
     } catch (error) {
-        console.log(error)
-        res.status(500).json({
-            msg: 'algo salio mal '
+        return res.status(400).json({
+            msg: 'Error al realizar el login ',
+            error: error.message
         })
     }
 
@@ -70,27 +34,9 @@ const login = async(req, res = response) => {
 const loginCookies = async(req, res = response) => {
     try {
         const {correo, contrasena} = req.body;
-        const usuario = await Colaborador.findOne({ correo });
-        if(!usuario || usuario === null){
-            return res.status(400).json({
-                msg: 'usuario y/o contraseña incorrectos -correo'
-            })
-        }
-     
-        if(!usuario.estado){        //verificar si el usuario esta activo
-            return res.status(400).json({
-                msg: 'el usuario esta inctivo -estado'
-            })
-        }
-        //verificar la contarseña
-        const validarContrasena = bcryptjs.compareSync( contrasena, usuario.contrasena);
-        if(!validarContrasena){
-            return res.status(400).json({
-                msg: 'la contraseña es incorrecta -contraseña'
-            })
-        }  
-        const minutosExpiracion = 60 * 24; // 24 horas
-        const milisegundosExpiracion = minutosExpiracion * 60 * 1000;
+        const usuario = await validarUsuario(correo);
+        validarContrasenaUsuario(usuario, contrasena); 
+        const milisegundosExpiracion = expiracionCookie(24);
         const token = await generarJWT(usuario.id);   //generar el JWT}
         res.cookie("jwt", token, {
             httpOnly: true,
@@ -130,16 +76,14 @@ const renovarToken = async(req, res) =>{
 }
 
 
+//dependiendo del front se envia una peticion para validar el token
 const validarTokenSesion = (req, res) => {
     try {
-        const token = req.header('x-token');
-        console.log(token);
+        const token = obtenerToken(req);
         if(!token || token === null){
-            return res.status(401).json({
-                msg: 'no hay token en la peticion'
-            })
+            throw new Error('No hay token en la peticion');
         }
-        jwt.verify(token, process.env.SECRETORPRIVATEKEY);
+        verificarToken(token, process.env.SECRETORPRIVATEKEY);
         return res.json({
             msg: 'sesion activa token valido'
         })

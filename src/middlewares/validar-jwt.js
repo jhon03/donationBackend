@@ -3,11 +3,11 @@ const jwt = require('jsonwebtoken');
 
 const Colaborador = require('../Domain/models/Colaborador.models');
 const { Benefactor } = require('../Domain/models');
-const { validarExpiracionToken, validarTokenRe, generarJWT } = require('../helpers');
+const { validarExpiracionToken, validarTokenRe, generarJWT, verificarToken, obtenerToken, validarUsuario } = require('../helpers');
 
 const validarJWT = async(req= request, res = response, next) => {
 
-    const token = req.header('x-token');
+    const token = obtenerToken(req);
     if(!token){
         return res.status(401).json({
             msg: 'no hay token en la peticion'
@@ -15,7 +15,7 @@ const validarJWT = async(req= request, res = response, next) => {
     }
 
     try {       
-        const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY)
+        const uid = verificarToken(token, process.env.SECRETORPRIVATEKEY);
         const tokenDecoded = jwt.decode(token);
         if(validarExpiracionToken(tokenDecoded.exp) ){
             await validarTokenRe(uid);
@@ -23,26 +23,7 @@ const validarJWT = async(req= request, res = response, next) => {
             req.tokenRenovado = tokenAcessoRenovado;
         }
 
-        let usuario;
-
-        usuario = await Colaborador.findById(uid);
-        if(!usuario){
-            usuario = await Benefactor.findById(uid);
-        }
-
-        if(!usuario){
-            return res.status(401).json({
-                msg: 'token no valido -usuario no exite en la db'
-            })
-        }
-
-        //verificar usuario activo
-        if(!usuario.estado){
-            return res.status(401).json({
-                msg:'token no valido -usuario inactivo'
-            })
-        }
-         
+        const usuario = await validarUsuario('', uid)        
         req.usuario = usuario;
 
         next();
@@ -67,19 +48,8 @@ const validarJWTCookie = async(req= request, res = response, next) => {
     }
 
     try {       
-        const {uid} = jwt.verify(token, process.env.SECRETORPRIVATEKEY)
-        const usuario = await Colaborador.findById(uid);
-        if(!usuario){
-            return res.status(401).json({
-                msg: 'token no valido -usuario no exite en la db'
-            })
-        }     
-        if(!usuario.estado){            //verificar usuario activo
-            return res.status(401).json({
-                msg:'token no valido -usuario inactivo'
-            })
-        }
-         
+        const uid = verificarToken(token, process.env.SECRETORPRIVATEKEY);
+        const usuario = await validarUsuario('', uid);        
         req.usuario = usuario;
 
         next();
