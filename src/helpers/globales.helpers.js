@@ -141,7 +141,7 @@ const encryptarContra = (resto, contrasena) => {
     const salt = bcryptjs.genSaltSync();  //encriptar nueva contraseña
     resto.contrasena= bcryptjs.hashSync( contrasena, salt);
   } catch (error) {
-    throw error;
+    throw new Error(`Error al encryptar la contraseña: ${error.message}`);
   }
 }
 

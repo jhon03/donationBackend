@@ -1,5 +1,4 @@
 const { response, request} = require('express');   //modulo para tipear respuesta
-const bcryptjs = require('bcryptjs');
 
 const Colaborador = require('../Domain/models/Colaborador.models');
 const { ColaboradorTemp, Role } = require('../Domain/models');

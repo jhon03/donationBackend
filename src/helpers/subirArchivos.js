@@ -1,9 +1,5 @@
-const { response, request } = require("express");
-const {Programa, Proyecto, Imagen} = require('../Domain/models')
 
-const path = require('path'); //importamos el path para formar rutas
-const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
+const {Programa, Proyecto, Imagen} = require('../Domain/models')
 
 const cloudinary = require('cloudinary').v2   //importamos clouddinary
 cloudinary.config(process.env.CLOUDINARY_URL);
