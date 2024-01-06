@@ -1,3 +1,4 @@
+const bcryptjs = require('bcryptjs');
 const {
   Benefactor,
   Colaborador,
@@ -9,6 +10,7 @@ const {
   Imagen,
 } = require("../Domain/models");
 const { buscarEstado } = require("./proyectos.helpers");
+const { obtenerEstado } = require('./programas.helpers');
 
 const buscarColeccion = async (modelo, NomRelacion, id = 0) => {
   try {
@@ -134,13 +136,97 @@ const updateColeccion = async(modelo, id, resto) =>{
 
 }
 
+const encryptarContra = (resto, contrasena) => {
+  try {
+    const salt = bcryptjs.genSaltSync();  //encriptar nueva contraseña
+    resto.contrasena= bcryptjs.hashSync( contrasena, salt);
+  } catch (error) {
+    throw error;
+  }
+}
+
+const buscarDocumentos = async(modelo, opcionesBusqueda = [], limite=5, desde=0, query)=>{
+  try {
+
+      const [total, documentos] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
+          modelo.countDocuments(query),  //devuelve los datos por indice
+          modelo.find(query)
+            .skip(desde)
+            .limit(limite)
+      ]);
+
+      const docs = await Promise.all(documentos.map(async doc => {
+        for (let opcion of opcionesBusqueda) {
+            await doc.populate(opcion.campo, opcion.nombre);
+        }
+        return doc;
+      }));
+
+      return { total, docs };
+  } catch (error) {
+      throw new Error('Ha ocurrido un error al buscar los documentos: ' + error.message);
+  }
+}
+
+const buscarDocumentoId = async(modelo, id, opcionesBusqueda = [], token = '') =>{
+  try {
+      let documento = await modelo.findOne({ _id : id, ...obtenerEstado(token) })
+      if(!documento || documento === null){
+          throw new Error(`El ${modelo.modelName} con id ${id} no existe o esta oculto -estado`);
+      }
+      for (let opcion of opcionesBusqueda) {
+        documento = await documento.populate(opcion.campo, opcion.nombre);
+      }
+
+      return documento;
+  } catch (error) {
+      throw new Error(`error al buscar el programa: ${error.message}`)
+  }
+}
+
+const obtenerOpcionesBus = (modelo = '') => {
+  try {
+    let opcionesBusqueda = [];
+    switch (modelo) {
+      case 'proyecto':
+        opcionesBusqueda = [
+          {campo: 'programa', nombre: 'nombre'},
+          {campo: 'imagenes', nombre: 'url'},
+        ];
+        break;
+      case 'programa':
+        opcionesBusqueda = [
+          {campo: 'colaborador', nombre: 'nombre'},
+          {campo: 'imagenes', nombre: 'url'},
+        ];
+        break;
+      case 'colaborador':
+        opcionesBusqueda = [
+          {campo: 'rol', nombre: 'rol'},
+        ];
+        break;
+        default:
+          opcionesBusqueda = []
+        break;
+    }
+    
+    return opcionesBusqueda;
+  } catch (error) {
+    throw new Error(`Error al obtener las opciones de busqueda: ${error.message}`);
+  }
+} 
+
 module.exports = {
   buscarColeccion,
+  buscarDocumentos,
+  buscarDocumentoId,
   cambiarEstadoColeccion,
+  encryptarContra,
   findColeccion,
   listPaginada,
   obtenerColeccionUrl,
   obtenermodeloUrl,
+  obtenerOpcionesBus,
   validarFechaDonacion,
   validarEstadoColeccion,
   updateColeccion,

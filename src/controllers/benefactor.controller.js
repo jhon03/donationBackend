@@ -43,10 +43,8 @@ const eliminarBenefactor = async(req, res= response) => {
     try {
         const {id} = req.params;
         const benefactor = await Benefactor.findByIdAndUpdate(id, {estado:false}, {new:true} );
-        if (!benefactor ) {
-            return res.status(400).json({
-                msg: 'El benefactor que intentas eliminar no existe'
-            })
+        if (!benefactor || benefactor === null ) {
+            throw new Error(`El benefactor con el id ${id} no existe`);
         }
         return res.json({
             msg: 'benefactor eliminado correctamenete',

@@ -2,7 +2,7 @@ const { response, request} = require('express');   //modulo para tipear respuest
 
 
 const {Programa} = require('../Domain/models');
-const { validarOpciones, buscarProgramas, buscarProgramaId, crearObjetoPrograma, obtenerToken, cambiarEstadoColeccion, updateColeccion } = require('../helpers');
+const { validarOpciones, crearObjetoPrograma, obtenerToken, cambiarEstadoColeccion, updateColeccion, buscarDocumentos, buscarDocumentoId, obtenerEstado, obtenerOpcionesBus } = require('../helpers');
 
 
 
@@ -12,8 +12,11 @@ const obtenerProgramas = async(req = request, res = response) => {
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
         const token = obtenerToken(req);
+        const busqueda = obtenerEstado(token);
 
-        const {total, programas} = await buscarProgramas(Number(limite), Number(desde), token);
+        const opcionesBusqueda = obtenerOpcionesBus('programa');
+
+        const {total, docs: programas} = await buscarDocumentos(Programa, opcionesBusqueda, Number(limite), Number(desde), busqueda);
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, total, programas});
         }
@@ -34,8 +37,10 @@ const obtenerProgramasVista = async(req=request, res= response)=>{
 
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
-        
-        const {total, programas} = await buscarProgramas(Number(limite), Number(desde) ); //no se pasa el argumento del token ya que en vista y no es necesario
+        const busqueda = obtenerEstado();
+
+        const opcionesBusqueda = obtenerOpcionesBus('programa');
+        const {total, docs: programas} = await buscarDocumentos(Programa, opcionesBusqueda, Number(limite), Number(desde), busqueda);
         return res.json({
             total,
             programas
@@ -53,7 +58,8 @@ const obtenerProgramasId = async(req, res) => {
         const {id} = req.params;
         const tokenNuevo = req.tokenRenovado;
         const token = obtenerToken(req);
-        const programa = await buscarProgramaId(id, token);
+        const opcionesBusqueda = obtenerOpcionesBus('programa');
+        const programa = await buscarDocumentoId(Programa, id, opcionesBusqueda, token);
 
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, msg: 'programa obtenido correctamente', programa});
@@ -73,7 +79,8 @@ const obtenerProgramasId = async(req, res) => {
 const obtenerProgramaIdVista = async(req, res) =>{
     try {
         const {id} = req.params;
-        const programa = await buscarProgramaId(id);    //no se manda el atributo token de la funcion no se necesita
+        const opcionesBusqueda = obtenerOpcionesBus('programa');
+        const programa = await buscarDocumentoId(Programa, id, opcionesBusqueda);
         return res.json({
             msg: 'programa obtenido correctamente',
             programa

@@ -38,7 +38,7 @@ const asignarTokenRefresh = async (userId = '', refreshToken) => {
         console.log(modelRefreshT);
         if(!modelRefreshT || modelRefreshT == null ){
             const data = {
-                userId: usuario.id,
+                userId,
                 tokenRefreso: refreshToken,
             }
             const modelToken = new TokenR(data);

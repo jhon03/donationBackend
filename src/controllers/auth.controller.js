@@ -36,7 +36,7 @@ const loginCookies = async(req, res = response) => {
         const {correo, contrasena} = req.body;
         const usuario = await validarUsuario(correo);
         validarContrasenaUsuario(usuario, contrasena); 
-        const milisegundosExpiracion = expiracionCookie(24);
+        const milisegundosExpiracion = expiracionCookie(200);
         const token = await generarJWT(usuario.id);   //generar el JWT}
         res.cookie("jwt", token, {
             httpOnly: true,

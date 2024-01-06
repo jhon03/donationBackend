@@ -1,7 +1,7 @@
 const { response, request} = require('express');
 
 const {Proyecto} = require('../Domain/models'); 
-const { buscarProyectos, buscarProyectoId, crearObjetoProyecto, obtenerToken, cambiarEstadoColeccion, updateColeccion, validarOpciones } = require('../helpers');
+const { crearObjetoProyecto, obtenerToken, cambiarEstadoColeccion, updateColeccion, validarOpciones, buscarDocumentos, buscarDocumentoId, obtenerEstado, obtenerOpcionesBus } = require('../helpers');
 
 const obtenerProyectos = async(req = request, res = response) => {
     try {
@@ -10,14 +10,15 @@ const obtenerProyectos = async(req = request, res = response) => {
         const desde = (page-1) * limite;
         const token = req.params;
 
-        const {total, proyecto} = await buscarProyectos(Number(limite), Number(desde), token );
+        const busqueda = obtenerEstado(token);
+
+        const opcionesBusqueda = obtenerOpcionesBus('proyecto');
+        const {total, docs: proyecto} = await buscarDocumentos(Proyecto, opcionesBusqueda, Number(limite), Number(desde), busqueda);
+
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, total, proyecto});
         }
-        return res.json({
-            total,
-            proyecto
-        });
+        return res.json({total, proyecto });
     } catch (error) {
         return res.status(400).json({
            error: error.message
@@ -29,8 +30,11 @@ const obtenerProyectosVista = async(req = request, res = response) => {
     try {
         const {page = 1, limite = 5} = req.query;
         const desde = (page-1) * limite;
+        const busqueda = obtenerEstado();
 
-        const {total, proyecto} = await buscarProyectos( Number(limite), Number(desde));    //no se pasa el atributo de token, ya que al ser la vista no es necesario
+        const opcionesBusqueda = obtenerOpcionesBus('proyecto');
+        //no se pasa el atributo de token, ya que al ser la vista no es necesario
+        const {total, docs: proyecto} = await buscarDocumentos(Proyecto, opcionesBusqueda, Number(limite), Number(desde), busqueda);
         return res.json({
             total,
             proyecto
@@ -48,7 +52,8 @@ const obtenerProyectoId = async(req, res) => {
         const {id} = req.params;
         const token = obtenerToken(req);
 
-        const proyecto = await buscarProyectoId(id, token);
+        const opcionesBusqueda = obtenerOpcionesBus('proyecto');
+        const proyecto = await buscarDocumentoId(Proyecto, id, opcionesBusqueda, token);
         if(tokenNuevo && tokenNuevo !== null){
             return res.json({tokenNuevo, proyecto});
         }
@@ -65,7 +70,8 @@ const obtenerProyectoId = async(req, res) => {
 const obtenerProyectoIdVista = async(req, res) => {
     try {
         const {id} = req.params;
-        const proyecto = await buscarProyectoId(id);
+        const opcionesBusqueda = obtenerOpcionesBus('proyecto');
+        const proyecto = await buscarDocumentoId(Proyecto, id, opcionesBusqueda);
         res.json({
             proyecto
         });

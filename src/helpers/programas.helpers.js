@@ -3,53 +3,21 @@ const {Programa} = require('../Domain/models');
 const { obtenerToken } = require('./jwt.helpers');
 const { validarOpciones } = require('./bd-valiadators');
 
-
-const buscarProgramas = async (limite = 5, desde = 0, token = '' ) => {
-    try {
-
-        let query = obtenerEstado(token);
-
-        const [total, programas] = await Promise.all([
-            Programa.countDocuments(query),
-            Programa.find(query)
-                .populate('colaborador', 'nombre')
-                .populate('imagenes', 'url')
-                .skip(desde)
-                .limit(limite)
-        ]);
-
-        return { total, programas };
-    } catch (error) {
-        throw new Error('Ha ocurrido un error al buscar los programas' + error.message);
-    }
-    
-};
-
-const buscarProgramaId = async(id, token = '') =>{
-    try {
-        const programa = await Programa.findOne({ _id : id, ...obtenerEstado(token) })
-                                   .populate('colaborador','nombre')
-                                   .populate('imagenes','url');
-        if(!programa || programa === null){
-            throw new Error(`El programa con id ${id} no existe o esta oculto -estado`);
-        }
-        return programa;
-    } catch (error) {
-        throw new Error(`error al buscar el programa: ${error.message}`)
-    }
-}
-
 const obtenerEstado = (token = '') =>{
-    let query = { estado: 'visible' }; // Utiliza el estado proporcionado
-    if(!token || token === null){
-        console.log('solicitud sin token');
+    try {
+        let query = { estado: 'visible' }; // Utiliza el estado proporcionado
+        if(!token || token === null){
+            console.log('solicitud sin token');
+            return query;
+        }
+        if(token && token !== null ){
+            console.log('solicitud con token');
+            query = { estado: { $in: ['visible', 'oculto'] } };
+        }
         return query;
-    }
-    if(token && token !== null ){
-        console.log('solicitud con token');
-        query = { estado: { $in: ['visible', 'oculto'] } };
-    }
-    return query;
+    } catch (error) {
+        throw error;
+    }   
 }
 
 const crearObjetoPrograma = (req) =>{
@@ -91,8 +59,6 @@ const programaFindById = async(id='') =>{
 
 
 module.exports = {
-    buscarProgramas,
-    buscarProgramaId,
     crearObjetoPrograma,
     obtenerEstado,
     programaFindById,

@@ -6,7 +6,7 @@ const { validarCampos,
         tieneRol,
         validarRole} = require('../middlewares');  //carpeta donde estan todos los middlewares
 
-const { validarRol, validarEmail, validarId, validarEstado, validarNIdentificacion, validarUsername } = require('../helpers');
+const { validarRol, validarEmail, validarId, validarEstado, validarNIdentificacion, validarUsername, validarNumeroCel, validarOpcionesIdentificacion, validarContrasenaUsuario, validarContrasena } = require('../helpers');
 
 const { colaboradorGet, 
         colaboradorDelete, 
@@ -38,6 +38,9 @@ router.put('/:id', [
         tieneRol('CREADOR','ADMINISTRADOR', 'MODIFICADOR'),   //middlewarepara verificzr varios roles
         check('id', 'no es un id valido').isMongoId(),
         check('id').custom( validarId),
+        check('correo', 'No puedes cambiar tu correo, habla con el administrador').isEmpty(),
+        check('cargo', 'No puedes cambiar tu cargo, habla con el administrador').isEmpty(),
+        check('contrasena', 'el password deber ser de mas de 6 letras').isLength( {min: 6}),
         validarCampos  //llamamos la validacion
 ],colaboradorPut);
 
@@ -61,11 +64,13 @@ router.post('/', [              //arreglo de middlewares para verificar campos
         check('contrasena', 'la contrasena es requerida').not().isEmpty(),
         check('cargo', 'El cargo es requerido').not().isEmpty(),
         check('celular', 'El numero de celular es requerido').not().isEmpty(),
-        check('contrasena', 'el password deber ser de mas de 6 letras').isLength( {min: 6}),
         check('correo').isEmail().withMessage('Correo no valido'),
+        check('tipoIdentificacion').custom(validarOpcionesIdentificacion),
+        check('celular').custom(validarNumeroCel),
         check('correo').custom(validarEmail),   //validacion personalizada
         check('rol').custom( validarRol ),
         check('numeroIdentificacion').custom(validarNIdentificacion),
+        check('contrasena').custom(validarContrasena),
         check('username').custom(validarUsername),
         validarCampos           //middleware personalizado
 ],colaboradorPost);

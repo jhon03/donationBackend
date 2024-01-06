@@ -3,39 +3,6 @@ const { obtenerEstado } = require("./programas.helpers");
 const { Proyecto, Programa } = require("../Domain/models");
 const { validarOpciones } = require("./bd-valiadators");
 
-const buscarProyectos = async( limite=5, desde=0, token ='')=>{
-    try {
-
-        let query = obtenerEstado(token);
-        const [total, proyecto] = await Promise.all([    //utilaza promesas para que se ejecuten las dos peticiones a la vez
-            Proyecto.countDocuments(query),  //devuelve los datos por indice
-            Proyecto.find(query)
-            .populate('programa','nombre')
-            .populate('imagenes','url')
-            .skip(desde)
-            .limit(limite)
-        ]);
-
-        return { total, proyecto };
-    } catch (error) {
-        throw new Error('Ha ocurrido un error al buscar los proyectos' + error.message);
-    }
-}
-
-const buscarProyectoId = async(id, token = '') =>{
-    try {
-        
-        const proyecto = await Proyecto.findOne({ _id : id, ...obtenerEstado(token) })
-                                   .populate('programa','nombre')
-                                   .populate('imagenes','url');
-        if(!proyecto || proyecto === null){
-            throw new Error(`El proyecto con id ${id} no existe o esta oculto -estado`);
-        }
-        return proyecto;
-    } catch (error) {
-        throw new Error(`error al buscar el proyecto: ${error.message}`)
-    }
-}
 
 const crearObjetoProyecto = (req) =>{
     try {
@@ -96,9 +63,7 @@ const proyectoFindById = async(id= '') =>{
 }
 
 module.exports = {
-    buscarProyectos,
     buscarEstado,
-    buscarProyectoId,
     crearObjetoProyecto,
     proyectoFindById,
 }
